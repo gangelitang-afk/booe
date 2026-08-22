@@ -40,15 +40,18 @@
     mix-blend-mode: multiply;
   }
 
-  /* ===== 三星堆云雷纹：宣纸底上隐约的古代纹路 ===== */
+  /* ===== 三星堆云雷纹：底部一条隐约的纹饰带 ===== */
   body::after {
     content: '';
     position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 40 40'%3E%3Cpath d='M4 4 h20 v12 h-12 v8 h20 v-24 h4 v28 h-28 v-8 h4 v-12 h12 v-4 h-20 z' fill='none' stroke='%2316130F' stroke-opacity='0.22' stroke-width='1.2'/%3E%3C/svg%3E");
-    background-size: 56px 56px;
+    left: 0; right: 0; bottom: 0;
+    height: 32vh;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 40 40'%3E%3Cpath d='M4 4 h20 v12 h-12 v8 h20 v-24 h4 v28 h-28 v-8 h4 v-12 h12 v-4 h-20 z' fill='none' stroke='%2316130F' stroke-opacity='0.14' stroke-width='1.2'/%3E%3C/svg%3E");
+    background-size: 90px 90px;
     z-index: 0;
     pointer-events: none;
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.9) 30%, transparent 100%);
+    mask-image: linear-gradient(to top, rgba(0,0,0,0.9) 30%, transparent 100%);
   }
 
   /* ===== 三星堆太阳轮：右下角 ===== */
@@ -61,17 +64,6 @@
     z-index: 1;
     opacity: 0.26;
     pointer-events: none;
-  }
-
-  /* ===== 关羽：右上角 ===== */
-  .guanyu {
-    position: absolute;
-    top: 3.5vh;
-    right: 3.5vw;
-    width: clamp(100px, 12vw, 170px);
-    z-index: 4;
-    pointer-events: none;
-    mix-blend-mode: multiply;
   }
 
   /* ===== 第零层：满屏巨字 ===== */
@@ -296,7 +288,6 @@
       width: 55vw; height: 55vw;
     }
     .spike { left: 78vw; }
-    .guanyu { top: 2vh; right: 2vw; width: 22vw; opacity: 0.8; }
     .sunwheel { bottom: 8vh; right: -8vw; width: 55vw; height: 55vw; opacity: 0.2; }
     .tags {
       top: 60vh;
@@ -339,36 +330,6 @@
     </svg>
   </div>
 
-  <!-- 关羽（右上角，朱砂版画风） -->
-  <div class="guanyu">
-    <svg viewBox="0 0 200 250" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- 头巾 -->
-      <path d="M58 66 Q100 36 142 66 L136 92 Q100 74 64 92 Z" stroke="#16130F" stroke-width="2.5"/>
-      <!-- 头巾飘带 -->
-      <path d="M58 66 Q50 92 46 122" stroke="#16130F" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M142 66 Q150 92 154 122" stroke="#16130F" stroke-width="2.5" stroke-linecap="round"/>
-      <!-- 红脸 -->
-      <ellipse cx="100" cy="106" rx="32" ry="36" fill="#C0362C" opacity="0.5"/>
-      <!-- 卧蚕眉 -->
-      <path d="M78 98 Q100 88 122 98" stroke="#16130F" stroke-width="3" stroke-linecap="round"/>
-      <!-- 丹凤眼 -->
-      <path d="M84 108 L94 105 M116 108 L106 105" stroke="#16130F" stroke-width="2.5" stroke-linecap="round"/>
-      <!-- 鼻 -->
-      <path d="M100 108 L98 120" stroke="#16130F" stroke-width="2.5"/>
-      <!-- 唇 -->
-      <path d="M90 124 Q100 128 110 124" stroke="#16130F" stroke-width="2"/>
-      <!-- 美髯 -->
-      <path d="M84 134 Q80 178 90 212 Q100 222 110 212 Q120 178 116 134 Q100 146 84 134 Z" fill="#16130F" opacity="0.45"/>
-      <!-- 袍服 -->
-      <path d="M62 152 Q54 204 58 250 L142 250 Q146 204 138 152 Q118 170 100 170 Q82 170 62 152 Z" stroke="#16130F" stroke-width="2.5"/>
-      <!-- 青龙偃月刀杆 -->
-      <path d="M162 250 L152 32" stroke="#16130F" stroke-width="4.5" stroke-linecap="round"/>
-      <!-- 月牙刃 -->
-      <path d="M152 32 Q176 46 172 80 Q160 64 152 32 Z" fill="#C0362C" opacity="0.75"/>
-      <!-- 红缨 -->
-      <path d="M152 88 Q144 108 140 124" stroke="#C0362C" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-  </div>
 
   <div class="ring"></div>
 
