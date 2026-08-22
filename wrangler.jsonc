@@ -1,0 +1,17 @@
+{
+  "name": "booe",
+  "main": "_worker.js",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "booe-db",
+      "database_id": "a0ab3c23-3dd3-4b6d-9e96-0769a6bc1487"
+    }
+  ],
+  "compatibility_date": "2026-08-01"
+}
