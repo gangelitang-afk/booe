@@ -13,5 +13,19 @@
       "database_id": "a0ab3c23-3dd3-4b6d-9e96-0769a6bc1487"
     }
   ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "LUDO_ROOM",
+        "class_name": "LudoRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["LudoRoom"]
+    }
+  ],
   "compatibility_date": "2026-08-01"
 }
