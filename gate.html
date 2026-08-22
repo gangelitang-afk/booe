@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>验证 · 止一</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --paper: #EFE8D8; --ink: #16130F; --cinnabar: #C0362C; --ink-mid: rgba(22,19,15,0.55); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    height: 100vh; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: radial-gradient(rgba(22,19,15,0.03) 1px, transparent 1px);
+    background-size: 3px 3px; pointer-events: none;
+  }
+
+  /* 背景大字 */
+  .bg-char {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-3deg);
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: 70vw;
+    color: rgba(22,19,15,0.05);
+    user-select: none; pointer-events: none;
+    line-height: 1;
+  }
+
+  .back {
+    position: fixed; top: 4vh; left: 4vw; z-index: 10;
+    color: var(--ink); text-decoration: none;
+    font-size: 13px; font-weight: 900; letter-spacing: 0.3em;
+    padding: 8px 16px; border: 2px solid var(--ink); background: var(--paper);
+    transition: all 0.3s;
+  }
+  .back:hover { background: var(--ink); color: var(--paper); }
+
+  .gate-box {
+    position: relative; z-index: 2;
+    text-align: center;
+    animation: fadeUp 0.8s ease-out both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .gate-title {
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    margin-bottom: 8px;
+  }
+  .gate-sub {
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--ink-mid);
+    margin-bottom: 40px;
+  }
+
+  .gate-input-wrap {
+    display: flex;
+    gap: 0;
+    max-width: 360px;
+    margin: 0 auto;
+    border: 3px solid var(--ink);
+    background: var(--paper);
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .gate-input-wrap:focus-within {
+    border-color: var(--cinnabar);
+    box-shadow: 4px 4px 0 var(--cinnabar);
+  }
+  .gate-input-wrap.error {
+    border-color: var(--cinnabar);
+    animation: shake 0.4s ease-in-out;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+
+  #gateInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 16px 20px;
+    font-size: 18px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+  #gateInput::placeholder {
+    color: rgba(22,19,15,0.3);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+  }
+
+  .gate-btn {
+    border: none;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 16px 24px;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    font-family: 'Noto Sans SC', sans-serif;
+    transition: background 0.3s;
+  }
+  .gate-btn:hover { background: var(--cinnabar); }
+
+  .gate-msg {
+    margin-top: 20px;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--cinnabar);
+    min-height: 20px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .gate-msg.show { opacity: 1; }
+
+  .gate-hint {
+    margin-top: 48px;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: rgba(22,19,15,0.35);
+    line-height: 2;
+  }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">← 回基地</a>
+<div class="bg-char">验</div>
+
+<div class="gate-box">
+  <div class="gate-title">此门有锁</div>
+  <div class="gate-sub">输入暗号，方可入内</div>
+
+  <div class="gate-input-wrap" id="inputWrap">
+    <input type="text" id="gateInput" placeholder="暗号" autocomplete="off" spellcheck="false">
+    <button class="gate-btn" onclick="check()">进</button>
+  </div>
+
+  <div class="gate-msg" id="gateMsg"></div>
+
+  <div class="gate-hint">暗号是什么？<br>你猜。</div>
+</div>
+
+<script>
+  // 密码混淆存储（不是明文，但也别当银行金库用）
+  var _0xk = [78,73,67,65,73,67,65,73,75,65,78];
+  var _pw = _0xk.map(function(c){return String.fromCharCode(c)}).join('');
+
+  var input = document.getElementById('gateInput');
+  var wrap = document.getElementById('inputWrap');
+  var msg = document.getElementById('gateMsg');
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') check();
+  });
+
+  input.focus();
+
+  function check() {
+    var val = input.value.trim().toUpperCase();
+    if (val === _pw) {
+      msg.textContent = '门开了。';
+      msg.style.color = 'var(--cinnabar)';
+      msg.classList.add('show');
+      wrap.style.borderColor = 'var(--cinnabar)';
+      setTimeout(function() {
+        window.location.href = 'about.html';
+      }, 600);
+    } else {
+      msg.textContent = '不对。';
+      msg.classList.add('show');
+      wrap.classList.add('error');
+      input.value = '';
+      input.focus();
+      setTimeout(function() {
+        wrap.classList.remove('error');
+        msg.classList.remove('show');
+      }, 1200);
+    }
+  }
+</script>
+
+</body>
+</html>
