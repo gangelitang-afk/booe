@@ -275,32 +275,69 @@
 
   /* ===== 手机端 ===== */
   @media (max-width: 640px) {
-    .spirit { font-size: 130vw; top: 46%; }
+    html, body { height: 100dvh; }
+
+    /* 巨字：缩小 + 右移，露出「不」字多一点，避免横向溢出失控 */
+    .spirit {
+      font-size: 68vw;
+      top: 34%;
+      left: 52%;
+      letter-spacing: -0.02em;
+      line-height: 0.88;
+    }
+
+    /* 红块：垂直居中偏上，不再被巨字挤歪 */
     .slash {
-      width: 105vw;
-      height: 20vh;
-      padding: 0 5vw 0 12vw;
+      top: 44%;
+      left: -6vw;
+      width: 88vw;
+      height: 17vh;
+      min-height: 92px;
+      padding: 0 4vw 0 10vw;
+      box-shadow: 4px 6px 0 rgba(22, 19, 15, 0.2);
     }
+    .slash .name { font-size: clamp(34px, 8vw, 56px); }
     .slash .domain { display: none; }
-    .ring {
-      top: 10vh;
-      right: -10vw;
-      width: 55vw; height: 55vw;
-    }
-    .spike { left: 78vw; }
-    .sunwheel { bottom: 8vh; right: -8vw; width: 55vw; height: 55vw; opacity: 0.2; }
+
+    /* 手机上圆环太挤，隐藏 */
+    .ring { display: none; }
+
+    /* 朱砂竖线移到最右侧，避开内容 */
+    .spike { left: 88vw; width: 5px; }
+
+    /* 太阳轮：更淡更小 */
+    .sunwheel { bottom: 10vh; right: -10vw; width: 48vw; height: 48vw; opacity: 0.16; }
+
+    /* 标签：红块下方，宽度撑开 */
     .tags {
-      top: 60vh;
-      max-width: 85vw;
-      gap: 8px 10px;
+      top: 64%;
+      left: 5vw;
+      max-width: 90vw;
+      gap: 7px 9px;
     }
     .tags span {
-      font-size: 12px;
-      padding: 4px 10px;
-      letter-spacing: 0.1em;
+      font-size: 11.5px;
+      padding: 5px 12px;
+      letter-spacing: 0.08em;
+      border-width: 1.5px;
     }
-    nav { flex-wrap: wrap; gap: 8px 26px; }
+
+    /* 导航：一行四列排开，bottom 抬高避开浏览器底部栏 */
+    nav {
+      left: 4vw;
+      bottom: 6vh;
+      width: 92vw;
+      justify-content: space-between;
+      gap: 0;
+      flex-wrap: nowrap;
+    }
+    nav a { font-size: 13.5px; letter-spacing: 0.14em; }
     nav a:nth-child(n) { transform: none; }
+    nav a::after { height: 2px; }
+
+    /* 左上信息块 */
+    .meta-issue { top: 3.5vh; left: 4vw; }
+    .meta-issue b { font-size: 22px; }
   }
 </style>
 </head>
