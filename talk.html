@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>和我聊聊 · 止一</title>
+<title>留言板 · 和我聊聊</title>
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root { --paper: #EFE8D8; --ink: #16130F; --cinnabar: #C0362C; --ink-mid: rgba(22,19,15,0.55); }
@@ -28,26 +28,97 @@
   .back:hover { background: var(--ink); color: var(--paper); }
   main { max-width: 720px; margin: 0 auto; position: relative; z-index: 1; }
   header { margin-bottom: 6vh; padding-top: 4vh; }
-  .page-title { font-family: 'Ma Shan Zheng', serif; font-size: clamp(48px, 8vw, 80px); line-height: 1; margin-bottom: 16px; }
+  .page-title { font-family: 'Ma Shan Zheng', serif; font-size: clamp(48px, 8vw, 80px); line-height: 1; margin-bottom: 12px; }
   .page-title .accent { color: var(--cinnabar); }
   .subtitle { font-size: 14px; letter-spacing: 0.35em; color: var(--ink-mid); }
-  .coming {
-    text-align: center; padding: 15vh 0;
+
+  /* 表单 */
+  .form-box {
+    border: 2px solid var(--ink);
+    padding: 24px;
+    margin-bottom: 6vh;
+    background: rgba(239,232,216,0.6);
   }
-  .coming-char {
-    font-family: 'Ma Shan Zheng', serif;
-    font-size: clamp(60px, 12vw, 120px);
-    color: rgba(22,19,15,0.1);
-    line-height: 1;
+  .form-row { display: flex; gap: 12px; margin-bottom: 12px; }
+  .form-row input {
+    flex: 1;
+    border: 2px solid var(--ink);
+    background: transparent;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.3s;
   }
-  .coming-text {
-    margin-top: 24px;
-    font-size: 15px;
-    letter-spacing: 0.3em;
-    color: var(--ink-mid);
-    line-height: 2.2;
+  .form-row input:focus { border-color: var(--cinnabar); }
+  .form-row input::placeholder { color: rgba(22,19,15,0.35); }
+  .form-box textarea {
+    width: 100%;
+    border: 2px solid var(--ink);
+    background: transparent;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.3s;
   }
+  .form-box textarea:focus { border-color: var(--cinnabar); }
+  .form-box textarea::placeholder { color: rgba(22,19,15,0.35); }
+  .form-actions {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .submit-btn {
+    border: 2px solid var(--cinnabar);
+    background: var(--cinnabar);
+    color: var(--paper);
+    padding: 10px 28px;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    font-family: 'Noto Sans SC', sans-serif;
+    transition: all 0.3s;
+  }
+  .submit-btn:hover { background: var(--ink); border-color: var(--ink); }
+  .submit-btn:disabled { opacity: 0.5; cursor: wait; }
+  .form-msg { font-size: 12px; color: var(--cinnabar); letter-spacing: 0.1em; }
+
+  .section-title {
+    font-size: 12px; font-weight: 900; letter-spacing: 0.5em;
+    color: var(--cinnabar); margin-bottom: 3vh;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(22,19,15,0.15); }
+
+  /* 留言列表 */
+  .msg-list { display: flex; flex-direction: column; gap: 16px; min-height: 100px; }
+  .msg-item {
+    border: 2px solid var(--ink);
+    padding: 18px 20px;
+    transition: all 0.3s;
+  }
+  .msg-item:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); }
+  .msg-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .msg-name { font-weight: 900; font-size: 15px; letter-spacing: 0.1em; }
+  .msg-name::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--cinnabar); margin-right: 8px; }
+  .msg-time { font-size: 11px; color: var(--ink-mid); font-family: ui-monospace, monospace; }
+  .msg-content { font-size: 14px; line-height: 1.8; word-break: break-word; }
+
+  .empty { text-align: center; padding: 60px 0; color: var(--ink-mid); font-size: 13px; letter-spacing: 0.3em; }
+  .loading { text-align: center; padding: 40px 0; color: var(--ink-mid); font-size: 12px; letter-spacing: 0.3em; }
+
   footer { text-align: center; font-size: 11px; letter-spacing: 0.3em; color: var(--ink-mid); margin-top: 10vh; }
+  @media (max-width: 640px) {
+    body { padding: 8vh 5vw 12vh; }
+    .form-row { flex-direction: column; }
+  }
 </style>
 </head>
 <body>
@@ -55,13 +126,103 @@
 <main>
   <header>
     <h1 class="page-title">和我<span class="accent">聊聊</span></h1>
-    <p class="subtitle">留个言吧</p>
+    <p class="subtitle">留言板 · 想说啥说啥</p>
   </header>
-  <div class="coming">
-    <div class="coming-char">待</div>
-    <p class="coming-text">留言板正在筹建中<br>先记住这个网址，常来看看</p>
+
+  <div class="form-box">
+    <div class="form-row">
+      <input type="text" id="msgName" placeholder="怎么称呼你" maxlength="20">
+    </div>
+    <textarea id="msgContent" placeholder="想对止一说什么？" maxlength="500"></textarea>
+    <div class="form-actions">
+      <span class="form-msg" id="formMsg"></span>
+      <button class="submit-btn" id="submitBtn" onclick="submitMsg()">落笔</button>
+    </div>
   </div>
+
+  <div class="section-title">留言</div>
+  <div class="msg-list" id="msgList">
+    <div class="loading">正在打开留言簿…</div>
+  </div>
+
   <footer>BOOE.XYZ · 止一的数字基地</footer>
 </main>
+
+<script>
+  const API = '/api/guestbook';
+  const list = document.getElementById('msgList');
+
+  function fmtTime(iso) {
+    const d = new Date(iso);
+    const p = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  async function loadMessages() {
+    try {
+      const res = await fetch(API);
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+      list.innerHTML = '';
+      if (data.messages.length === 0) {
+        list.innerHTML = '<div class="empty">还没有留言，来当第一个吧。</div>';
+        return;
+      }
+      data.messages.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'msg-item';
+        item.innerHTML = `
+          <div class="msg-head">
+            <span class="msg-name">${escapeHtml(m.name)}</span>
+            <span class="msg-time">${fmtTime(m.created_at)}</span>
+          </div>
+          <div class="msg-content">${escapeHtml(m.content)}</div>`;
+        list.appendChild(item);
+      });
+    } catch (e) {
+      list.innerHTML = '<div class="empty">留言板还没接通（数据库未配置）。</div>';
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  async function submitMsg() {
+    const name = document.getElementById('msgName').value.trim();
+    const content = document.getElementById('msgContent').value.trim();
+    const btn = document.getElementById('submitBtn');
+    const fm = document.getElementById('formMsg');
+
+    if (!content) { fm.textContent = '写点什么再落笔'; return; }
+
+    btn.disabled = true;
+    fm.textContent = '正在落笔…';
+
+    try {
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name || '匿名', content })
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        fm.textContent = data.error || '失败';
+        btn.disabled = false;
+        return;
+      }
+      document.getElementById('msgContent').value = '';
+      fm.textContent = '留好啦';
+      loadMessages();
+    } catch (e) {
+      fm.textContent = '网络出错，稍后再试';
+    }
+    btn.disabled = false;
+  }
+
+  loadMessages();
+</script>
 </body>
 </html>

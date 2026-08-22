@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect x="4" y="4" width="56" height="56" rx="8" fill="#C0362C"/>
+  <rect x="4" y="4" width="56" height="56" rx="8" fill="none" stroke="#9E2A1F" stroke-width="2"/>
+  <text x="32" y="45" font-family="'SimHei','Noto Serif SC',serif" font-size="40" font-weight="900" fill="#EFE8D8" text-anchor="middle">一</text>
+</svg>

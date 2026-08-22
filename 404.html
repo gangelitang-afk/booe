@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 · 此路不通</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --paper: #EFE8D8; --ink: #16130F; --cinnabar: #C0362C; --ink-mid: rgba(22,19,15,0.55); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    height: 100vh; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: radial-gradient(rgba(22,19,15,0.03) 1px, transparent 1px);
+    background-size: 3px 3px; pointer-events: none;
+  }
+  .bg-char {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-3deg);
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: 80vw; color: rgba(22,19,15,0.05);
+    user-select: none; pointer-events: none; line-height: 1;
+  }
+  .box { position: relative; z-index: 2; text-align: center; }
+  .title {
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: clamp(56px, 10vw, 110px);
+    line-height: 1.1;
+  }
+  .title .red { color: var(--cinnabar); }
+  .desc {
+    margin-top: 24px;
+    font-size: 13px; letter-spacing: 0.4em;
+    color: var(--ink-mid);
+  }
+  .back {
+    display: inline-block;
+    margin-top: 56px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 14px; font-weight: 900; letter-spacing: 0.3em;
+    padding: 12px 28px;
+    border: 2px solid var(--ink);
+    transition: all 0.3s;
+  }
+  .back:hover { background: var(--ink); color: var(--paper); }
+</style>
+</head>
+<body>
+  <div class="bg-char">无</div>
+  <div class="box">
+    <div class="title">此路<span class="red">不通</span></div>
+    <div class="desc">404 · 你要找的东西不在这里</div>
+    <a class="back" href="index.html">← 回基地</a>
+  </div>
+</body>
+</html>
