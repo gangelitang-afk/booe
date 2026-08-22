@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>认识我 · 止一</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EFE8D8;
+    --ink: #16130F;
+    --cinnabar: #C0362C;
+    --ink-mid: rgba(22,19,15,0.55);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    padding: 6vh 6vw 15vh;
+    position: relative;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(22,19,15,0.03) 1px, transparent 1px);
+    background-size: 3px 3px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* 返回 */
+  .back {
+    position: fixed;
+    top: 4vh; left: 4vw;
+    z-index: 10;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    padding: 8px 16px;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    transition: all 0.3s;
+  }
+  .back:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* 背景大字 */
+  .bg-char {
+    position: fixed;
+    right: -5vw;
+    bottom: -10vh;
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: 60vw;
+    color: rgba(22,19,15,0.04);
+    user-select: none;
+    pointer-events: none;
+    z-index: 0;
+    line-height: 1;
+  }
+
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 头部 */
+  header {
+    margin-bottom: 8vh;
+    padding-top: 4vh;
+  }
+  .page-title {
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: clamp(48px, 8vw, 80px);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .page-title .accent { color: var(--cinnabar); }
+  .subtitle {
+    font-size: 14px;
+    letter-spacing: 0.35em;
+    color: var(--ink-mid);
+    font-weight: 400;
+  }
+
+  /* 简介 */
+  .intro {
+    font-size: clamp(15px, 1.6vw, 18px);
+    line-height: 2.2;
+    margin-bottom: 8vh;
+    padding-left: 20px;
+    border-left: 3px solid var(--cinnabar);
+  }
+  .intro p + p { margin-top: 1em; }
+
+  /* 区块标题 */
+  .section-title {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.5em;
+    color: var(--cinnabar);
+    margin-bottom: 4vh;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(22,19,15,0.15);
+  }
+
+  /* 时间轴 */
+  .timeline {
+    margin-bottom: 8vh;
+  }
+  .tl-item {
+    display: flex;
+    gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px dashed rgba(22,19,15,0.15);
+    align-items: baseline;
+  }
+  .tl-item:last-child { border-bottom: none; }
+  .tl-year {
+    font-size: 13px;
+    font-weight: 900;
+    font-family: ui-monospace, monospace;
+    letter-spacing: 0.05em;
+    min-width: 110px;
+    color: var(--cinnabar);
+  }
+  .tl-content { flex: 1; }
+  .tl-role {
+    font-size: clamp(15px, 1.5vw, 17px);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .tl-desc {
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--ink-mid);
+  }
+
+  /* 兴趣 */
+  .interests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8vh;
+  }
+  .interests span {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 8px 18px;
+    border: 2px solid var(--ink);
+    transition: all 0.3s;
+  }
+  .interests span:nth-child(3n) {
+    border-color: var(--cinnabar);
+    color: var(--cinnabar);
+  }
+  .interests span:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  /* 页脚 */
+  footer {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--ink-mid);
+    margin-top: 10vh;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 8vh 5vw 12vh; }
+    .tl-item { flex-direction: column; gap: 6px; }
+    .tl-year { min-width: auto; }
+    .bg-char { font-size: 80vw; }
+  }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">← 回基地</a>
+<div class="bg-char">一</div>
+
+<main>
+  <header>
+    <h1 class="page-title">认识<span class="accent">我</span></h1>
+    <p class="subtitle">一个供应链老手的数字自白</p>
+  </header>
+
+  <div class="intro">
+    <p>止一，30 岁，深圳。白天在万科泊寓管全国工程供应链，从一线工程师干到总部副总经理，年交付 3 万间房源。</p>
+    <p>晚上是另一个物种：折腾 AI Agent、OpenWrt、自动化工具，打游戏，写一些没人看的东西。</p>
+    <p>这个网站是这两种生活的交汇点——既是数字名片，也是实验室，也是朋友们来玩的地方。</p>
+  </div>
+
+  <div class="section-title">经历</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-year">2013—2017</div>
+      <div class="tl-content">
+        <div class="tl-role">华中农业大学 · 工程管理</div>
+        <div class="tl-desc">武汉，入门工程行业</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2017—2019</div>
+      <div class="tl-content">
+        <div class="tl-role">武汉万科 · 工程师 / 泊寓项目经理</div>
+        <div class="tl-desc">一线打基础，独立统筹三个门店从施工到开业</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2020—2021</div>
+      <div class="tl-content">
+        <div class="tl-role">万科泊寓总部 · 建造统筹</div>
+        <div class="tl-desc">从 0 到 1 组建全国筹建管理中枢，落地 C60 筹开体系</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2022—2023</div>
+      <div class="tl-content">
+        <div class="tl-role">万科泊寓总部 · 供应链负责人</div>
+        <div class="tl-desc">搭建全国供应商地图，创立产品线研发实验室</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2024—至今</div>
+      <div class="tl-content">
+        <div class="tl-role">万科泊寓总部 · 工程管理部副总经理</div>
+        <div class="tl-desc">统筹全国营建交付，支撑管理规模 15 万→25 万间跨越</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">折腾</div>
+  <div class="interests">
+    <span>AI Agent</span>
+    <span>OpenWrt</span>
+    <span>自动化</span>
+    <span>Hermes</span>
+    <span>剧本杀</span>
+    <span>桌游</span>
+    <span>冥想</span>
+    <span>游戏</span>
+  </div>
+
+  <footer>BOOE.XYZ · 止一的数字基地</footer>
+</main>
+
+</body>
+</html>

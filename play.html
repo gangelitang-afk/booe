@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>眼明手快 · 一起玩</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EFE8D8;
+    --ink: #16130F;
+    --cinnabar: #C0362C;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(22,19,15,0.03) 1px, transparent 1px);
+    background-size: 3px 3px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .back {
+    position: fixed;
+    top: 4vh; left: 4vw;
+    z-index: 10;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    padding: 8px 16px;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    transition: all 0.3s;
+  }
+  .back:hover { background: var(--ink); color: var(--paper); }
+
+  /* 游戏区 */
+  .arena {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .arena.waiting { background: var(--paper); }
+  .arena.ready { background: var(--cinnabar); }
+  .arena.result { background: var(--paper); }
+
+  .status {
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: clamp(36px, 8vw, 72px);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .arena.ready .status { color: var(--paper); }
+
+  .hint {
+    margin-top: 24px;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    color: rgba(22,19,15,0.5);
+  }
+  .arena.ready .hint { color: rgba(239,232,216,0.7); }
+
+  .score-display {
+    margin-top: 16px;
+    font-size: clamp(48px, 10vw, 96px);
+    font-weight: 900;
+    font-family: 'Ma Shan Zheng', serif;
+  }
+  .score-display .ms { font-size: 0.4em; color: var(--ink-mid); }
+
+  .best {
+    margin-top: 12px;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--ink-mid);
+  }
+  .best b { color: var(--cinnabar); }
+
+  .attempts {
+    position: fixed;
+    bottom: 4vh;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--ink-mid);
+    z-index: 5;
+  }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">← 回基地</a>
+
+<div class="arena waiting" id="arena" onclick="tap()">
+  <div class="status" id="status">眼明手快</div>
+  <div class="hint" id="hint">点击任意处开始</div>
+  <div class="score-display" id="scoreDisplay" style="display:none"></div>
+  <div class="best" id="best"></div>
+</div>
+
+<div class="attempts" id="attempts"></div>
+
+<script>
+  const arena = document.getElementById('arena');
+  const status = document.getElementById('status');
+  const hint = document.getElementById('hint');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const bestEl = document.getElementById('best');
+  const attemptsEl = document.getElementById('attempts');
+
+  let state = 'idle'; // idle, waiting, ready, result, tooEarly
+  let timeout = null;
+  let startTime = 0;
+  let attempts = 0;
+  let best = localStorage.getItem('booe_reaction_best') || null;
+
+  updateBest();
+
+  function updateBest() {
+    if (best) {
+      bestEl.innerHTML = `最佳纪录 <b>${best}ms</b>`;
+      bestEl.style.display = 'block';
+    } else {
+      bestEl.style.display = 'none';
+    }
+  }
+
+  function updateAttempts() {
+    attemptsEl.textContent = attempts > 0 ? `已试 ${attempts} 次` : '';
+  }
+
+  function tap() {
+    if (state === 'idle' || state === 'result' || state === 'tooEarly') {
+      // 开始新一轮
+      state = 'waiting';
+      arena.className = 'arena waiting';
+      status.textContent = '等待变红…';
+      hint.textContent = '变红的瞬间点击！';
+      scoreDisplay.style.display = 'none';
+
+      const delay = 1500 + Math.random() * 3500;
+      timeout = setTimeout(() => {
+        state = 'ready';
+        arena.className = 'arena ready';
+        status.textContent = '点！';
+        hint.textContent = '';
+        startTime = performance.now();
+      }, delay);
+
+    } else if (state === 'waiting') {
+      // 点太早了
+      clearTimeout(timeout);
+      state = 'tooEarly';
+      arena.className = 'arena result';
+      status.textContent = '太早了！';
+      hint.textContent = '点击重新来过';
+      scoreDisplay.style.display = 'none';
+
+    } else if (state === 'ready') {
+      // 正常得分
+      const elapsed = Math.round(performance.now() - startTime);
+      state = 'result';
+      arena.className = 'arena result';
+      status.textContent = '';
+      hint.textContent = '点击再来一次';
+      scoreDisplay.style.display = 'block';
+      scoreDisplay.innerHTML = `${elapsed}<span class="ms">ms</span>`;
+
+      attempts++;
+      if (!best || elapsed < best) {
+        best = elapsed;
+        localStorage.setItem('booe_reaction_best', best);
+      }
+      updateBest();
+      updateAttempts();
+    }
+  }
+
+  // 手机触摸优化
+  arena.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    tap();
+  }, { passive: false });
+</script>
+
+</body>
+</html>

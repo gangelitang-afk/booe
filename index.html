@@ -21,7 +21,6 @@
     overflow: hidden;
   }
 
-  /* 纸面颗粒 */
   body::before {
     content: '';
     position: fixed;
@@ -33,7 +32,7 @@
     mix-blend-mode: multiply;
   }
 
-  /* ===== 第零层：满屏巨字，观者站在字里 ===== */
+  /* ===== 第零层：满屏巨字 ===== */
   .spirit {
     position: absolute;
     top: 50%;
@@ -59,7 +58,7 @@
     100% { opacity: 1; transform: translate(-50%, -50%) rotate(-3deg) scale(1); filter: blur(0); }
   }
 
-  /* ===== 干涉一：朱砂斜块横贯，从字中间穿过 ===== */
+  /* ===== 干涉一：朱砂斜块穿字 ===== */
   .slash {
     position: absolute;
     top: 50%;
@@ -97,7 +96,7 @@
     writing-mode: vertical-rl;
   }
 
-  /* ===== 干涉二：镂空圆环，套在字上 ===== */
+  /* ===== 干涉二：镂空圆环 ===== */
   .ring {
     position: absolute;
     top: 18vh;
@@ -115,7 +114,7 @@
     to   { opacity: 0.85; transform: scale(1); }
   }
 
-  /* ===== 干涉三：朱砂竖线，从顶插到底，穿过一切 ===== */
+  /* ===== 干涉三：朱砂竖线 ===== */
   .spike {
     position: absolute;
     top: -5vh;
@@ -153,19 +152,42 @@
     color: var(--ink);
   }
 
-  .meta-role {
+  /* ===== 身份标签：斜块下方，醒目排列 ===== */
+  .tags {
     position: absolute;
-    bottom: 16vh;
-    right: 4vw;
+    top: 66vh;
+    left: 5vw;
     z-index: 5;
-    font-size: clamp(11px, 1vw, 13px);
-    letter-spacing: 0.4em;
-    line-height: 2.4;
-    text-align: right;
-    color: rgba(22,19,15,0.8);
-    writing-mode: vertical-rl;
-    height: 30vh;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    max-width: 50vw;
     animation: fade 1s 1.9s both;
+  }
+  .tags span {
+    font-size: clamp(13px, 1.3vw, 17px);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    padding: 6px 14px;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    transition: all 0.3s;
+  }
+  .tags span:nth-child(odd) {
+    transform: rotate(-2deg);
+  }
+  .tags span:nth-child(even) {
+    transform: rotate(1.5deg);
+  }
+  .tags span:nth-child(3) {
+    background: var(--cinnabar);
+    color: var(--paper);
+    border-color: var(--cinnabar);
+  }
+  .tags span:hover {
+    background: var(--ink);
+    color: var(--paper);
+    transform: rotate(0deg) scale(1.05);
   }
 
   @keyframes fade {
@@ -173,7 +195,7 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ===== 导航：压在画面底部，错位 ===== */
+  /* ===== 导航 ===== */
   nav {
     position: absolute;
     left: 4vw;
@@ -222,7 +244,16 @@
       width: 55vw; height: 55vw;
     }
     .spike { left: 78vw; }
-    .meta-role { display: none; }
+    .tags {
+      top: 60vh;
+      max-width: 85vw;
+      gap: 8px 10px;
+    }
+    .tags span {
+      font-size: 12px;
+      padding: 4px 10px;
+      letter-spacing: 0.1em;
+    }
     nav { flex-wrap: wrap; gap: 8px 26px; }
     nav a:nth-child(n) { transform: none; }
   }
@@ -230,34 +261,35 @@
 </head>
 <body>
 
-  <!-- 第零层：满屏巨字 -->
   <div class="spirit">不仁义</div>
 
-  <!-- 干涉二：圆环套字 -->
   <div class="ring"></div>
 
-  <!-- 干涉一：朱砂斜块穿字 -->
   <div class="slash">
     <div class="name">止一</div>
-    <div class="domain">BUYI.ZONE</div>
+    <div class="domain">BOOE.XYZ</div>
   </div>
 
-  <!-- 干涉三：朱砂竖线插穿全屏 -->
   <div class="spike"></div>
 
-  <!-- 散点信息 -->
   <div class="meta-issue">
     <b>个人数字基地</b>
     NO.001 · 营造中 · EST.2026
   </div>
 
-  <div class="meta-role">采购成本 · AI · 网络 · 折腾</div>
+  <div class="tags">
+    <span>供应链老手</span>
+    <span>AI 学习者</span>
+    <span>网瘾少年</span>
+    <span>兼职冥想家</span>
+    <span>嘴炮爱好者</span>
+  </div>
 
   <nav>
-    <a href="#about">认识我</a>
-    <a href="#lab">实验室</a>
-    <a href="#play">一起玩</a>
-    <a href="#talk">和我聊聊</a>
+    <a href="about.html">认识我</a>
+    <a href="lab.html">实验室</a>
+    <a href="play.html">一起玩</a>
+    <a href="talk.html">和我聊聊</a>
   </nav>
 
 </body>

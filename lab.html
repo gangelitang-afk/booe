@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实验室 · 止一</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --paper: #EFE8D8; --ink: #16130F; --cinnabar: #C0362C; --ink-mid: rgba(22,19,15,0.55); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh; padding: 6vh 6vw 15vh;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: radial-gradient(rgba(22,19,15,0.03) 1px, transparent 1px);
+    background-size: 3px 3px; pointer-events: none; z-index: 0;
+  }
+  .back {
+    position: fixed; top: 4vh; left: 4vw; z-index: 10;
+    color: var(--ink); text-decoration: none;
+    font-size: 13px; font-weight: 900; letter-spacing: 0.3em;
+    padding: 8px 16px; border: 2px solid var(--ink); background: var(--paper);
+    transition: all 0.3s;
+  }
+  .back:hover { background: var(--ink); color: var(--paper); }
+  main { max-width: 720px; margin: 0 auto; position: relative; z-index: 1; }
+  header { margin-bottom: 8vh; padding-top: 4vh; }
+  .page-title { font-family: 'Ma Shan Zheng', serif; font-size: clamp(48px, 8vw, 80px); line-height: 1; margin-bottom: 16px; }
+  .page-title .accent { color: var(--cinnabar); }
+  .subtitle { font-size: 14px; letter-spacing: 0.35em; color: var(--ink-mid); }
+  .lab-grid { display: flex; flex-direction: column; gap: 24px; margin-bottom: 8vh; }
+  .lab-card {
+    border: 2px solid var(--ink); padding: 28px;
+    transition: all 0.3s; position: relative;
+  }
+  .lab-card:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); }
+  .lab-status {
+    position: absolute; top: 12px; right: 16px;
+    font-size: 11px; font-weight: 900; letter-spacing: 0.2em;
+    padding: 4px 10px;
+  }
+  .status-active { background: var(--cinnabar); color: var(--paper); }
+  .status-paused { background: var(--ink-mid); color: var(--paper); }
+  .lab-name { font-size: clamp(18px, 2vw, 24px); font-weight: 900; margin-bottom: 8px; }
+  .lab-desc { font-size: 14px; line-height: 1.9; color: var(--ink-mid); }
+  .section-title {
+    font-size: 12px; font-weight: 900; letter-spacing: 0.5em;
+    color: var(--cinnabar); margin-bottom: 4vh;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(22,19,15,0.15); }
+  footer { text-align: center; font-size: 11px; letter-spacing: 0.3em; color: var(--ink-mid); margin-top: 10vh; }
+  @media (max-width: 640px) { body { padding: 8vh 5vw 12vh; } }
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← 回基地</a>
+<main>
+  <header>
+    <h1 class="page-title">实验<span class="accent">室</span></h1>
+    <p class="subtitle">正在折腾的东西</p>
+  </header>
+
+  <div class="section-title">进行中</div>
+  <div class="lab-grid">
+    <div class="lab-card">
+      <div class="lab-status status-active">进行中</div>
+      <div class="lab-name">Hermes Agent</div>
+      <div class="lab-desc">个人 AI 助手系统。管理日程、推送情报、控制智能家居、自动生成内容。这个网站本身就是它的作品之一。</div>
+    </div>
+    <div class="lab-card">
+      <div class="lab-status status-active">进行中</div>
+      <div class="lab-name">Reddit 每日情报</div>
+      <div class="lab-desc">每天自动抓取 Reddit 热帖，AI 翻译生成中英对照日报，推送到企微。学英语 + 追热点两不误。</div>
+    </div>
+    <div class="lab-card">
+      <div class="lab-status status-active">进行中</div>
+      <div class="lab-name">booe.xyz</div>
+      <div class="lab-desc">就是你现在看到的这个网站。从一张白纸开始，目标是长成一个有游戏、有互动、有朋友的数字空间。</div>
+    </div>
+  </div>
+
+  <div class="section-title">搁置中</div>
+  <div class="lab-grid">
+    <div class="lab-card">
+      <div class="lab-status status-paused">搁置</div>
+      <div class="lab-name">剧本杀线上平台</div>
+      <div class="lab-desc">多人实时剧本杀，朋友拿手机就能玩。需要房间系统 + 实时通信，等基地再长大一点。</div>
+    </div>
+  </div>
+
+  <footer>BOOE.XYZ · 止一的数字基地</footer>
+</main>
+</body>
+</html>
