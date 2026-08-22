@@ -1,0 +1,101 @@
+{
+  "updated_at": "2026-08-22 18:49",
+  "hermes": {
+    "total_sessions": 286,
+    "total_messages": 20349,
+    "total_tokens": 27775575,
+    "total_input_tokens": 23142621,
+    "total_output_tokens": 4632954,
+    "tool_calls": 9285,
+    "recent_sessions_7d": 28,
+    "recent_tokens_7d": 1408523,
+    "days_active": 58,
+    "models": [
+      {
+        "model": "deepseek-v4-flash",
+        "sessions": 190,
+        "tokens": 18261021
+      },
+      {
+        "model": "deepseek-v4-pro",
+        "sessions": 81,
+        "tokens": 7490013
+      },
+      {
+        "model": "glm-5.2",
+        "sessions": 2,
+        "tokens": 1246425
+      },
+      {
+        "model": "ark-code-latest",
+        "sessions": 3,
+        "tokens": 527334
+      },
+      {
+        "model": "doubao-seed-2.0-lite",
+        "sessions": 4,
+        "tokens": 139710
+      }
+    ]
+  },
+  "reddit": {
+    "total_digests": 20,
+    "latest_date": "2026-08-21",
+    "recent_posts": [
+      {
+        "date": "2026-08-21",
+        "title": "Qwen3.8:27b slow with hermes, how to optimize?"
+      },
+      {
+        "date": "2026-08-21",
+        "title": "Do you use hermes for no-coding and no-tech purpose?"
+      },
+      {
+        "date": "2026-08-21",
+        "title": "I text my Hermes from my Apple Watch now - i got Imessage to finally work"
+      },
+      {
+        "date": "2026-08-20",
+        "title": "Qwen 3.8 27B - Day 3 Summary"
+      },
+      {
+        "date": "2026-08-20",
+        "title": "Megathread Submission Request"
+      },
+      {
+        "date": "2026-08-20",
+        "title": "Do you actually use hermes's desktop app?"
+      },
+      {
+        "date": "2026-08-17",
+        "title": "Goodbye Deepseek on Opencode Go"
+      },
+      {
+        "date": "2026-08-17",
+        "title": "Mnemosyne Graph (~3 months)"
+      },
+      {
+        "date": "2026-08-17",
+        "title": "Hermes keeps making assertions without checking..."
+      },
+      {
+        "date": "2026-08-16",
+        "title": "What have you done with Hermes Agent this week?"
+      },
+      {
+        "date": "2026-08-16",
+        "title": "Qwen 3.8 Release Megathread"
+      },
+      {
+        "date": "2026-08-16",
+        "title": "If too risky for your laptop, how can it ever be a safe personal assistant (with your data)?"
+      }
+    ]
+  },
+  "site": {
+    "commits": 5,
+    "first_commit": "2026-08-22",
+    "pages": 9,
+    "launched": "2026-08-22"
+  }
+}

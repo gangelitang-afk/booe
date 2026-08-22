@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Agent · 实验室</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@900&display=swap" rel="stylesheet">
+<style>
+  :root { --paper: #EFE8D8; --ink: #16130F; --cinnabar: #C0362C; --ink-mid: rgba(22,19,15,0.55); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh; padding: 6vh 6vw 15vh;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: radial-gradient(rgba(22,19,15,0.03) 1px, transparent 1px);
+    background-size: 3px 3px; pointer-events: none; z-index: 0;
+  }
+  .back {
+    position: fixed; top: 4vh; left: 4vw; z-index: 10;
+    color: var(--ink); text-decoration: none;
+    font-size: 13px; font-weight: 900; letter-spacing: 0.3em;
+    padding: 8px 16px; border: 2px solid var(--ink); background: var(--paper);
+    transition: all 0.3s;
+  }
+  .back:hover { background: var(--ink); color: var(--paper); }
+  main { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; }
+  header { margin-bottom: 6vh; padding-top: 4vh; }
+  .page-title { font-family: 'Ma Shan Zheng', serif; font-size: clamp(40px, 7vw, 68px); line-height: 1.1; margin-bottom: 12px; }
+  .page-title .accent { color: var(--cinnabar); }
+  .subtitle { font-size: 13px; letter-spacing: 0.35em; color: var(--ink-mid); }
+
+  .updated { margin-top: 12px; font-size: 11px; letter-spacing: 0.2em; color: rgba(22,19,15,0.4); }
+
+  /* 数字卡片 */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 6vh;
+  }
+  .stat-card {
+    border: 2px solid var(--ink);
+    padding: 20px 16px;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .stat-card:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); }
+  .stat-card.hot { background: var(--cinnabar); border-color: var(--cinnabar); color: var(--paper); }
+  .stat-num {
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 900;
+    font-family: ui-monospace, monospace;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+  .stat-label {
+    margin-top: 8px;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--ink-mid);
+  }
+  .stat-card.hot .stat-label { color: rgba(239,232,216,0.8); }
+
+  .section-title {
+    font-size: 12px; font-weight: 900; letter-spacing: 0.5em;
+    color: var(--cinnabar); margin-bottom: 3vh;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(22,19,15,0.15); }
+
+  /* 模型分布 */
+  .model-list { margin-bottom: 6vh; display: flex; flex-direction: column; gap: 12px; }
+  .model-row {
+    border: 2px solid var(--ink);
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .model-name {
+    font-weight: 900; font-size: 14px; letter-spacing: 0.05em;
+    min-width: 160px; font-family: ui-monospace, monospace;
+  }
+  .model-bar-wrap { flex: 1; height: 8px; background: rgba(22,19,15,0.1); position: relative; }
+  .model-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cinnabar), var(--cinnabar-deep, #9E2A1F));
+    width: 0;
+    transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .model-tokens { font-size: 12px; color: var(--ink-mid); font-family: ui-monospace, monospace; min-width: 110px; text-align: right; }
+  .model-sessions { font-size: 11px; color: var(--ink-mid); min-width: 70px; }
+
+  .note {
+    margin-top: 4vh;
+    padding: 16px 20px;
+    border-left: 3px solid var(--cinnabar);
+    font-size: 12px;
+    line-height: 2;
+    color: var(--ink-mid);
+    background: rgba(192,54,44,0.04);
+  }
+
+  footer { text-align: center; font-size: 11px; letter-spacing: 0.3em; color: var(--ink-mid); margin-top: 10vh; }
+  @media (max-width: 640px) {
+    body { padding: 8vh 5vw 12vh; }
+    .model-name { min-width: 120px; font-size: 12px; }
+    .model-sessions { display: none; }
+  }
+</style>
+</head>
+<body>
+<a class="back" href="lab.html">← 回实验室</a>
+<main>
+  <header>
+    <h1 class="page-title">Hermes <span class="accent">Agent</span></h1>
+    <p class="subtitle">我的 AI 助手 · 数据概览</p>
+    <p class="updated" id="updatedAt"></p>
+  </header>
+
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="stat-num">…</div><div class="stat-label">总会话</div></div>
+    <div class="stat-card"><div class="stat-num">…</div><div class="stat-label">总消息</div></div>
+    <div class="stat-card hot"><div class="stat-num">…</div><div class="stat-label">总 Token 消耗</div></div>
+    <div class="stat-card"><div class="stat-num">…</div><div class="stat-label">工具调用</div></div>
+    <div class="stat-card"><div class="stat-num">…</div><div class="stat-label">活跃天数</div></div>
+    <div class="stat-card"><div class="stat-num">…</div><div class="stat-label">近 7 天会话</div></div>
+  </div>
+
+  <div class="section-title">模型分布</div>
+  <div class="model-list" id="modelList"></div>
+
+  <div class="note">
+    Hermes 是我的数字分身：管理日程、推送情报、写代码、控制自动化。
+    以上数据来自本地运行记录，随时间自动增长。<br>
+    这个网站的每个页面，都是它写的。
+  </div>
+
+  <footer>BOOE.XYZ · 止一的数字基地</footer>
+</main>
+
+<script>
+  fetch('stats.json').then(r => r.json()).then(data => {
+    const h = data.hermes;
+    document.getElementById('updatedAt').textContent = '数据更新于 ' + data.updated_at;
+
+    const nums = [
+      [h.total_sessions, '总会话'],
+      [h.total_messages, '总消息'],
+      [h.total_tokens, '总 Token 消耗'],
+      [h.tool_calls, '工具调用'],
+      [h.days_active, '活跃天数'],
+      [h.recent_sessions_7d, '近 7 天会话']
+    ];
+    const cards = document.querySelectorAll('#statsGrid .stat-card');
+    cards.forEach((card, i) => {
+      const n = nums[i][0];
+      card.querySelector('.stat-num').textContent = n >= 10000 ? (n/10000).toFixed(1) + '万' : n.toLocaleString();
+    });
+
+    const list = document.getElementById('modelList');
+    const max = h.models[0].tokens;
+    h.models.forEach(m => {
+      const row = document.createElement('div');
+      row.className = 'model-row';
+      row.innerHTML = `
+        <div class="model-name">${m.model}</div>
+        <div class="model-bar-wrap"><div class="model-bar" style="width:${(m.tokens/max*100).toFixed(1)}%"></div></div>
+        <div class="model-tokens">${(m.tokens/10000).toFixed(1)}万</div>
+        <div class="model-sessions">${m.sessions} 会话</div>`;
+      list.appendChild(row);
+    });
+  }).catch(() => {
+    document.querySelectorAll('.stat-num').forEach(el => el.textContent = '—');
+  });
+</script>
+</body>
+</html>

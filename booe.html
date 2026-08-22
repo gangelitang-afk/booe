@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>booe.xyz · 实验室</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --paper: #EFE8D8; --ink: #16130F; --cinnabar: #C0362C; --ink-mid: rgba(22,19,15,0.55); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh; padding: 6vh 6vw 15vh;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: radial-gradient(rgba(22,19,15,0.03) 1px, transparent 1px);
+    background-size: 3px 3px; pointer-events: none; z-index: 0;
+  }
+  .back {
+    position: fixed; top: 4vh; left: 4vw; z-index: 10;
+    color: var(--ink); text-decoration: none;
+    font-size: 13px; font-weight: 900; letter-spacing: 0.3em;
+    padding: 8px 16px; border: 2px solid var(--ink); background: var(--paper);
+    transition: all 0.3s;
+  }
+  .back:hover { background: var(--ink); color: var(--paper); }
+  main { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; }
+  header { margin-bottom: 6vh; padding-top: 4vh; }
+  .page-title { font-family: 'Ma Shan Zheng', serif; font-size: clamp(40px, 7vw, 68px); line-height: 1.1; margin-bottom: 12px; }
+  .page-title .accent { color: var(--cinnabar); }
+  .subtitle { font-size: 13px; letter-spacing: 0.35em; color: var(--ink-mid); }
+  .updated { margin-top: 12px; font-size: 11px; letter-spacing: 0.2em; color: rgba(22,19,15,0.4); }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 6vh;
+  }
+  .stat-card {
+    border: 2px solid var(--ink);
+    padding: 20px 16px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .stat-card:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); }
+  .stat-card.hot { background: var(--cinnabar); border-color: var(--cinnabar); color: var(--paper); }
+  .stat-num { font-size: clamp(24px, 3vw, 36px); font-weight: 900; font-family: ui-monospace, monospace; line-height: 1.2; }
+  .stat-label { margin-top: 8px; font-size: 11px; letter-spacing: 0.25em; color: var(--ink-mid); }
+  .stat-card.hot .stat-label { color: rgba(239,232,216,0.8); }
+
+  .section-title {
+    font-size: 12px; font-weight: 900; letter-spacing: 0.5em;
+    color: var(--cinnabar); margin-bottom: 3vh;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(22,19,15,0.15); }
+
+  .note {
+    margin-top: 4vh;
+    padding: 16px 20px;
+    border-left: 3px solid var(--cinnabar);
+    font-size: 12px;
+    line-height: 2;
+    color: var(--ink-mid);
+    background: rgba(192,54,44,0.04);
+  }
+
+  footer { text-align: center; font-size: 11px; letter-spacing: 0.3em; color: var(--ink-mid); margin-top: 10vh; }
+  @media (max-width: 640px) { body { padding: 8vh 5vw 12vh; } }
+</style>
+</head>
+<body>
+<a class="back" href="lab.html">← 回实验室</a>
+<main>
+  <header>
+    <h1 class="page-title">booe<span class="accent">.xyz</span></h1>
+    <p class="subtitle">本站 · 建造日志</p>
+    <p class="updated" id="updatedAt"></p>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card hot"><div class="stat-num" id="commits">…</div><div class="stat-label">代码提交</div></div>
+    <div class="stat-card"><div class="stat-num" id="pages">…</div><div class="stat-label">页面数</div></div>
+    <div class="stat-card"><div class="stat-num" id="launched">…</div><div class="stat-label">上线日期</div></div>
+    <div class="stat-card"><div class="stat-num" id="phase">Phase 1</div><div class="stat-label">当前阶段</div></div>
+  </div>
+
+  <div class="section-title">建造日志</div>
+  <div class="post-list" id="logList"></div>
+
+  <div class="note">
+    「不仁义」个人数字基地。从一张白纸开始，目标是长成一个有游戏、有互动、有朋友的数字空间。<br>
+    当前进度：Phase 1 建立基地（首页 / 认识我 / 实验室 / 一起玩）已上线。
+    下一步：Phase 2 互动（留言板、聊天、小游戏）。
+  </div>
+
+  <footer>BOOE.XYZ · 止一的数字基地</footer>
+</main>
+
+<script>
+  fetch('stats.json').then(r => r.json()).then(data => {
+    const s = data.site;
+    document.getElementById('updatedAt').textContent = '数据更新于 ' + data.updated_at;
+    document.getElementById('commits').textContent = s.commits;
+    document.getElementById('pages').textContent = s.pages;
+    document.getElementById('launched').textContent = s.launched;
+
+    const logs = [
+      { date: s.first_commit, text: '仓库建立，v5 首页上线：不仁义满屏巨字 + 朱砂干涉' },
+      { date: s.launched, text: '域名绑定 booe.xyz，DNS 生效，正式开门' },
+      { date: s.launched, text: '新增认识我（密码门）/ 实验室 / 一起玩（反应力游戏）/ 留言板占位' },
+      { date: s.launched, text: '实验室详情页上线：Hermes 统计 / Reddit 情报 / 本站日志' }
+    ];
+    const list = document.getElementById('logList');
+    logs.forEach(l => {
+      const item = document.createElement('div');
+      item.className = 'post-item';
+      item.innerHTML = `<div class="post-date">${l.date}</div><div class="post-title">${l.text}</div>`;
+      list.appendChild(item);
+    });
+  }).catch(() => {
+    ['commits','pages','launched'].forEach(id => document.getElementById(id).textContent = '—');
+  });
+</script>
+<style>
+  .post-list { display: flex; flex-direction: column; gap: 12px; }
+  .post-item {
+    border: 2px solid var(--ink);
+    padding: 16px 18px;
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .post-date {
+    font-size: 11px; font-family: ui-monospace, monospace; font-weight: 900;
+    color: var(--cinnabar); letter-spacing: 0.05em;
+    min-width: 80px; padding-top: 3px;
+  }
+  .post-title { font-size: 14px; font-weight: 700; line-height: 1.6; }
+  @media (max-width: 640px) { .post-item { flex-direction: column; gap: 6px; } }
+</style>
+</body>
+</html>
