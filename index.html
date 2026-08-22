@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>止一 · 不仁义</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EFE8D8;
+    --ink: #16130F;
+    --cinnabar: #C0362C;
+    --cinnabar-deep: #9E2A1F;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    overflow: hidden;
+  }
+
+  /* 纸面颗粒 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(22,19,15,0.04) 1px, transparent 1px);
+    background-size: 3px 3px;
+    z-index: 20;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+
+  /* ===== 第零层：满屏巨字，观者站在字里 ===== */
+  .spirit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-3deg);
+    white-space: nowrap;
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: 95vw;
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+    user-select: none;
+    z-index: 1;
+    background: linear-gradient(100deg,
+      var(--ink) 0%, rgba(22,19,15,0.85) 35%,
+      var(--ink) 60%, rgba(22,19,15,0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: brushIn 2.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes brushIn {
+    0%   { opacity: 0; transform: translate(-50%, -50%) rotate(-3deg) scale(1.1); filter: blur(16px); }
+    100% { opacity: 1; transform: translate(-50%, -50%) rotate(-3deg) scale(1); filter: blur(0); }
+  }
+
+  /* ===== 干涉一：朱砂斜块横贯，从字中间穿过 ===== */
+  .slash {
+    position: absolute;
+    top: 50%;
+    left: -12vw;
+    width: 82vw;
+    height: 26vh;
+    min-height: 170px;
+    background: linear-gradient(120deg, var(--cinnabar) 0%, var(--cinnabar-deep) 100%);
+    transform: translateY(-50%) rotate(-3deg);
+    z-index: 3;
+    box-shadow: 8px 12px 0 rgba(22, 19, 15, 0.22);
+    animation: slashIn 0.9s 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6vw 0 15vw;
+  }
+  @keyframes slashIn {
+    from { transform: translateY(-50%) rotate(-3deg) translateX(-115%); }
+    to   { transform: translateY(-50%) rotate(-3deg) translateX(0); }
+  }
+  .slash .name {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(48px, 7vw, 104px);
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    color: var(--paper);
+    line-height: 1;
+  }
+  .slash .domain {
+    font-size: clamp(11px, 1vw, 14px);
+    font-weight: 700;
+    letter-spacing: 0.45em;
+    color: rgba(239, 232, 216, 0.85);
+    writing-mode: vertical-rl;
+  }
+
+  /* ===== 干涉二：镂空圆环，套在字上 ===== */
+  .ring {
+    position: absolute;
+    top: 18vh;
+    right: 8vw;
+    width: clamp(180px, 24vw, 380px);
+    height: clamp(180px, 24vw, 380px);
+    border: clamp(2px, 0.35vw, 5px) solid var(--ink);
+    border-radius: 50%;
+    z-index: 2;
+    opacity: 0;
+    animation: ringIn 1.2s 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes ringIn {
+    from { opacity: 0; transform: scale(1.3); }
+    to   { opacity: 0.85; transform: scale(1); }
+  }
+
+  /* ===== 干涉三：朱砂竖线，从顶插到底，穿过一切 ===== */
+  .spike {
+    position: absolute;
+    top: -5vh;
+    left: 68vw;
+    width: clamp(6px, 0.8vw, 12px);
+    height: 110vh;
+    background: var(--cinnabar);
+    z-index: 4;
+    transform: rotate(-3deg);
+    transform-origin: top center;
+    animation: spikeIn 0.7s 1.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes spikeIn {
+    from { transform: rotate(-3deg) scaleY(0); }
+    to   { transform: rotate(-3deg) scaleY(1); }
+  }
+
+  /* ===== 散点信息层 ===== */
+  .meta-issue {
+    position: absolute;
+    top: 5vh;
+    left: 4vw;
+    z-index: 5;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    line-height: 2.2;
+    color: rgba(22,19,15,0.65);
+    animation: fade 1s 1.7s both;
+  }
+  .meta-issue b {
+    display: block;
+    font-size: clamp(15px, 1.5vw, 20px);
+    font-weight: 900;
+    letter-spacing: 0.25em;
+    color: var(--ink);
+  }
+
+  .meta-role {
+    position: absolute;
+    bottom: 16vh;
+    right: 4vw;
+    z-index: 5;
+    font-size: clamp(11px, 1vw, 13px);
+    letter-spacing: 0.4em;
+    line-height: 2.4;
+    text-align: right;
+    color: rgba(22,19,15,0.8);
+    writing-mode: vertical-rl;
+    height: 30vh;
+    animation: fade 1s 1.9s both;
+  }
+
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== 导航：压在画面底部，错位 ===== */
+  nav {
+    position: absolute;
+    left: 4vw;
+    bottom: 4.5vh;
+    z-index: 5;
+    display: flex;
+    gap: clamp(18px, 3vw, 44px);
+    animation: fade 1s 2.1s both;
+  }
+  nav a {
+    color: var(--ink);
+    text-decoration: none;
+    font-size: clamp(13px, 1.3vw, 17px);
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    position: relative;
+    padding-bottom: 6px;
+  }
+  nav a:nth-child(2) { transform: translateY(-9px); }
+  nav a:nth-child(3) { transform: translateY(6px); }
+  nav a:nth-child(4) { transform: translateY(-5px); }
+  nav a::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 3px;
+    background: var(--cinnabar);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  nav a:hover::after { transform: scaleX(1); }
+
+  /* ===== 手机端 ===== */
+  @media (max-width: 640px) {
+    .spirit { font-size: 130vw; top: 46%; }
+    .slash {
+      width: 105vw;
+      height: 20vh;
+      padding: 0 5vw 0 12vw;
+    }
+    .slash .domain { display: none; }
+    .ring {
+      top: 10vh;
+      right: -10vw;
+      width: 55vw; height: 55vw;
+    }
+    .spike { left: 78vw; }
+    .meta-role { display: none; }
+    nav { flex-wrap: wrap; gap: 8px 26px; }
+    nav a:nth-child(n) { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 第零层：满屏巨字 -->
+  <div class="spirit">不仁义</div>
+
+  <!-- 干涉二：圆环套字 -->
+  <div class="ring"></div>
+
+  <!-- 干涉一：朱砂斜块穿字 -->
+  <div class="slash">
+    <div class="name">止一</div>
+    <div class="domain">BUYI.ZONE</div>
+  </div>
+
+  <!-- 干涉三：朱砂竖线插穿全屏 -->
+  <div class="spike"></div>
+
+  <!-- 散点信息 -->
+  <div class="meta-issue">
+    <b>个人数字基地</b>
+    NO.001 · 营造中 · EST.2026
+  </div>
+
+  <div class="meta-role">采购成本 · AI · 网络 · 折腾</div>
+
+  <nav>
+    <a href="#about">认识我</a>
+    <a href="#lab">实验室</a>
+    <a href="#play">一起玩</a>
+    <a href="#talk">和我聊聊</a>
+  </nav>
+
+</body>
+</html>
