@@ -66,6 +66,9 @@
     pointer-events: none;
   }
 
+  /* 右上竖排刊号 + 墨渍：仅手机端显示 */
+  .issue, .inkdots { display: none; }
+
   /* ===== 第零层：满屏巨字 =====
      left 55vw：视口显示字串中心附近 = 「仁」全字 + 不尾/义头微露
      红块横笔 + 亻偏旁 = 视觉「不」 */
@@ -285,28 +288,29 @@
       width: 100%;
     }
 
-    /* 巨字：手机端只显示「仁」，145vw 巨幅，横向超出屏幕两侧出血 */
+    /* 巨字：170vw 斜劈全屏，爆炸感 */
     .spirit {
-      font-size: 145vw;
-      top: 50%;
-      left: 48vw;
+      font-size: 170vw;
+      top: 46%;
+      left: 56vw;
       letter-spacing: -0.02em;
       line-height: 0.85;
+      transform: translate(-50%, -50%) rotate(-7deg);
     }
     .spirit .c1, .spirit .c3 { display: none; }
 
-    /* 红块：从屏幕外延伸进来，横穿亻上部构成「不」，收窄 */
+    /* 朱砂裂痕：粗大斜劈贯穿全屏，把「仁」劈开 */
     .slash {
-      top: 30%;
-      left: -8vw;
-      width: 46vw;
-      height: 8vh;
-      min-height: 56px;
-      padding: 0 4vw 0 5vw;
-      transform: translateY(-50%) rotate(-1.5deg);
-      box-shadow: 3px 4px 0 rgba(22, 19, 15, 0.18);
+      top: 44%;
+      left: -30vw;
+      width: 150vw;
+      height: 110px;
+      min-height: 110px;
+      padding: 0 6vw;
+      transform: translateY(-50%) rotate(-8deg);
+      box-shadow: 6px 8px 0 rgba(22, 19, 15, 0.25);
     }
-    .slash .name { font-size: clamp(20px, 4.5vw, 30px); }
+    .slash .name { font-size: clamp(34px, 9vw, 56px); letter-spacing: 0.2em; }
     .slash .domain { display: none; }
 
     /* 手机上圆环太挤，隐藏 */
@@ -345,6 +349,35 @@
     nav a:nth-child(n) { transform: none; }
     nav a::after { height: 2px; }
 
+    /* 右上竖排刊号 */
+    .issue {
+      display: block;
+      position: absolute;
+      top: 40px; right: 14px;
+      writing-mode: vertical-rl;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px; font-weight: 900;
+      letter-spacing: 0.3em;
+      color: rgba(22, 19, 15, 0.6);
+      z-index: 30;
+      transform: rotate(180deg);
+    }
+    .issue .red { color: var(--cinnabar); }
+
+    /* 墨渍喷溅 */
+    .inkdots { display: block; position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+    .inkdots i {
+      position: absolute;
+      display: block;
+      background: rgba(22, 19, 15, 0.5);
+      border-radius: 50%;
+    }
+    .inkdots i:nth-child(1) { width: 26px; height: 26px; top: 22%; left: 68%; opacity: 0.5; }
+    .inkdots i:nth-child(2) { width: 12px; height: 12px; top: 26%; left: 74%; opacity: 0.65; }
+    .inkdots i:nth-child(3) { width: 8px; height: 8px; top: 31%; left: 70%; opacity: 0.8; }
+    .inkdots i:nth-child(4) { width: 16px; height: 16px; top: 55%; left: 82%; opacity: 0.4; }
+    .inkdots i:nth-child(5) { width: 5px; height: 5px; top: 60%; left: 86%; opacity: 0.7; }
+
     /* 左上信息块 */
     .meta-issue { top: 3.5vh; left: 4vw; }
     .meta-issue b { font-size: 32px; }
@@ -356,6 +389,12 @@
 <body>
 
   <div class="spirit"><span class="c1">不</span><span class="c2">仁</span><span class="c3">义</span></div>
+
+  <!-- 墨渍喷溅（手机端） -->
+  <div class="inkdots"><i></i><i></i><i></i><i></i><i></i></div>
+
+  <!-- 右上竖排刊号 -->
+  <div class="issue"><span class="red">不仁</span> · 数字基地</div>
 
   <!-- 三星堆太阳轮（右下角，隐约） -->
   <div class="sunwheel">
