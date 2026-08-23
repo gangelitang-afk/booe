@@ -275,13 +275,19 @@
 
   /* ===== 手机端 ===== */
   @media (max-width: 640px) {
-    html, body { height: 100dvh; }
+    html, body {
+      height: 100dvh;
+      overflow: clip !important;
+      overscroll-behavior: none;
+      position: fixed;
+      width: 100%;
+    }
 
-    /* 巨字：缩小 + 右移，露出「不」字多一点，避免横向溢出失控 */
+    /* 巨字：进一步缩小 + 固定定位，杜绝横向溢出 */
     .spirit {
-      font-size: 68vw;
+      font-size: 56vw;
       top: 34%;
-      left: 52%;
+      left: 50%;
       letter-spacing: -0.02em;
       line-height: 0.88;
     }
