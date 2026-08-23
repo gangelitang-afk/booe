@@ -66,8 +66,8 @@
     pointer-events: none;
   }
 
-  /* 右上竖排刊号 + 墨渍：仅手机端显示 */
-  .issue, .inkdots { display: none; }
+  /* 右上竖排刊号 + 墨渍 + 扫描线 + 像素尘：仅手机端显示 */
+  .issue, .inkdots, .scanlines, .pixeldust, .gridfloor, .spirit .c2 i, .reflect, .reflect-mask, .tagglow { display: none; }
 
   /* ===== 第零层：满屏巨字 =====
      left 55vw：视口显示字串中心附近 = 「仁」全字 + 不尾/义头微露
@@ -278,76 +278,424 @@
   }
   nav a:hover::after { transform: scaleX(1); }
 
-  /* ===== 手机端 ===== */
+  /* ===== 手机端：赛博霓虹 glitch「不仁」 ===== */
   @media (max-width: 900px) {
+    :root {
+      --neon-pink: #FF2E88;
+      --neon-cyan: #00F0FF;
+      --neon-yellow: #FFE600;
+      --neon-red: #FF3B30;
+      --neon-purple: #B537F2;
+      --neon-green: #39FF6A;
+      --cyber-bg: #050505;
+    }
+
     html, body {
       height: 100dvh;
       overflow: clip !important;
       overscroll-behavior: none;
       position: fixed;
       width: 100%;
+      background: var(--cyber-bg) !important;
+      color: #EDEDED;
     }
 
-    /* 巨字：170vw 斜劈全屏，爆炸感 */
+    /* 关掉宣纸质感 */
+    body::before, body::after { display: none; }
+    .sunwheel, .ring, .inkdots { display: none !important; }
+
+    /* 扫描线 */
+    .scanlines {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px, transparent 2px,
+        rgba(0, 0, 0, 0.22) 3px, rgba(0, 0, 0, 0.22) 4px
+      );
+      mix-blend-mode: overlay;
+    }
+
+    /* 漂浮像素尘 */
+    .pixeldust { display: block; position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .pixeldust i {
+      position: absolute;
+      display: block;
+      width: 4px; height: 4px;
+      opacity: 0.55;
+      animation: dustFloat 7s ease-in-out infinite;
+    }
+    .pixeldust i:nth-child(1)  { top: 12%; left: 8%;  background: var(--neon-pink);   box-shadow: 0 0 6px var(--neon-pink);   animation-delay: 0s; }
+    .pixeldust i:nth-child(2)  { top: 20%; left: 88%; background: var(--neon-cyan);   box-shadow: 0 0 6px var(--neon-cyan);   animation-delay: -1s; width: 6px; height: 6px; }
+    .pixeldust i:nth-child(3)  { top: 34%; left: 4%;  background: var(--neon-yellow); box-shadow: 0 0 6px var(--neon-yellow); animation-delay: -2.5s; }
+    .pixeldust i:nth-child(4)  { top: 47%; left: 93%; background: var(--neon-green);  box-shadow: 0 0 6px var(--neon-green);  animation-delay: -0.7s; width: 3px; height: 3px; }
+    .pixeldust i:nth-child(5)  { top: 58%; left: 6%;  background: var(--neon-purple); box-shadow: 0 0 6px var(--neon-purple); animation-delay: -3.2s; width: 7px; height: 7px; }
+    .pixeldust i:nth-child(6)  { top: 70%; left: 90%; background: var(--neon-red);    box-shadow: 0 0 6px var(--neon-red);    animation-delay: -1.8s; }
+    .pixeldust i:nth-child(7)  { top: 82%; left: 10%; background: var(--neon-cyan);   box-shadow: 0 0 6px var(--neon-cyan);   animation-delay: -4.1s; width: 5px; height: 5px; }
+    .pixeldust i:nth-child(8)  { top: 8%;  left: 62%; background: var(--neon-green);  box-shadow: 0 0 6px var(--neon-green);  animation-delay: -5s; }
+    .pixeldust i:nth-child(9)  { top: 90%; left: 78%; background: var(--neon-pink);   box-shadow: 0 0 6px var(--neon-pink);   animation-delay: -2.2s; width: 3px; height: 3px; }
+    .pixeldust i:nth-child(10) { top: 42%; left: 50%; background: var(--neon-yellow); box-shadow: 0 0 5px var(--neon-yellow); animation-delay: -6s; width: 3px; height: 3px; opacity: 0.35; }
+    .pixeldust i:nth-child(11) { top: 26%; left: 40%; background: var(--neon-purple); box-shadow: 0 0 5px var(--neon-purple); animation-delay: -3.7s; width: 3px; height: 3px; opacity: 0.3; }
+    .pixeldust i:nth-child(12) { top: 64%; left: 55%; background: var(--neon-red);    box-shadow: 0 0 5px var(--neon-red);    animation-delay: -0.4s; width: 4px; height: 4px; opacity: 0.4; }
+    @keyframes dustFloat {
+      0%, 100% { transform: translate(0, 0); }
+      50%      { transform: translate(6px, -14px); }
+    }
+
+    /* ===== 巨字「仁」：切片撕裂 glitch =====
+       三层叠字 + clip-path 切三条横带：
+       - 底层 .c2 显示下 1/3（白色）
+       - ::before 显示中 1/3（品红，永久右错位 = 亻被撕走 → 视觉「不」）
+       - ::after 显示上 1/3（青色，反向错位抽动） */
     .spirit {
-      font-size: 170vw;
-      top: 46%;
-      left: 56vw;
-      letter-spacing: -0.02em;
+      top: 36%;
+      left: 36vw;
+      font-size: 112vw;
       line-height: 0.85;
-      transform: translate(-50%, -50%) rotate(-7deg);
+      letter-spacing: 0;
+      transform: translate(-50%, -50%);
+      background: none;
+      -webkit-background-clip: initial;
+      background-clip: initial;
+      -webkit-text-fill-color: initial;
+      color: transparent;
+      animation: spiritIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+      z-index: 2;
     }
     .spirit .c1, .spirit .c3 { display: none; }
-
-    /* 朱砂裂痕：粗大斜劈贯穿全屏，把「仁」劈开 */
-    .slash {
-      top: 44%;
-      left: -30vw;
-      width: 150vw;
-      height: 110px;
-      min-height: 110px;
-      padding: 0 6vw;
-      transform: translateY(-50%) rotate(-8deg);
-      box-shadow: 6px 8px 0 rgba(22, 19, 15, 0.25);
+    .spirit .c2 {
+      position: relative;
+      display: inline-block;
+      color: transparent;
     }
-    .slash .name { font-size: clamp(34px, 9vw, 56px); letter-spacing: 0.2em; }
-    .slash .domain { display: none; }
+    /* 三层切片：全部绝对定位叠放，互不裁剪 */
+    .spirit .c2 i,
+    .spirit .c2::before,
+    .spirit .c2::after {
+      content: '仁';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      font-style: normal;
+    }
+    /* 下带：白色，稳定 */
+    .spirit .c2 i {
+      display: block;
+      color: #F5F5F5;
+      text-shadow: 0 0 24px rgba(255, 255, 255, 0.25);
+      clip-path: polygon(0 62%, 100% 62%, 100% 100%, 0 100%);
+      animation: sliceBottom 4.1s steps(1) infinite;
+    }
+    /* 中带：亻所在区域，品红，永久错位 + 抽动 */
+    .spirit .c2::before {
+      color: var(--neon-pink);
+      text-shadow: 0 0 20px rgba(255, 46, 136, 0.55);
+      clip-path: polygon(0 30%, 100% 30%, 100% 62%, 0 62%);
+      animation: sliceMid 2.8s steps(1) infinite;
+    }
+    /* 上带：青色，反向错位 */
+    .spirit .c2::after {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 20px rgba(0, 240, 255, 0.45);
+      clip-path: polygon(0 0, 100% 0, 100% 30%, 0 30%);
+      animation: sliceTop 3.4s steps(1) infinite;
+    }
+    @keyframes spiritIn {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(1.15); filter: blur(20px); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0); }
+    }
+    /* 中带：基础错位 0.07em，间歇剧烈抽动 */
+    @keyframes sliceMid {
+      0%, 100% { transform: translate(0.07em, 0); }
+      11% { transform: translate(0.07em, 0); }
+      12% { transform: translate(0.16em, -0.01em) skewX(4deg); }
+      13% { transform: translate(0.02em, 0.008em); }
+      14% { transform: translate(0.11em, 0); }
+      15% { transform: translate(0.07em, 0); }
+      47% { transform: translate(0.07em, 0); }
+      48% { transform: translate(-0.03em, 0.012em) skewX(-3deg); }
+      49% { transform: translate(0.14em, -0.006em); }
+      50% { transform: translate(0.07em, 0); }
+      80% { transform: translate(0.07em, 0); }
+      81% { transform: translate(0.19em, 0.01em); }
+      82% { transform: translate(0.07em, 0); }
+    }
+    /* 上带：轻微反方向 */
+    @keyframes sliceTop {
+      0%, 100% { transform: translate(-0.015em, 0); }
+      22% { transform: translate(-0.015em, 0); }
+      23% { transform: translate(-0.09em, -0.008em) skewX(-3deg); }
+      24% { transform: translate(0.04em, 0); }
+      25% { transform: translate(-0.015em, 0); }
+      59% { transform: translate(-0.015em, 0); }
+      60% { transform: translate(-0.12em, 0.01em) skewX(-5deg); }
+      61% { transform: translate(-0.015em, 0); }
+      89% { transform: translate(-0.015em, 0); }
+      90% { transform: translate(0.06em, -0.012em); }
+      91% { transform: translate(-0.015em, 0); }
+    }
+    /* 下带：基本稳定，偶发小抽 */
+    @keyframes sliceBottom {
+      0%, 100% { transform: translate(0, 0); }
+      34% { transform: translate(0, 0); }
+      35% { transform: translate(-0.02em, 0.008em); }
+      36% { transform: translate(0, 0); }
+      71% { transform: translate(0, 0); }
+      72% { transform: translate(0.025em, -0.006em); }
+      73% { transform: translate(0, 0); }
+    }
 
-    /* 手机上圆环太挤，隐藏 */
-    .ring { display: none; }
+    /* ===== 底部霓虹网格地平线：青色主网格 + 品红第二透视层 ===== */
+    .gridfloor {
+      display: block;
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 38vh;
+      z-index: 1;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0, 240, 255, 0.3) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.3) 1.5px, transparent 1.5px);
+      background-size: 40px 40px;
+      transform: perspective(220px) rotateX(56deg) scale(2.2);
+      transform-origin: center bottom;
+      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 92%);
+      mask-image: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 92%);
+      animation: gridScroll 5s linear infinite;
+    }
+    /* 品红错位层：更大格子、反方向、不同角度，叠加出色彩干涉 */
+    .gridfloor::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 46, 136, 0.22) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, rgba(255, 46, 136, 0.22) 1.5px, transparent 1.5px);
+      background-size: 64px 64px;
+      transform: translateX(18px);
+      animation: gridScroll2 8s linear infinite;
+    }
+    @keyframes gridScroll {
+      from { background-position: 0 0, 0 0; }
+      to   { background-position: 0 40px, 0 0; }
+    }
+    @keyframes gridScroll2 {
+      from { background-position: 0 0, 0 0; }
+      to   { background-position: 0 64px, 0 0; }
+    }
 
-    /* 朱砂竖线移到最右侧，避开内容 */
-    .spike { left: 88vw; width: 5px; }
+    /* ===== 「仁」倒影：霓虹灯牌倒映在湿地面 ===== */
+    .reflect {
+      display: block;
+      position: absolute;
+      top: 62%;
+      left: 36vw;
+      z-index: 1;
+      pointer-events: none;
+      font-family: 'Ma Shan Zheng', serif;
+      font-size: 112vw;
+      line-height: 0.85;
+      white-space: nowrap;
+      transform: translateX(-50%) scaleY(-1);
+      transform-origin: top center;
+      color: transparent;
+      user-select: none;
+    }
+    .reflect::before,
+    .reflect::after {
+      content: '仁';
+      position: absolute;
+      inset: 0;
+    }
+    /* 倒影主体：品红残影 */
+    .reflect::before {
+      position: relative;
+      display: block;
+      color: rgba(255, 46, 136, 0.3);
+      text-shadow: 0 0 34px rgba(255, 46, 136, 0.45);
+      animation: reflectWobble 5.2s ease-in-out infinite;
+    }
+    /* 倒影青色错层 */
+    .reflect::after {
+      color: rgba(0, 240, 255, 0.24);
+      text-shadow: 0 0 34px rgba(0, 240, 255, 0.4);
+      animation: reflectWobble2 6.4s ease-in-out infinite;
+    }
+    @keyframes reflectWobble {
+      0%, 100% { transform: translate(0, 0) skewX(0deg); opacity: 1; }
+      30%      { transform: translate(0.012em, 0.02em) skewX(1.5deg); opacity: 0.75; }
+      55%      { transform: translate(-0.015em, 0.01em) skewX(-1deg); opacity: 0.9; }
+      80%      { transform: translate(0.008em, 0.03em) skewX(2deg); opacity: 0.6; }
+    }
+    @keyframes reflectWobble2 {
+      0%, 100% { transform: translate(0.01em, 0.01em); opacity: 0.9; }
+      40%      { transform: translate(-0.02em, 0.03em); opacity: 0.6; }
+      70%      { transform: translate(0.018em, 0.005em); opacity: 1; }
+    }
+    /* 倒影渐隐遮罩（用上层渐变盖住） */
+    .reflect-mask {
+      display: block;
+      position: absolute;
+      left: 0; right: 0;
+      top: 62%;
+      height: 38%;
+      z-index: 2;
+      pointer-events: none;
+      background: linear-gradient(to bottom, transparent 0%, rgba(5,5,5,0.35) 50%, rgba(5,5,5,0.92) 100%);
+    }
 
-    /* 太阳轮：更淡更小 */
-    .sunwheel { bottom: 10vh; right: -10vw; width: 48vw; height: 48vw; opacity: 0.16; }
+    /* ===== 标签区氛围光晕：品红→青 双色斑 ===== */
+    .tagglow {
+      display: block;
+      position: absolute;
+      left: 50%;
+      top: 70%;
+      width: 110vw;
+      height: 30vh;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 45% 60% at 28% 50%, rgba(255, 46, 136, 0.16), transparent 70%),
+        radial-gradient(ellipse 45% 60% at 72% 45%, rgba(0, 240, 255, 0.14), transparent 70%),
+        radial-gradient(ellipse 30% 40% at 55% 70%, rgba(181, 55, 242, 0.1), transparent 70%);
+      filter: blur(6px);
+      animation: glowBreathe 6s ease-in-out infinite;
+    }
+    @keyframes glowBreathe {
+      0%, 100% { opacity: 0.85; }
+      50%      { opacity: 0.55; }
+    }
 
-    /* 标签：红块下方，宽度撑开 */
+    /* =====  slash 改为右侧竖排名牌 ===== */
+    .slash {
+      top: 26%;
+      left: auto;
+      right: 5vw;
+      width: auto;
+      height: auto;
+      min-height: 0;
+      padding: 0;
+      background: none;
+      transform: none;
+      z-index: 6;
+      box-shadow: none;
+      animation: fade 0.8s 1.4s both;
+      text-align: center;
+    }
+    .slash .name {
+      writing-mode: vertical-rl;
+      margin: 0 auto;
+      font-family: 'Ma Shan Zheng', serif;
+      font-size: clamp(40px, 11vw, 62px);
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--neon-yellow);
+      text-shadow:
+        0 0 16px rgba(255, 230, 0, 0.55),
+        2px 0 0 rgba(255, 46, 136, 0.8),
+        -2px 0 0 rgba(0, 240, 255, 0.8);
+    }
+    .slash .domain {
+      display: block;
+      margin: 14px auto 0;
+      writing-mode: vertical-rl;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.45em;
+      color: rgba(255, 255, 255, 0.5);
+      border-right: 1px solid rgba(0, 240, 255, 0.5);
+      padding-right: 8px;
+    }
+
+    /* 朱砂竖线 → 霓虹青竖线 */
+    .spike {
+      left: 90vw;
+      width: 2px;
+      background: var(--neon-cyan);
+      opacity: 0.5;
+      box-shadow: 0 0 10px var(--neon-cyan);
+      transform: none;
+      animation: spikeIn 0.7s 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* 左上信息块 */
+    .meta-issue {
+      top: 4vh;
+      left: 5vw;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.25em;
+      animation: fade 0.8s 1.5s both;
+    }
+    .meta-issue b {
+      font-family: 'Noto Sans SC', sans-serif;
+      font-size: clamp(20px, 5.6vw, 30px);
+      color: #F5F5F5;
+      text-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+      letter-spacing: 0.06em;
+    }
+    .meta-issue .visits {
+      color: var(--neon-pink);
+      text-shadow: 0 0 10px rgba(255, 46, 136, 0.6);
+    }
+
+    /* 五色霓虹标签 */
     .tags {
-      top: 64%;
+      top: 68%;
+      z-index: 3;
       left: 5vw;
       max-width: 90vw;
-      gap: 7px 9px;
+      gap: 9px 10px;
+      animation: fade 0.8s 1.7s both;
     }
     .tags span {
-      font-size: 11.5px;
-      padding: 5px 12px;
-      letter-spacing: 0.08em;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 13px;
+      letter-spacing: 0.1em;
       border-width: 1.5px;
+      border-radius: 3px;
+      background: rgba(5, 5, 5, 0.6);
+      color: #EDEDED;
+      transform: none !important;
     }
+    .tags span:nth-child(1) { border-color: var(--neon-red);    box-shadow: 0 0 10px rgba(255,59,48,0.35), inset 0 0 8px rgba(255,59,48,0.12); }
+    .tags span:nth-child(2) { border-color: var(--neon-cyan);   box-shadow: 0 0 10px rgba(0,240,255,0.35), inset 0 0 8px rgba(0,240,255,0.12); }
+    .tags span:nth-child(3) { border-color: var(--neon-yellow); box-shadow: 0 0 10px rgba(255,230,0,0.35), inset 0 0 8px rgba(255,230,0,0.12); background: rgba(5,5,5,0.6); color: #EDEDED; }
+    .tags span:nth-child(4) { border-color: var(--neon-purple); box-shadow: 0 0 10px rgba(181,55,242,0.35), inset 0 0 8px rgba(181,55,242,0.12); }
+    .tags span:nth-child(5) { border-color: var(--neon-green);  box-shadow: 0 0 10px rgba(57,255,106,0.35), inset 0 0 8px rgba(57,255,106,0.12); }
 
-    /* 导航：一行四列排开，bottom 抬高避开浏览器底部栏 */
+    /* 终端风导航 */
     nav {
-      left: 4vw;
-      bottom: 6vh;
-      width: 92vw;
-      justify-content: space-between;
-      gap: 0;
-      flex-wrap: nowrap;
+      left: 5vw;
+      bottom: 5vh;
+      width: 90vw;
+      justify-content: flex-start;
+      gap: 6px 20px;
+      flex-wrap: wrap;
+      animation: fade 0.8s 1.9s both;
     }
-    nav a { font-size: 13.5px; letter-spacing: 0.14em; }
-    nav a:nth-child(n) { transform: none; }
-    nav a::after { height: 2px; }
+    nav a {
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 700;
+      transform: none !important;
+      padding-bottom: 8px;
+    }
+    nav a::before {
+      content: '> ';
+      color: var(--neon-green);
+      font-weight: 900;
+    }
+    nav a::after {
+      height: 2px;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 8px var(--neon-cyan);
+    }
 
     /* 右上竖排刊号 */
     .issue {
@@ -355,43 +703,32 @@
       position: absolute;
       top: 40px; right: 14px;
       writing-mode: vertical-rl;
-      font-family: 'Noto Serif SC', serif;
-      font-size: 15px; font-weight: 900;
+      font-family: 'Noto Sans SC', sans-serif;
+      font-size: 13px; font-weight: 900;
       letter-spacing: 0.3em;
-      color: rgba(22, 19, 15, 0.6);
+      color: rgba(255, 255, 255, 0.4);
       z-index: 30;
       transform: rotate(180deg);
     }
-    .issue .red { color: var(--cinnabar); }
-
-    /* 墨渍喷溅 */
-    .inkdots { display: block; position: absolute; inset: 0; pointer-events: none; z-index: 2; }
-    .inkdots i {
-      position: absolute;
-      display: block;
-      background: rgba(22, 19, 15, 0.5);
-      border-radius: 50%;
-    }
-    .inkdots i:nth-child(1) { width: 26px; height: 26px; top: 22%; left: 68%; opacity: 0.5; }
-    .inkdots i:nth-child(2) { width: 12px; height: 12px; top: 26%; left: 74%; opacity: 0.65; }
-    .inkdots i:nth-child(3) { width: 8px; height: 8px; top: 31%; left: 70%; opacity: 0.8; }
-    .inkdots i:nth-child(4) { width: 16px; height: 16px; top: 55%; left: 82%; opacity: 0.4; }
-    .inkdots i:nth-child(5) { width: 5px; height: 5px; top: 60%; left: 86%; opacity: 0.7; }
-
-    /* 左上信息块 */
-    .meta-issue { top: 3.5vh; left: 4vw; }
-    .meta-issue b { font-size: 32px; }
-    .meta-issue { font-size: 12px; color: rgba(22,19,15,0.75); }
+    .issue .red { color: var(--neon-red); text-shadow: 0 0 10px rgba(255,59,48,0.7); }
   }
 </style>
   <link rel="stylesheet" href="fonts/mashanzheng.css">
 </head>
 <body>
 
-  <div class="spirit"><span class="c1">不</span><span class="c2">仁</span><span class="c3">义</span></div>
+  <div class="spirit"><span class="c1">不</span><span class="c2">仁<i>仁</i></span><span class="c3">义</span></div>
 
   <!-- 墨渍喷溅（手机端） -->
   <div class="inkdots"><i></i><i></i><i></i><i></i><i></i></div>
+
+  <!-- 扫描线 + 像素尘（手机端赛博风） -->
+  <div class="scanlines"></div>
+  <div class="pixeldust"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="gridfloor"></div>
+  <div class="reflect"></div>
+  <div class="reflect-mask"></div>
+  <div class="tagglow"></div>
 
   <!-- 右上竖排刊号 -->
   <div class="issue"><span class="red">不仁</span> · 数字基地</div>
