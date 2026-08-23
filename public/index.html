@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>止一 · 不仁义</title>
-<meta name="description" content="ONE 的数字基地 —— 不仁义。个人数字基地：认识我、实验室、一起玩。">
-<meta property="og:title" content="不仁义 · ONE 的数字基地">
+<title>不仁 · 止一</title>
+<meta name="description" content="ONE 的数字基地 —— 不仁。个人数字基地：认识我、实验室、一起玩。">
+<meta property="og:title" content="不仁 · ONE 的数字基地">
 <meta property="og:description" content="供应链老手 / AI学习者 / 网瘾少年 / 兼职冥想家 / 嘴炮爱好者。这是止一的数字基地。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://booe.xyz">
@@ -285,15 +285,15 @@
       width: 100%;
     }
 
-    /* 巨字：定位到「不仁」两字（左缘贴屏），「义」完全出血裁掉
-       80vw = 字串半宽(84vw) - 4vw 出血；窗口显示字串[0,100vw] ≈ 不+仁 */
+    /* 巨字：手机端只显示「仁」一个字（居中），红块横穿亻=视觉「不」 */
     .spirit {
       font-size: 56vw;
       top: 34%;
-      left: 80vw;
+      left: 50vw;
       letter-spacing: -0.02em;
       line-height: 0.88;
     }
+    .spirit .c1, .spirit .c3 { display: none; }
 
     /* 红块：垂直居中偏上，不再被巨字挤歪 */
     .slash {
@@ -353,7 +353,7 @@
 </head>
 <body>
 
-  <div class="spirit">不仁义</div>
+  <div class="spirit"><span class="c1">不</span><span class="c2">仁</span><span class="c3">义</span></div>
 
   <!-- 三星堆太阳轮（右下角，隐约） -->
   <div class="sunwheel">
