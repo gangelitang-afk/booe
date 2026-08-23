@@ -285,28 +285,28 @@
       width: 100%;
     }
 
-    /* 巨字：手机端只显示「仁」，左下移 + 左缘/顶部出血（参照桌面） */
+    /* 巨字：手机端只显示「仁」，95vw 铺满屏宽居中偏左，左右微出血 */
     .spirit {
-      font-size: 80vw;
-      top: 42%;
-      left: 30vw;
+      font-size: 95vw;
+      top: 40%;
+      left: 45vw;
       letter-spacing: -0.02em;
       line-height: 0.85;
     }
     .spirit .c1, .spirit .c3 { display: none; }
 
-    /* 红块：下移避开左上信息区 + 收窄 + 减倾斜，穿过亻竖笔上部 */
+    /* 红块：右移避开亻，变矮下移穿「二」上下横之间（上横下横都露） */
     .slash {
-      top: 33%;
-      left: -4vw;
-      width: 72vw;
-      height: 15vh;
-      min-height: 84px;
-      padding: 0 4vw 0 8vw;
+      top: 42%;
+      left: 30vw;
+      width: 45vw;
+      height: 8vh;
+      min-height: 56px;
+      padding: 0 4vw 0 5vw;
       transform: translateY(-50%) rotate(-1.5deg);
       box-shadow: 3px 4px 0 rgba(22, 19, 15, 0.18);
     }
-    .slash .name { font-size: clamp(26px, 6vw, 42px); }
+    .slash .name { font-size: clamp(20px, 4.5vw, 30px); }
     .slash .domain { display: none; }
 
     /* 手机上圆环太挤，隐藏 */
