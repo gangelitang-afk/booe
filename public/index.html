@@ -66,11 +66,13 @@
     pointer-events: none;
   }
 
-  /* ===== 第零层：满屏巨字 ===== */
+  /* ===== 第零层：满屏巨字 =====
+     定位到「仁」字全显 +「不」右缘微露（left 224vw ≈ 字串半宽136.8 + 左缘87.2）
+     红块横笔 + 亻偏旁 = 视觉「不」；「义」完全出血裁到屏幕之外 */
   .spirit {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 224vw;
     transform: translate(-50%, -50%) rotate(-3deg);
     white-space: nowrap;
     font-family: 'Ma Shan Zheng', serif;
@@ -283,11 +285,12 @@
       width: 100%;
     }
 
-    /* 巨字：进一步缩小 + 固定定位，杜绝横向溢出 */
+    /* 巨字：定位到「不仁」两字（左缘贴屏），「义」完全出血裁掉
+       80vw = 字串半宽(84vw) - 4vw 出血；窗口显示字串[0,100vw] ≈ 不+仁 */
     .spirit {
       font-size: 56vw;
       top: 34%;
-      left: 50%;
+      left: 80vw;
       letter-spacing: -0.02em;
       line-height: 0.88;
     }
