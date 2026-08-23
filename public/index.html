@@ -12,7 +12,7 @@
 <meta property="og:image" content="https://booe.xyz/og-image.png">
 <meta name="theme-color" content="#EFE8D8">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@900&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper: #EFE8D8;
@@ -67,12 +67,12 @@
   }
 
   /* ===== 第零层：满屏巨字 =====
-     定位到「仁」字全显 +「不」右缘微露（left 224vw ≈ 字串半宽136.8 + 左缘87.2）
-     红块横笔 + 亻偏旁 = 视觉「不」；「义」完全出血裁到屏幕之外 */
+     left 55vw：视口显示字串中心附近 = 「仁」全字 + 不尾/义头微露
+     红块横笔 + 亻偏旁 = 视觉「不」 */
   .spirit {
     position: absolute;
     top: 50%;
-    left: 224vw;
+    left: 55vw;
     transform: translate(-50%, -50%) rotate(-3deg);
     white-space: nowrap;
     font-family: 'Ma Shan Zheng', serif;
@@ -276,7 +276,7 @@
   nav a:hover::after { transform: scaleX(1); }
 
   /* ===== 手机端 ===== */
-  @media (max-width: 640px) {
+  @media (max-width: 900px) {
     html, body {
       height: 100dvh;
       overflow: clip !important;
@@ -349,6 +349,7 @@
     .meta-issue b { font-size: 22px; }
   }
 </style>
+  <link rel="stylesheet" href="fonts/mashanzheng.css">
 </head>
 <body>
 
@@ -408,6 +409,9 @@
   </nav>
 
   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
 
 </body>
 </html>
