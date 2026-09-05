@@ -3,793 +3,223 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>不仁 · 止一</title>
-<meta name="description" content="ONE 的数字基地 —— 不仁。个人数字基地：认识我、实验室、一起玩。">
+<title>不仁 · 止一的数字基地</title>
+<meta name="description" content="ONE 的数字基地 —— 不仁。一份持续增补中、不设栏目的私人刊物。">
 <meta property="og:title" content="不仁 · ONE 的数字基地">
 <meta property="og:description" content="供应链老手 / AI学习者 / 网瘾少年 / 兼职冥想家 / 嘴炮爱好者。这是止一的数字基地。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://booe.xyz">
 <meta property="og:image" content="https://booe.xyz/og-image.png">
-<meta name="theme-color" content="#EFE8D8">
+<meta name="theme-color" content="#FCFAF3">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts/mashanzheng.css">
 <style>
-  :root {
-    --paper: #EFE8D8;
-    --ink: #16130F;
-    --cinnabar: #C0362C;
-    --cinnabar-deep: #9E2A1F;
+  :root{
+    --paper:#FCFAF3; --ink:#1A1A18; --red:#C0272D; --red-d:#9E2A1F;
+    --line:rgba(26,26,24,.16); --gray:#6A6A60; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    height: 100%;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Noto Sans SC', sans-serif;
-    overflow: hidden;
-  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:var(--paper);color:var(--ink);font-family:'Noto Serif SC',serif;}
+  body{min-height:100vh;position:relative;overflow-x:hidden;}
+  .grain{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(rgba(26,26,24,.035) 1px,transparent 1px);background-size:3px 3px;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 40px;position:relative;z-index:1;}
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: radial-gradient(rgba(22,19,15,0.04) 1px, transparent 1px);
-    background-size: 3px 3px;
-    z-index: 20;
-    pointer-events: none;
-    mix-blend-mode: multiply;
-  }
-
-  /* ===== 三星堆云雷纹：底部一条隐约的纹饰带 ===== */
-  body::after {
-    content: '';
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    height: 32vh;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 40 40'%3E%3Cpath d='M4 4 h20 v12 h-12 v8 h20 v-24 h4 v28 h-28 v-8 h4 v-12 h12 v-4 h-20 z' fill='none' stroke='%2316130F' stroke-opacity='0.14' stroke-width='1.2'/%3E%3C/svg%3E");
-    background-size: 90px 90px;
-    z-index: 0;
-    pointer-events: none;
-    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.9) 30%, transparent 100%);
-    mask-image: linear-gradient(to top, rgba(0,0,0,0.9) 30%, transparent 100%);
-  }
-
-  /* ===== 三星堆太阳轮：右下角 ===== */
-  .sunwheel {
-    position: absolute;
-    bottom: 14vh;
-    right: -4vw;
-    width: clamp(160px, 24vw, 340px);
-    height: clamp(160px, 24vw, 340px);
-    z-index: 1;
-    opacity: 0.26;
-    pointer-events: none;
-  }
-
-  /* 右上竖排刊号 + 墨渍 + 扫描线 + 像素尘：仅手机端显示 */
-  .issue, .inkdots, .scanlines, .pixeldust, .gridfloor, .spirit .c2 i, .reflect, .reflect-mask, .tagglow { display: none; }
-
-  /* ===== 第零层：满屏巨字 =====
-     left 55vw：视口显示字串中心附近 = 「仁」全字 + 不尾/义头微露
-     红块横笔 + 亻偏旁 = 视觉「不」 */
-  .spirit {
-    position: absolute;
-    top: 50%;
-    left: 55vw;
-    transform: translate(-50%, -50%) rotate(-3deg);
-    white-space: nowrap;
-    font-family: 'Ma Shan Zheng', serif;
-    font-size: 95vw;
-    line-height: 0.85;
-    letter-spacing: -0.06em;
-    user-select: none;
-    z-index: 1;
-    background: linear-gradient(100deg,
-      var(--ink) 0%, rgba(22,19,15,0.85) 35%,
-      var(--ink) 60%, rgba(22,19,15,0.7) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: brushIn 2.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  @keyframes brushIn {
-    0%   { opacity: 0; transform: translate(-50%, -50%) rotate(-3deg) scale(1.1); filter: blur(16px); }
-    100% { opacity: 1; transform: translate(-50%, -50%) rotate(-3deg) scale(1); filter: blur(0); }
-  }
-
-  /* ===== 干涉一：朱砂斜块穿字 ===== */
-  .slash {
-    position: absolute;
-    top: 50%;
-    left: -12vw;
-    width: 82vw;
-    height: 26vh;
-    min-height: 170px;
-    background: linear-gradient(120deg, var(--cinnabar) 0%, var(--cinnabar-deep) 100%);
-    transform: translateY(-50%) rotate(-3deg);
-    z-index: 3;
-    box-shadow: 8px 12px 0 rgba(22, 19, 15, 0.22);
-    animation: slashIn 0.9s 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 6vw 0 15vw;
-  }
-  @keyframes slashIn {
-    from { transform: translateY(-50%) rotate(-3deg) translateX(-115%); }
-    to   { transform: translateY(-50%) rotate(-3deg) translateX(0); }
-  }
-  .slash .name {
-    font-family: 'Noto Serif SC', serif;
-    font-size: clamp(48px, 7vw, 104px);
-    font-weight: 900;
-    letter-spacing: 0.18em;
-    color: var(--paper);
-    line-height: 1;
-  }
-  .slash .domain {
-    font-size: clamp(11px, 1vw, 14px);
-    font-weight: 700;
-    letter-spacing: 0.45em;
-    color: rgba(239, 232, 216, 0.85);
-    writing-mode: vertical-rl;
-  }
-
-  /* ===== 干涉二：镂空圆环 ===== */
-  .ring {
-    position: absolute;
-    top: 18vh;
-    right: 8vw;
-    width: clamp(180px, 24vw, 380px);
-    height: clamp(180px, 24vw, 380px);
-    border: clamp(2px, 0.35vw, 5px) solid var(--ink);
-    border-radius: 50%;
-    z-index: 2;
-    opacity: 0;
-    animation: ringIn 1.2s 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  @keyframes ringIn {
-    from { opacity: 0; transform: scale(1.3); }
-    to   { opacity: 0.85; transform: scale(1); }
-  }
-
-  /* ===== 干涉三：朱砂竖线 ===== */
-  .spike {
-    position: absolute;
-    top: -5vh;
-    left: 68vw;
-    width: clamp(6px, 0.8vw, 12px);
-    height: 110vh;
-    background: var(--cinnabar);
-    z-index: 4;
-    transform: rotate(-3deg);
-    transform-origin: top center;
-    animation: spikeIn 0.7s 1.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  @keyframes spikeIn {
-    from { transform: rotate(-3deg) scaleY(0); }
-    to   { transform: rotate(-3deg) scaleY(1); }
-  }
-
-  /* ===== 散点信息层 ===== */
-  .meta-issue {
-    position: absolute;
-    top: 5vh;
-    left: 4vw;
-    z-index: 5;
-    font-size: 11px;
-    letter-spacing: 0.3em;
-    line-height: 2.2;
-    color: rgba(22,19,15,0.65);
-    animation: fade 1s 1.7s both;
-  }
-  .meta-issue b {
-    display: block;
-    font-family: 'Noto Serif SC', serif;
-    font-size: clamp(28px, 3.4vw, 46px);
-    font-weight: 900;
-    letter-spacing: 0.08em;
-    color: var(--ink);
-    line-height: 1.25;
-  }
-  .meta-issue .visits {
-    display: block;
-    margin-top: 6px;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--cinnabar);
-    font-weight: 900;
-  }
-
-  /* ===== 身份标签：斜块下方，醒目排列 ===== */
-  .tags {
-    position: absolute;
-    top: 66vh;
-    left: 5vw;
-    z-index: 5;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 14px;
-    max-width: 50vw;
-    animation: fade 1s 1.9s both;
-  }
-  .tags span {
-    font-size: clamp(13px, 1.3vw, 17px);
-    font-weight: 900;
-    letter-spacing: 0.15em;
-    padding: 6px 14px;
-    border: 2px solid var(--ink);
-    background: var(--paper);
-    transition: all 0.3s;
-  }
-  .tags span:nth-child(odd) {
-    transform: rotate(-2deg);
-  }
-  .tags span:nth-child(even) {
-    transform: rotate(1.5deg);
-  }
-  .tags span:nth-child(3) {
-    background: var(--cinnabar);
-    color: var(--paper);
-    border-color: var(--cinnabar);
-  }
-  .tags span:hover {
-    background: var(--ink);
-    color: var(--paper);
-    transform: rotate(0deg) scale(1.05);
-  }
-
-  @keyframes fade {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  /* ===== 刊头 ===== */
+  .topbar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;
+    letter-spacing:.28em;color:var(--gray);padding:26px 0 0;}
+  .topbar .r{color:var(--red);font-weight:700;}
+  .mast{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 0 0;}
+  .logo{display:flex;align-items:flex-end;gap:16px;}
+  .logo b{font-family:'Ma Shan Zheng',serif;font-weight:400;font-size:96px;line-height:.86;color:var(--red);letter-spacing:.04em;}
+  .logo i{font-style:normal;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:13px;letter-spacing:.42em;color:var(--ink);padding-bottom:10px;}
+  .issue{text-align:right;font-size:12px;letter-spacing:.14em;color:var(--gray);line-height:2;}
+  .issue b{display:block;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:14px;color:var(--ink);letter-spacing:.1em;}
+  .issue .r{color:var(--red);font-weight:700;}
+  .wx{margin-top:18px;}
+  .wx .thick{height:5px;background:var(--red);}
+  .wx .thin{height:1px;background:var(--ink);margin-top:3px;}
 
   /* ===== 导航 ===== */
-  nav {
-    position: absolute;
-    left: 4vw;
-    bottom: 4.5vh;
-    z-index: 5;
-    display: flex;
-    gap: clamp(18px, 3vw, 44px);
-    animation: fade 1s 2.1s both;
-  }
-  nav a {
-    color: var(--ink);
-    text-decoration: none;
-    font-size: clamp(13px, 1.3vw, 17px);
-    font-weight: 900;
-    letter-spacing: 0.3em;
-    position: relative;
-    padding-bottom: 6px;
-  }
-  nav a:nth-child(2) { transform: translateY(-9px); }
-  nav a:nth-child(3) { transform: translateY(6px); }
-  nav a:nth-child(4) { transform: translateY(-5px); }
-  nav a::after {
-    content: '';
-    position: absolute;
-    left: 0; bottom: 0;
-    width: 100%; height: 3px;
-    background: var(--cinnabar);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  nav a:hover::after { transform: scaleX(1); }
+  .nav{display:flex;flex-wrap:wrap;gap:30px;padding:20px 0 6px;}
+  .nav a{font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:14px;letter-spacing:.18em;
+    color:var(--ink);text-decoration:none;display:flex;gap:8px;align-items:baseline;
+    padding-bottom:4px;border-bottom:2px solid transparent;}
+  .nav a i{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--red);font-weight:700;}
+  .nav a:hover{color:var(--red);border-color:var(--red);}
 
-  /* ===== 手机端：赛博霓虹 glitch「不仁」 ===== */
-  @media (max-width: 900px) {
-    :root {
-      --neon-pink: #FF2E88;
-      --neon-cyan: #00F0FF;
-      --neon-yellow: #FFE600;
-      --neon-red: #FF3B30;
-      --neon-purple: #B537F2;
-      --neon-green: #39FF6A;
-      --cyber-bg: #050505;
-    }
+  /* ===== 三栏 ===== */
+  .cols{display:grid;grid-template-columns:336px 1fr 356px;gap:0;margin:30px 0 10px;}
+  .col{padding:0 34px;}
+  .col+.col{border-left:1px solid var(--line);}
+  .col:first-child{padding-left:0;}
+  .col:last-child{padding-right:0;}
+  .colhead{display:inline-block;background:var(--red);color:#fff;font-family:'Noto Sans SC',sans-serif;
+    font-weight:900;font-size:12px;letter-spacing:.26em;padding:6px 13px;margin-bottom:18px;}
+  .colhead.dark{background:var(--ink);}
 
-    html, body {
-      height: 100dvh;
-      overflow: clip !important;
-      overscroll-behavior: none;
-      position: fixed;
-      width: 100%;
-      background: var(--cyber-bg) !important;
-      color: #EDEDED;
-    }
+  .toc{list-style:none;}
+  .toc li{display:flex;align-items:baseline;gap:9px;padding:14px 0;border-bottom:1px dotted rgba(26,26,24,.24);}
+  .toc li a{color:var(--ink);text-decoration:none;font-size:16px;font-weight:600;letter-spacing:.05em;}
+  .toc li:hover a{color:var(--red);}
+  .toc .no{font-family:var(--mono);font-size:11px;color:var(--red);font-weight:700;}
+  .toc .sq{width:8px;height:8px;background:var(--red);flex-shrink:0;transform:translateY(-2px);}
+  .toc .fill{flex:1;border-bottom:1px dotted rgba(26,26,24,.3);transform:translateY(-5px);}
+  .toc .pg{font-family:var(--mono);font-size:11px;color:#9A9A90;}
+  .toc-note{margin-top:20px;font-size:12.5px;line-height:2;color:var(--gray);letter-spacing:.04em;}
 
-    /* 关掉宣纸质感 */
-    body::before, body::after { display: none; }
-    .sunwheel, .ring, .inkdots { display: none !important; }
+  .title{font-size:50px;font-weight:900;line-height:1.32;letter-spacing:.02em;}
+  .title em{font-style:normal;color:var(--red);}
+  .sub{margin-top:16px;font-family:'Noto Sans SC',sans-serif;font-size:12.5px;letter-spacing:.2em;color:var(--gray);}
+  .sub .r{color:var(--red);font-weight:700;}
+  .body{margin-top:24px;font-size:15.5px;line-height:2.1;color:#33322C;text-indent:2em;}
+  .body p+p{margin-top:4px;}
+  .pull{margin-top:26px;padding:16px 20px;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    font-size:14px;line-height:1.9;color:#3A3A34;letter-spacing:.03em;}
+  .pull b{color:var(--red);}
+  .rule-red{margin-top:26px;width:130px;height:3px;background:var(--red);}
+  .sign{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:#8A8A80;}
 
-    /* 扫描线 */
-    .scanlines {
-      display: block;
-      position: fixed;
-      inset: 0;
-      z-index: 40;
-      pointer-events: none;
-      background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px, transparent 2px,
-        rgba(0, 0, 0, 0.22) 3px, rgba(0, 0, 0, 0.22) 4px
-      );
-      mix-blend-mode: overlay;
-    }
+  .portrait{border:2px solid var(--ink);padding:18px;display:flex;gap:16px;align-items:flex-start;}
+  .portrait .vname{writing-mode:vertical-rl;font-family:'Ma Shan Zheng',serif;font-size:58px;letter-spacing:.12em;color:var(--ink);}
+  .portrait .vnote{writing-mode:vertical-rl;font-size:12px;color:var(--gray);letter-spacing:.22em;line-height:2.2;}
+  .seal2{margin-left:auto;width:76px;height:76px;background:var(--red);display:flex;align-items:center;justify-content:center;align-self:flex-end;}
+  .seal2 span{font-family:'Ma Shan Zheng',serif;font-size:36px;color:#fff;}
+  .facts{margin-top:20px;border-top:2px solid var(--ink);}
+  .facts div{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(26,26,24,.14);font-size:13px;}
+  .facts .k{color:var(--gray);letter-spacing:.12em;}
+  .facts .v{font-family:var(--mono);font-weight:700;}
+  .facts .v.r{color:var(--red);}
+  .keys{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px;}
+  .keys span{display:inline-flex;align-items:center;gap:7px;font-size:13px;padding:6px 11px;border:1px solid rgba(26,26,24,.32);letter-spacing:.08em;}
+  .keys span::before{content:'';width:7px;height:7px;background:var(--red);}
 
-    /* 漂浮像素尘 */
-    .pixeldust { display: block; position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-    .pixeldust i {
-      position: absolute;
-      display: block;
-      width: 4px; height: 4px;
-      opacity: 0.55;
-      animation: dustFloat 7s ease-in-out infinite;
-    }
-    .pixeldust i:nth-child(1)  { top: 12%; left: 8%;  background: var(--neon-pink);   box-shadow: 0 0 6px var(--neon-pink);   animation-delay: 0s; }
-    .pixeldust i:nth-child(2)  { top: 20%; left: 88%; background: var(--neon-cyan);   box-shadow: 0 0 6px var(--neon-cyan);   animation-delay: -1s; width: 6px; height: 6px; }
-    .pixeldust i:nth-child(3)  { top: 34%; left: 4%;  background: var(--neon-yellow); box-shadow: 0 0 6px var(--neon-yellow); animation-delay: -2.5s; }
-    .pixeldust i:nth-child(4)  { top: 47%; left: 93%; background: var(--neon-green);  box-shadow: 0 0 6px var(--neon-green);  animation-delay: -0.7s; width: 3px; height: 3px; }
-    .pixeldust i:nth-child(5)  { top: 58%; left: 6%;  background: var(--neon-purple); box-shadow: 0 0 6px var(--neon-purple); animation-delay: -3.2s; width: 7px; height: 7px; }
-    .pixeldust i:nth-child(6)  { top: 70%; left: 90%; background: var(--neon-red);    box-shadow: 0 0 6px var(--neon-red);    animation-delay: -1.8s; }
-    .pixeldust i:nth-child(7)  { top: 82%; left: 10%; background: var(--neon-cyan);   box-shadow: 0 0 6px var(--neon-cyan);   animation-delay: -4.1s; width: 5px; height: 5px; }
-    .pixeldust i:nth-child(8)  { top: 8%;  left: 62%; background: var(--neon-green);  box-shadow: 0 0 6px var(--neon-green);  animation-delay: -5s; }
-    .pixeldust i:nth-child(9)  { top: 90%; left: 78%; background: var(--neon-pink);   box-shadow: 0 0 6px var(--neon-pink);   animation-delay: -2.2s; width: 3px; height: 3px; }
-    .pixeldust i:nth-child(10) { top: 42%; left: 50%; background: var(--neon-yellow); box-shadow: 0 0 5px var(--neon-yellow); animation-delay: -6s; width: 3px; height: 3px; opacity: 0.35; }
-    .pixeldust i:nth-child(11) { top: 26%; left: 40%; background: var(--neon-purple); box-shadow: 0 0 5px var(--neon-purple); animation-delay: -3.7s; width: 3px; height: 3px; opacity: 0.3; }
-    .pixeldust i:nth-child(12) { top: 64%; left: 55%; background: var(--neon-red);    box-shadow: 0 0 5px var(--neon-red);    animation-delay: -0.4s; width: 4px; height: 4px; opacity: 0.4; }
-    @keyframes dustFloat {
-      0%, 100% { transform: translate(0, 0); }
-      50%      { transform: translate(6px, -14px); }
-    }
+  /* ===== 页脚 ===== */
+  .foot{margin:40px 0 50px;}
+  .foot .f1{height:1px;background:var(--ink);margin-bottom:3px;}
+  .foot .f2{height:3px;background:var(--red);margin-bottom:14px;}
+  .foot .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-size:11.5px;letter-spacing:.14em;color:var(--gray);}
+  .foot .row .r{color:var(--red);font-weight:700;}
+  .foot .row a{color:var(--gray);text-decoration:none;}
+  .foot .row a:hover{color:var(--red);}
 
-    /* ===== 巨字「仁」：切片撕裂 glitch =====
-       三层叠字 + clip-path 切三条横带：
-       - 底层 .c2 显示下 1/3（白色）
-       - ::before 显示中 1/3（品红，永久右错位 = 亻被撕走 → 视觉「不」）
-       - ::after 显示上 1/3（青色，反向错位抽动） */
-    .spirit {
-      top: 36%;
-      left: 36vw;
-      font-size: 112vw;
-      line-height: 0.85;
-      letter-spacing: 0;
-      transform: translate(-50%, -50%);
-      background: none;
-      -webkit-background-clip: initial;
-      background-clip: initial;
-      -webkit-text-fill-color: initial;
-      color: transparent;
-      animation: spiritIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-      z-index: 2;
-    }
-    .spirit .c1, .spirit .c3 { display: none; }
-    .spirit .c2 {
-      position: relative;
-      display: inline-block;
-      color: transparent;
-    }
-    /* 三层切片：全部绝对定位叠放，互不裁剪 */
-    .spirit .c2 i,
-    .spirit .c2::before,
-    .spirit .c2::after {
-      content: '仁';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      font-style: normal;
-    }
-    /* 下带：白色，稳定 */
-    .spirit .c2 i {
-      display: block;
-      color: #F5F5F5;
-      text-shadow: 0 0 24px rgba(255, 255, 255, 0.25);
-      clip-path: polygon(0 62%, 100% 62%, 100% 100%, 0 100%);
-      animation: sliceBottom 4.1s steps(1) infinite;
-    }
-    /* 中带：亻所在区域，品红，永久错位 + 抽动 */
-    .spirit .c2::before {
-      color: var(--neon-pink);
-      text-shadow: 0 0 20px rgba(255, 46, 136, 0.55);
-      clip-path: polygon(0 30%, 100% 30%, 100% 62%, 0 62%);
-      animation: sliceMid 2.8s steps(1) infinite;
-    }
-    /* 上带：青色，反向错位 */
-    .spirit .c2::after {
-      color: var(--neon-cyan);
-      text-shadow: 0 0 20px rgba(0, 240, 255, 0.45);
-      clip-path: polygon(0 0, 100% 0, 100% 30%, 0 30%);
-      animation: sliceTop 3.4s steps(1) infinite;
-    }
-    @keyframes spiritIn {
-      0%   { opacity: 0; transform: translate(-50%, -50%) scale(1.15); filter: blur(20px); }
-      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0); }
-    }
-    /* 中带：基础错位 0.07em，间歇剧烈抽动 */
-    @keyframes sliceMid {
-      0%, 100% { transform: translate(0.07em, 0); }
-      11% { transform: translate(0.07em, 0); }
-      12% { transform: translate(0.16em, -0.01em) skewX(4deg); }
-      13% { transform: translate(0.02em, 0.008em); }
-      14% { transform: translate(0.11em, 0); }
-      15% { transform: translate(0.07em, 0); }
-      47% { transform: translate(0.07em, 0); }
-      48% { transform: translate(-0.03em, 0.012em) skewX(-3deg); }
-      49% { transform: translate(0.14em, -0.006em); }
-      50% { transform: translate(0.07em, 0); }
-      80% { transform: translate(0.07em, 0); }
-      81% { transform: translate(0.19em, 0.01em); }
-      82% { transform: translate(0.07em, 0); }
-    }
-    /* 上带：轻微反方向 */
-    @keyframes sliceTop {
-      0%, 100% { transform: translate(-0.015em, 0); }
-      22% { transform: translate(-0.015em, 0); }
-      23% { transform: translate(-0.09em, -0.008em) skewX(-3deg); }
-      24% { transform: translate(0.04em, 0); }
-      25% { transform: translate(-0.015em, 0); }
-      59% { transform: translate(-0.015em, 0); }
-      60% { transform: translate(-0.12em, 0.01em) skewX(-5deg); }
-      61% { transform: translate(-0.015em, 0); }
-      89% { transform: translate(-0.015em, 0); }
-      90% { transform: translate(0.06em, -0.012em); }
-      91% { transform: translate(-0.015em, 0); }
-    }
-    /* 下带：基本稳定，偶发小抽 */
-    @keyframes sliceBottom {
-      0%, 100% { transform: translate(0, 0); }
-      34% { transform: translate(0, 0); }
-      35% { transform: translate(-0.02em, 0.008em); }
-      36% { transform: translate(0, 0); }
-      71% { transform: translate(0, 0); }
-      72% { transform: translate(0.025em, -0.006em); }
-      73% { transform: translate(0, 0); }
-    }
+  /* 轻微进场 */
+  .fade{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .fade.in{opacity:1;transform:none;}
 
-    /* ===== 底部霓虹网格地平线：青色主网格 + 品红第二透视层 ===== */
-    .gridfloor {
-      display: block;
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 38vh;
-      z-index: 1;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(0, 240, 255, 0.3) 1.5px, transparent 1.5px),
-        linear-gradient(90deg, rgba(0, 240, 255, 0.3) 1.5px, transparent 1.5px);
-      background-size: 40px 40px;
-      transform: perspective(220px) rotateX(56deg) scale(2.2);
-      transform-origin: center bottom;
-      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 92%);
-      mask-image: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 92%);
-      animation: gridScroll 5s linear infinite;
-    }
-    /* 品红错位层：更大格子、反方向、不同角度，叠加出色彩干涉 */
-    .gridfloor::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255, 46, 136, 0.22) 1.5px, transparent 1.5px),
-        linear-gradient(90deg, rgba(255, 46, 136, 0.22) 1.5px, transparent 1.5px);
-      background-size: 64px 64px;
-      transform: translateX(18px);
-      animation: gridScroll2 8s linear infinite;
-    }
-    @keyframes gridScroll {
-      from { background-position: 0 0, 0 0; }
-      to   { background-position: 0 40px, 0 0; }
-    }
-    @keyframes gridScroll2 {
-      from { background-position: 0 0, 0 0; }
-      to   { background-position: 0 64px, 0 0; }
-    }
-
-    /* ===== 「仁」倒影：霓虹灯牌倒映在湿地面 ===== */
-    .reflect {
-      display: block;
-      position: absolute;
-      top: 62%;
-      left: 36vw;
-      z-index: 1;
-      pointer-events: none;
-      font-family: 'Ma Shan Zheng', serif;
-      font-size: 112vw;
-      line-height: 0.85;
-      white-space: nowrap;
-      transform: translateX(-50%) scaleY(-1);
-      transform-origin: top center;
-      color: transparent;
-      user-select: none;
-    }
-    .reflect::before,
-    .reflect::after {
-      content: '仁';
-      position: absolute;
-      inset: 0;
-    }
-    /* 倒影主体：品红残影 */
-    .reflect::before {
-      position: relative;
-      display: block;
-      color: rgba(255, 46, 136, 0.3);
-      text-shadow: 0 0 34px rgba(255, 46, 136, 0.45);
-      animation: reflectWobble 5.2s ease-in-out infinite;
-    }
-    /* 倒影青色错层 */
-    .reflect::after {
-      color: rgba(0, 240, 255, 0.24);
-      text-shadow: 0 0 34px rgba(0, 240, 255, 0.4);
-      animation: reflectWobble2 6.4s ease-in-out infinite;
-    }
-    @keyframes reflectWobble {
-      0%, 100% { transform: translate(0, 0) skewX(0deg); opacity: 1; }
-      30%      { transform: translate(0.012em, 0.02em) skewX(1.5deg); opacity: 0.75; }
-      55%      { transform: translate(-0.015em, 0.01em) skewX(-1deg); opacity: 0.9; }
-      80%      { transform: translate(0.008em, 0.03em) skewX(2deg); opacity: 0.6; }
-    }
-    @keyframes reflectWobble2 {
-      0%, 100% { transform: translate(0.01em, 0.01em); opacity: 0.9; }
-      40%      { transform: translate(-0.02em, 0.03em); opacity: 0.6; }
-      70%      { transform: translate(0.018em, 0.005em); opacity: 1; }
-    }
-    /* 倒影渐隐遮罩（用上层渐变盖住） */
-    .reflect-mask {
-      display: block;
-      position: absolute;
-      left: 0; right: 0;
-      top: 62%;
-      height: 38%;
-      z-index: 2;
-      pointer-events: none;
-      background: linear-gradient(to bottom, transparent 0%, rgba(5,5,5,0.35) 50%, rgba(5,5,5,0.92) 100%);
-    }
-
-    /* ===== 标签区氛围光晕：品红→青 双色斑 ===== */
-    .tagglow {
-      display: block;
-      position: absolute;
-      left: 50%;
-      top: 70%;
-      width: 110vw;
-      height: 30vh;
-      transform: translate(-50%, -50%);
-      z-index: 1;
-      pointer-events: none;
-      background:
-        radial-gradient(ellipse 45% 60% at 28% 50%, rgba(255, 46, 136, 0.16), transparent 70%),
-        radial-gradient(ellipse 45% 60% at 72% 45%, rgba(0, 240, 255, 0.14), transparent 70%),
-        radial-gradient(ellipse 30% 40% at 55% 70%, rgba(181, 55, 242, 0.1), transparent 70%);
-      filter: blur(6px);
-      animation: glowBreathe 6s ease-in-out infinite;
-    }
-    @keyframes glowBreathe {
-      0%, 100% { opacity: 0.85; }
-      50%      { opacity: 0.55; }
-    }
-
-    /* =====  slash 改为右侧竖排名牌 ===== */
-    .slash {
-      top: 26%;
-      left: auto;
-      right: 5vw;
-      width: auto;
-      height: auto;
-      min-height: 0;
-      padding: 0;
-      background: none;
-      transform: none;
-      z-index: 6;
-      box-shadow: none;
-      animation: fade 0.8s 1.4s both;
-      text-align: center;
-    }
-    .slash .name {
-      writing-mode: vertical-rl;
-      margin: 0 auto;
-      font-family: 'Ma Shan Zheng', serif;
-      font-size: clamp(40px, 11vw, 62px);
-      font-weight: 400;
-      letter-spacing: 0.12em;
-      color: var(--neon-yellow);
-      text-shadow:
-        0 0 16px rgba(255, 230, 0, 0.55),
-        2px 0 0 rgba(255, 46, 136, 0.8),
-        -2px 0 0 rgba(0, 240, 255, 0.8);
-    }
-    .slash .domain {
-      display: block;
-      margin: 14px auto 0;
-      writing-mode: vertical-rl;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.45em;
-      color: rgba(255, 255, 255, 0.5);
-      border-right: 1px solid rgba(0, 240, 255, 0.5);
-      padding-right: 8px;
-    }
-
-    /* 朱砂竖线 → 霓虹青竖线 */
-    .spike {
-      left: 90vw;
-      width: 2px;
-      background: var(--neon-cyan);
-      opacity: 0.5;
-      box-shadow: 0 0 10px var(--neon-cyan);
-      transform: none;
-      animation: spikeIn 0.7s 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    /* 左上信息块 */
-    .meta-issue {
-      top: 4vh;
-      left: 5vw;
-      color: rgba(255, 255, 255, 0.5);
-      letter-spacing: 0.25em;
-      animation: fade 0.8s 1.5s both;
-    }
-    .meta-issue b {
-      font-family: 'Noto Sans SC', sans-serif;
-      font-size: clamp(20px, 5.6vw, 30px);
-      color: #F5F5F5;
-      text-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
-      letter-spacing: 0.06em;
-    }
-    .meta-issue .visits {
-      color: var(--neon-pink);
-      text-shadow: 0 0 10px rgba(255, 46, 136, 0.6);
-    }
-
-    /* 五色霓虹标签 */
-    .tags {
-      top: 68%;
-      z-index: 3;
-      left: 5vw;
-      max-width: 90vw;
-      gap: 9px 10px;
-      animation: fade 0.8s 1.7s both;
-    }
-    .tags span {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 6px 13px;
-      letter-spacing: 0.1em;
-      border-width: 1.5px;
-      border-radius: 3px;
-      background: rgba(5, 5, 5, 0.6);
-      color: #EDEDED;
-      transform: none !important;
-    }
-    .tags span:nth-child(1) { border-color: var(--neon-red);    box-shadow: 0 0 10px rgba(255,59,48,0.35), inset 0 0 8px rgba(255,59,48,0.12); }
-    .tags span:nth-child(2) { border-color: var(--neon-cyan);   box-shadow: 0 0 10px rgba(0,240,255,0.35), inset 0 0 8px rgba(0,240,255,0.12); }
-    .tags span:nth-child(3) { border-color: var(--neon-yellow); box-shadow: 0 0 10px rgba(255,230,0,0.35), inset 0 0 8px rgba(255,230,0,0.12); background: rgba(5,5,5,0.6); color: #EDEDED; }
-    .tags span:nth-child(4) { border-color: var(--neon-purple); box-shadow: 0 0 10px rgba(181,55,242,0.35), inset 0 0 8px rgba(181,55,242,0.12); }
-    .tags span:nth-child(5) { border-color: var(--neon-green);  box-shadow: 0 0 10px rgba(57,255,106,0.35), inset 0 0 8px rgba(57,255,106,0.12); }
-
-    /* 终端风导航 */
-    nav {
-      left: 5vw;
-      bottom: 5vh;
-      width: 90vw;
-      justify-content: flex-start;
-      gap: 6px 20px;
-      flex-wrap: wrap;
-      animation: fade 0.8s 1.9s both;
-    }
-    nav a {
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      color: rgba(255, 255, 255, 0.75);
-      font-weight: 700;
-      transform: none !important;
-      padding-bottom: 8px;
-    }
-    nav a::before {
-      content: '> ';
-      color: var(--neon-green);
-      font-weight: 900;
-    }
-    nav a::after {
-      height: 2px;
-      background: var(--neon-cyan);
-      box-shadow: 0 0 8px var(--neon-cyan);
-    }
-
-    /* 右上竖排刊号 */
-    .issue {
-      display: block;
-      position: absolute;
-      top: 40px; right: 14px;
-      writing-mode: vertical-rl;
-      font-family: 'Noto Sans SC', sans-serif;
-      font-size: 13px; font-weight: 900;
-      letter-spacing: 0.3em;
-      color: rgba(255, 255, 255, 0.4);
-      z-index: 30;
-      transform: rotate(180deg);
-    }
-    .issue .red { color: var(--neon-red); text-shadow: 0 0 10px rgba(255,59,48,0.7); }
+  @media (max-width:900px){
+    .wrap{padding:0 22px;}
+    .topbar{font-size:10px;letter-spacing:.2em;}
+    .logo b{font-size:64px;}
+    .logo i{font-size:11px;letter-spacing:.32em;padding-bottom:6px;}
+    .issue{font-size:11px;}
+    .nav{gap:0;justify-content:space-between;}
+    .nav a{font-size:12.5px;letter-spacing:.08em;flex:1;text-align:center;}
+    .cols{grid-template-columns:1fr;gap:0;margin-top:14px;}
+    .col{padding:30px 0 0 !important;border-left:none !important;}
+    .col+.col{border-top:1px solid var(--line);}
+    .title{font-size:38px;}
+    .portrait .vname{font-size:44px;}
+    .seal2{width:60px;height:60px;}
+    .seal2 span{font-size:28px;}
   }
 </style>
-  <link rel="stylesheet" href="fonts/mashanzheng.css">
 </head>
 <body>
+<div class="grain"></div>
 
-  <div class="spirit"><span class="c1">不</span><span class="c2">仁<i>仁</i></span><span class="c3">义</span></div>
+<div class="wrap">
 
-  <!-- 墨渍喷溅（手机端） -->
-  <div class="inkdots"><i></i><i></i><i></i><i></i><i></i></div>
-
-  <!-- 扫描线 + 像素尘（手机端赛博风） -->
-  <div class="scanlines"></div>
-  <div class="pixeldust"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="gridfloor"></div>
-  <div class="reflect"></div>
-  <div class="reflect-mask"></div>
-  <div class="tagglow"></div>
-
-  <!-- 右上竖排刊号 -->
-  <div class="issue"><span class="red">不仁</span> · 数字基地</div>
-
-  <!-- 三星堆太阳轮（右下角，隐约） -->
-  <div class="sunwheel">
-    <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="88" stroke="#16130F" stroke-opacity="0.55" stroke-width="7"/>
-      <circle cx="100" cy="100" r="28" stroke="#16130F" stroke-opacity="0.55" stroke-width="7"/>
-      <line x1="100" y1="28" x2="100" y2="12" stroke="#16130F" stroke-opacity="0.55" stroke-width="7"/>
-      <line x1="172" y1="100" x2="188" y2="100" stroke="#16130F" stroke-opacity="0.55" stroke-width="7"/>
-      <line x1="28" y1="100" x2="12" y2="100" stroke="#16130F" stroke-opacity="0.55" stroke-width="7"/>
-      <line x1="100" y1="172" x2="100" y2="188" stroke="#16130F" stroke-opacity="0.55" stroke-width="7"/>
-      <line x1="149" y1="51" x2="159" y2="41" stroke="#16130F" stroke-opacity="0.55" stroke-width="7"/>
-      <line x1="51" y1="149" x2="41" y2="159" stroke="#16130F" stroke-opacity="0.55" stroke-width="7"/>
-      <line x1="51" y1="51" x2="41" y2="41" stroke="#16130F" stroke-opacity="0.55" stroke-width="7"/>
-      <line x1="149" y1="149" x2="159" y2="159" stroke="#16130F" stroke-opacity="0.55" stroke-width="7"/>
-      <!-- 五辐 -->
-      <line x1="128" y1="90" x2="185" y2="69" stroke="#16130F" stroke-opacity="0.5" stroke-width="6"/>
-      <line x1="128" y1="110" x2="185" y2="131" stroke="#16130F" stroke-opacity="0.5" stroke-width="6"/>
-      <line x1="100" y1="128" x2="100" y2="185" stroke="#16130F" stroke-opacity="0.5" stroke-width="6"/>
-      <line x1="72" y1="110" x2="15" y2="131" stroke="#16130F" stroke-opacity="0.5" stroke-width="6"/>
-      <line x1="72" y1="90" x2="15" y2="69" stroke="#16130F" stroke-opacity="0.5" stroke-width="6"/>
-    </svg>
+  <div class="topbar fade in">
+    <span>BOOE.XYZ · 止一数字基地</span>
+    <span class="r">NO.001 · EST.2026</span>
   </div>
 
-
-  <div class="ring"></div>
-
-  <div class="slash">
-    <div class="name">止一</div>
-    <div class="domain">BOOE.XYZ</div>
+  <div class="mast fade in">
+    <div class="logo"><b>不仁</b><i>BU REN</i></div>
+    <div class="issue">
+      <b>2026 年第 1 期 · 总第 001 期</b>
+      主办：<span class="r">止一</span>　出版：BOOE.XYZ
+    </div>
   </div>
+  <div class="wx fade in"><div class="thick"></div><div class="thin"></div></div>
 
-  <div class="spike"></div>
-
-  <div class="meta-issue">
-    <b>ONE 的数字基地</b>
-    NO.001 · 营造中 · EST.2026
-    <span class="visits"><span id="busuanzi_value_site_pv">0</span> 人来过</span>
-  </div>
-
-  <div class="tags">
-    <span>供应链老手</span>
-    <span>AI 学习者</span>
-    <span>网瘾少年</span>
-    <span>兼职冥想家</span>
-    <span>嘴炮爱好者</span>
-  </div>
-
-  <nav>
-    <a href="gate.html">认识我</a>
-    <a href="lab.html">实验室</a>
-    <a href="play.html">一起玩</a>
-    <a href="talk.html">和我聊聊</a>
+  <nav class="nav fade in">
+    <a href="gate.html"><i>01</i>认识我</a>
+    <a href="lab.html"><i>02</i>实验室</a>
+    <a href="play.html"><i>03</i>一起玩</a>
+    <a href="talk.html"><i>04</i>和我聊聊</a>
+    <a href="booe.html"><i>05</i>建造日志</a>
   </nav>
 
-  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <div class="cols">
 
+    <div class="col fade">
+      <div class="colhead">本期要目</div>
+      <ul class="toc">
+        <li><span class="no">01</span><span class="sq"></span><a href="gate.html">认识我</a><span class="fill"></span><span class="pg">P02</span></li>
+        <li><span class="no">02</span><span class="sq"></span><a href="lab.html">实验室</a><span class="fill"></span><span class="pg">P03</span></li>
+        <li><span class="no">03</span><span class="sq"></span><a href="play.html">一起玩</a><span class="fill"></span><span class="pg">P04</span></li>
+        <li><span class="no">04</span><span class="sq"></span><a href="talk.html">和我聊聊</a><span class="fill"></span><span class="pg">P05</span></li>
+        <li><span class="no">05</span><span class="sq"></span><a href="booe.html">建造日志</a><span class="fill"></span><span class="pg">P06</span></li>
+      </ul>
+      <div class="toc-note">全部内容免费开放，无需注册。<br>来访即读者，留言即来信。</div>
+    </div>
 
+    <div class="col fade">
+      <div class="colhead dark">卷 首 语</div>
+      <div class="title">一个人的<em>数字基地</em></div>
+      <div class="sub">NO.001 · 营造中 · EST.2026 · 深圳 <span class="r"><span id="busuanzi_value_site_pv">0</span> 人来过</span></div>
+      <div class="body">
+        <p>白天的营建与交付，夜里的折腾与胡思乱想，都被摊开在同一张桌子上。这里不做筛选，也不承诺更新。</p>
+        <p>从供应链到 AI Agent，从飞行棋到留言板，所有的东西都还在长。它们彼此没什么关系，唯一的共同点是都由同一个人折腾出来。</p>
+      </div>
+      <div class="pull">本期关键词：<b>不设栏目</b> · <b>不赶进度</b> · <b>不解释</b></div>
+      <div class="rule-red"></div>
+      <div class="sign">止一 / BOOE.XYZ / 2026</div>
+    </div>
 
+    <div class="col fade">
+      <div class="colhead">本 期 人 物</div>
+      <div class="portrait">
+        <div class="vname">止一</div>
+        <div class="vnote">主编兼唯一的撰稿人</div>
+        <div class="seal2"><span>止</span></div>
+      </div>
+      <div class="facts">
+        <div><span class="k">期　号</span><span class="v">NO.001</span></div>
+        <div><span class="k">创　刊</span><span class="v">EST.2026</span></div>
+        <div><span class="k">来　访</span><span class="v r"><span id="busuanzi_value_site_uv">0</span></span></div>
+        <div><span class="k">状　态</span><span class="v">营造中</span></div>
+      </div>
+      <div class="keys">
+        <span>供应链老手</span><span>AI 学习者</span><span>网瘾少年</span><span>兼职冥想家</span><span>嘴炮爱好者</span>
+      </div>
+    </div>
 
+  </div>
+
+  <div class="foot fade">
+    <div class="f1"></div><div class="f2"></div>
+    <div class="row">
+      <span>主办单位：止一数字基地</span>
+      <span>邮发代号：BOOE-001</span>
+      <span class="r">定价：无价</span>
+      <span><a href="index.html">booe.xyz</a></span>
+    </div>
+  </div>
+
+</div>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+  // 进场淡入（求是风不宜花哨）
+  var els = document.querySelectorAll('.fade');
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.06});
+  els.forEach(function(el){ io.observe(el); });
+</script>
 </body>
 </html>

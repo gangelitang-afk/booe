@@ -3,202 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>验证 · 止一</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<title>门禁 · 止一的数字基地</title>
+<meta name="theme-color" content="#FCFAF3">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@400;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts/mashanzheng.css">
 <style>
-  :root { --paper: #EFE8D8; --ink: #16130F; --cinnabar: #C0362C; --ink-mid: rgba(22,19,15,0.55); }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--paper); color: var(--ink);
-    font-family: 'Noto Sans SC', sans-serif;
-    height: 100vh; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
+  :root{
+    --paper:#FCFAF3; --ink:#1A1A18; --red:#C0272D; --red-d:#9E2A1F;
+    --line:rgba(26,26,24,.16); --gray:#6A6A60; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
-  body::before {
-    content: ''; position: fixed; inset: 0;
-    background-image: radial-gradient(rgba(22,19,15,0.03) 1px, transparent 1px);
-    background-size: 3px 3px; pointer-events: none;
-  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:var(--paper);color:var(--ink);font-family:'Noto Serif SC',serif;min-height:100vh;}
+  body{position:relative;overflow-x:hidden;}
+  .grain{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(rgba(26,26,24,.035) 1px,transparent 1px);background-size:3px 3px;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 40px;position:relative;z-index:1;min-height:100vh;
+    display:flex;flex-direction:column;}
 
-  /* 背景大字 */
-  .bg-char {
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%) rotate(-3deg);
-    font-family: 'Ma Shan Zheng', serif;
-    font-size: 70vw;
-    color: rgba(22,19,15,0.05);
-    user-select: none; pointer-events: none;
-    line-height: 1;
-  }
+  .back{position:absolute;top:34px;left:40px;z-index:10;color:var(--ink);text-decoration:none;
+    font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:12px;letter-spacing:.3em;
+    padding:8px 16px;border:2px solid var(--ink);background:var(--paper);transition:all .25s;}
+  .back:hover{background:var(--ink);color:var(--paper);}
 
-  .back {
-    position: fixed; top: 4vh; left: 4vw; z-index: 10;
-    color: var(--ink); text-decoration: none;
-    font-size: 13px; font-weight: 900; letter-spacing: 0.3em;
-    padding: 8px 16px; border: 2px solid var(--ink); background: var(--paper);
-    transition: all 0.3s;
-  }
-  .back:hover { background: var(--ink); color: var(--paper); }
+  .topbar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;
+    letter-spacing:.28em;color:var(--gray);padding:26px 0 0;}
+  .topbar .r{color:var(--red);font-weight:700;}
+  .mast{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 0 0;}
+  .logo{display:flex;align-items:flex-end;gap:16px;}
+  .logo b{font-family:'Ma Shan Zheng',serif;font-weight:400;font-size:84px;line-height:.86;color:var(--red);letter-spacing:.04em;}
+  .logo i{font-style:normal;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:12px;letter-spacing:.42em;color:var(--ink);padding-bottom:9px;}
+  .issue{text-align:right;font-size:12px;letter-spacing:.14em;color:var(--gray);line-height:2;}
+  .issue b{display:block;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:14px;color:var(--ink);letter-spacing:.1em;}
+  .wx{margin-top:18px;}
+  .wx .thick{height:5px;background:var(--red);}
+  .wx .thin{height:1px;background:var(--ink);margin-top:3px;}
 
-  .gate-box {
-    position: relative; z-index: 2;
-    text-align: center;
-    animation: fadeUp 0.8s ease-out both;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  .gate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0 70px;}
+  .gate .colhead{display:inline-block;background:var(--red);color:#fff;font-family:'Noto Sans SC',sans-serif;
+    font-weight:900;font-size:12px;letter-spacing:.26em;padding:6px 13px;margin-bottom:18px;}
+  .gate-title{font-family:'Ma Shan Zheng',serif;font-size:clamp(40px,7vw,76px);color:var(--ink);line-height:1;}
+  .gate-sub{margin-top:14px;font-family:'Noto Sans SC',sans-serif;font-size:13px;letter-spacing:.3em;color:var(--gray);}
 
-  .gate-title {
-    font-family: 'Ma Shan Zheng', serif;
-    font-size: clamp(32px, 5vw, 52px);
-    margin-bottom: 8px;
-  }
-  .gate-sub {
-    font-size: 13px;
-    letter-spacing: 0.3em;
-    color: var(--ink-mid);
-    margin-bottom: 40px;
-  }
+  .field{display:flex;margin-top:40px;max-width:380px;width:100%;border:3px solid var(--ink);background:var(--paper);transition:border-color .25s,box-shadow .25s;}
+  .field:focus-within{border-color:var(--red);box-shadow:5px 5px 0 var(--red);}
+  .field.err{border-color:var(--red);animation:shake .4s ease-in-out;}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  #pw{flex:1;border:none;outline:none;background:transparent;padding:16px 18px;font-size:18px;
+    font-family:'Noto Sans SC',sans-serif;font-weight:700;letter-spacing:.16em;color:var(--ink);text-transform:uppercase;}
+  #pw::placeholder{color:rgba(26,26,24,.3);font-weight:400;letter-spacing:.1em;}
+  .go{border:none;background:var(--ink);color:var(--paper);padding:0 26px;font-family:'Noto Sans SC',sans-serif;
+    font-size:16px;font-weight:900;letter-spacing:.2em;cursor:pointer;transition:background .25s;}
+  .go:hover{background:var(--red);}
 
-  .gate-input-wrap {
-    display: flex;
-    gap: 0;
-    max-width: 360px;
-    margin: 0 auto;
-    border: 3px solid var(--ink);
-    background: var(--paper);
-    transition: border-color 0.3s, box-shadow 0.3s;
-  }
-  .gate-input-wrap:focus-within {
-    border-color: var(--cinnabar);
-    box-shadow: 4px 4px 0 var(--cinnabar);
-  }
-  .gate-input-wrap.error {
-    border-color: var(--cinnabar);
-    animation: shake 0.4s ease-in-out;
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-5px); }
-    80% { transform: translateX(5px); }
-  }
+  .msg{margin-top:20px;min-height:20px;font-family:'Noto Sans SC',sans-serif;font-size:13px;letter-spacing:.2em;color:var(--red);opacity:0;transition:opacity .3s;}
+  .msg.show{opacity:1;}
+  .hint{margin-top:46px;font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--gray);line-height:2.2;text-align:center;}
+  .hint b{color:var(--red);font-weight:700;}
 
-  #gateInput {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    padding: 16px 20px;
-    font-size: 18px;
-    font-family: 'Noto Sans SC', sans-serif;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    color: var(--ink);
-    text-transform: uppercase;
-  }
-  #gateInput::placeholder {
-    color: rgba(22,19,15,0.3);
-    font-weight: 400;
-    letter-spacing: 0.1em;
-  }
+  .foot{margin-top:auto;padding-bottom:34px;}
+  .foot .f1{height:1px;background:var(--ink);margin-bottom:3px;}
+  .foot .f2{height:3px;background:var(--red);margin-bottom:14px;}
+  .foot .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--gray);}
+  .foot .row .r{color:var(--red);font-weight:700;}
 
-  .gate-btn {
-    border: none;
-    background: var(--ink);
-    color: var(--paper);
-    padding: 16px 24px;
-    font-size: 16px;
-    font-weight: 900;
-    letter-spacing: 0.2em;
-    cursor: pointer;
-    font-family: 'Noto Sans SC', sans-serif;
-    transition: background 0.3s;
-  }
-  .gate-btn:hover { background: var(--cinnabar); }
-
-  .gate-msg {
-    margin-top: 20px;
-    font-size: 13px;
-    letter-spacing: 0.2em;
-    color: var(--cinnabar);
-    min-height: 20px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .gate-msg.show { opacity: 1; }
-
-  .gate-hint {
-    margin-top: 48px;
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    color: rgba(22,19,15,0.35);
-    line-height: 2;
+  @media (max-width:900px){
+    .wrap{padding:0 22px;}
+    .back{top:26px;left:22px;padding:7px 13px;font-size:11px;}
+    .logo b{font-size:56px;}
+    .logo i{font-size:10px;letter-spacing:.32em;}
+    .issue{font-size:11px;}
+    .field{max-width:none;}
   }
 </style>
-  <link rel="stylesheet" href="fonts/mashanzheng.css">
 </head>
 <body>
+<div class="grain"></div>
 
-<a class="back" href="index.html">← 回基地</a>
-<div class="bg-char">验</div>
+<div class="wrap">
+  <a class="back" href="index.html">← 回基地</a>
 
-<div class="gate-box">
-  <div class="gate-title">此门有锁</div>
-  <div class="gate-sub">输入暗号，方可入内</div>
+  <div class="topbar">
+    <span>BOOE.XYZ · 止一数字基地</span>
+    <span class="r">NO.001 · EST.2026</span>
+  </div>
+  <div class="mast">
+    <div class="logo"><b>不仁</b><i>BU REN</i></div>
+    <div class="issue">
+      <b>2026 年第 1 期 · 总第 001 期</b>
+      主办：<span style="color:var(--red);font-weight:700;">止一</span>　出版：BOOE.XYZ
+    </div>
+  </div>
+  <div class="wx"><div class="thick"></div><div class="thin"></div></div>
 
-  <div class="gate-input-wrap" id="inputWrap">
-    <input type="text" id="gateInput" placeholder="暗号" autocomplete="off" spellcheck="false">
-    <button class="gate-btn" onclick="check()">进</button>
+  <div class="gate">
+    <div class="colhead">门　禁</div>
+    <div class="gate-title">此门有锁</div>
+    <div class="gate-sub">输入暗号，方可入内</div>
+
+    <div class="field" id="field">
+      <input type="text" id="pw" placeholder="暗号" autocomplete="off" spellcheck="false">
+      <button class="go" id="go">进</button>
+    </div>
+    <div class="msg" id="msg"></div>
+
+    <div class="hint">暗号是什么？<br><b>你猜猜看</b>。</div>
   </div>
 
-  <div class="gate-msg" id="gateMsg"></div>
-
-  <div class="gate-hint">暗号是什么？<br>你猜。</div>
+  <div class="foot">
+    <div class="f1"></div><div class="f2"></div>
+    <div class="row">
+      <span>止一数字基地 · 内部刊物</span>
+      <span class="r">定价：无价</span>
+    </div>
+  </div>
 </div>
 
 <script>
-  // 密码混淆存储（不是明文，但也别当银行金库用）
+  // 暗号混淆存储：NICAICAIKAN（拼音：你猜猜看）
   var _0xk = [78,73,67,65,73,67,65,73,75,65,78];
   var _pw = _0xk.map(function(c){return String.fromCharCode(c)}).join('');
 
-  var input = document.getElementById('gateInput');
-  var wrap = document.getElementById('inputWrap');
-  var msg = document.getElementById('gateMsg');
-
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') check();
-  });
+  var input = document.getElementById('pw');
+  var field = document.getElementById('field');
+  var msg = document.getElementById('msg');
+  var go = document.getElementById('go');
 
   input.focus();
+  input.addEventListener('keydown', function(e){ if(e.key === 'Enter') check(); });
+  go.addEventListener('click', check);
 
-  function check() {
+  function check(){
     var val = input.value.trim().toUpperCase();
-    if (val === _pw) {
+    if(val === _pw){
       msg.textContent = '门开了。';
-      msg.style.color = 'var(--cinnabar)';
       msg.classList.add('show');
-      wrap.style.borderColor = 'var(--cinnabar)';
-      setTimeout(function() {
-        window.location.href = 'about.html';
-      }, 600);
+      field.style.borderColor = 'var(--red)';
+      setTimeout(function(){ window.location.href = 'about.html'; }, 560);
     } else {
       msg.textContent = '不对。';
       msg.classList.add('show');
-      wrap.classList.add('error');
+      field.classList.add('err');
       input.value = '';
       input.focus();
-      setTimeout(function() {
-        wrap.classList.remove('error');
-        msg.classList.remove('show');
-      }, 1200);
+      setTimeout(function(){ field.classList.remove('err'); msg.classList.remove('show'); }, 1200);
     }
   }
 </script>
-
 </body>
 </html>
