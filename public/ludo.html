@@ -2,189 +2,152 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>飞行棋 · 一起玩</title>
+<meta name="theme-color" content="#EE3A2B">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts/mashanzheng.css">
 <style>
-  :root { --paper: #EFE8D8; --ink: #16130F; --cinnabar: #C0362C; --ink-mid: rgba(22,19,15,0.55); }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--paper); color: var(--ink);
-    font-family: 'Noto Sans SC', sans-serif;
-    min-height: 100vh;
-    padding: 14px 12px 100px;
-    position: relative;
+  :root{
+    --paper:#FAF4E6; --ink:#1A1A18; --red:#EE3A2B; --ink-mid:#6A6A60;
+    --c4:#F4B400; --c2:#2D6CDF; --c3:#13A87A; --c5:#8A5CD7;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
-  body::before {
-    content: ''; position: fixed; inset: 0;
-    background-image: radial-gradient(rgba(22,19,15,0.03) 1px, transparent 1px);
-    background-size: 3px 3px; pointer-events: none; z-index: 0;
-  }
-  .back {
-    position: fixed; top: 12px; left: 12px; z-index: 10;
-    color: var(--ink); text-decoration: none;
-    font-size: 12px; font-weight: 900; letter-spacing: 0.2em;
-    padding: 6px 12px; border: 2px solid var(--ink); background: var(--paper);
-  }
-  .back:hover { background: var(--ink); color: var(--paper); }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{background:var(--paper);color:var(--ink);font-family:'Noto Sans SC',sans-serif;
+    min-height:100vh;padding:14px 12px 80px;position:relative;}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(rgba(26,26,24,.04) 1px,transparent 1px);background-size:3px 3px;}
+  .back{position:fixed;top:12px;left:12px;z-index:10;color:var(--ink);text-decoration:none;
+    font-size:12px;font-weight:900;letter-spacing:.2em;padding:7px 13px;
+    border:2px solid var(--ink);background:var(--paper);}
+  .back:hover{background:var(--ink);color:var(--paper);}
 
-  .page-title {
-    font-family: 'Ma Shan Zheng', serif;
-    font-size: 34px; text-align: center; margin: 30px 0 6px;
-  }
-  .page-sub { text-align: center; font-size: 12px; letter-spacing: 0.3em; color: var(--ink-mid); margin-bottom: 20px; }
+  .head{text-align:center;margin:42px 0 6px;position:relative;}
+  .head .badge{display:inline-block;background:var(--ink);color:var(--paper);font-weight:900;font-size:10px;
+    letter-spacing:.28em;padding:5px 12px;transform:rotate(-3deg);}
+  .head h1{font-family:'Ma Shan Zheng',serif;font-weight:400;font-size:48px;line-height:1.1;margin:10px 0 2px;color:var(--red);}
+  .head .sub{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--ink-mid);}
+  .head .star{position:absolute;font-size:20px;}
+  .head .s1{top:4px;left:18%;color:var(--c4);transform:rotate(-14deg);}
+  .head .s2{top:34px;right:16%;color:var(--c2);font-size:15px;}
+  .head .s3{bottom:0;left:26%;color:var(--c3);font-size:13px;}
 
-  /* ===== 加入界面 ===== */
-  .join-box {
-    max-width: 380px; margin: 30px auto; text-align: center;
-  }
-  .join-box .field {
-    border: 2px solid var(--ink); background: transparent;
-    padding: 12px 16px; font-size: 15px; font-family: inherit;
-    width: 100%; margin-bottom: 12px; color: var(--ink); outline: none;
-  }
-  .join-box .field:focus { border-color: var(--cinnabar); }
-  .join-box .row { display: flex; gap: 10px; }
-  .join-box .row .field { flex: 1; }
-  .btn {
-    border: 2px solid var(--ink); background: transparent;
-    padding: 12px 20px; font-size: 14px; font-weight: 900;
-    letter-spacing: 0.2em; cursor: pointer; font-family: inherit;
-    color: var(--ink); transition: all 0.25s;
-  }
-  .btn:hover { background: var(--ink); color: var(--paper); }
-  .btn.primary { background: var(--cinnabar); border-color: var(--cinnabar); color: var(--paper); }
-  .btn.primary:hover { background: var(--ink); border-color: var(--ink); }
-  .btn:disabled { opacity: 0.4; cursor: wait; }
-
-  /* ===== 等待界面 ===== */
-  .wait-box { max-width: 380px; margin: 0 auto; text-align: center; }
-  .room-num {
-    font-family: ui-monospace, monospace;
-    font-size: 56px; font-weight: 900; letter-spacing: 0.15em;
-    border: 3px solid var(--ink); padding: 14px; margin: 10px 0 6px;
-    background: rgba(192,54,44,0.06);
-  }
-  .room-hint { font-size: 12px; color: var(--ink-mid); letter-spacing: 0.2em; margin-bottom: 24px; }
-  .player-list { margin: 16px 0 24px; }
-  .player-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; border: 2px solid var(--ink); margin-bottom: 8px;
-    font-size: 14px; font-weight: 700;
-  }
-  .player-row .dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-  .player-row .status { margin-left: auto; font-size: 11px; color: var(--ink-mid); font-weight: 400; }
-  .player-row.host .tag-host { font-size: 10px; background: var(--cinnabar); color: var(--paper); padding: 2px 6px; margin-left: 6px; }
+  /* ===== 加入 / 等待 ===== */
+  .box{max-width:400px;margin:22px auto;text-align:center;}
+  .box .field{border:3px solid var(--ink);background:#fff;padding:13px 16px;font-size:15px;
+    font-family:inherit;width:100%;margin-bottom:12px;color:var(--ink);outline:none;font-weight:700;}
+  .box .field:focus{border-color:var(--red);}
+  .box .row{display:flex;gap:10px;}
+  .box .row .field{flex:1;}
+  .btn{border:2px solid var(--ink);background:#fff;color:var(--ink);padding:13px 22px;font-size:14px;
+    font-weight:900;letter-spacing:.2em;cursor:pointer;font-family:inherit;transition:all .15s;}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);}
+  .btn.primary{background:var(--red);border-color:var(--red);color:#fff;}
+  .btn:disabled{opacity:.4;cursor:wait;transform:none;box-shadow:none;}
+  .room-num{font-family:var(--mono);font-size:56px;font-weight:900;letter-spacing:.15em;
+    border:3px solid var(--ink);padding:14px;margin:10px 0 6px;background:#fff;
+    box-shadow:6px 6px 0 rgba(238,58,43,.25);color:var(--red);}
+  .room-hint{font-size:12px;color:var(--ink-mid);letter-spacing:.2em;margin-bottom:20px;}
+  .player-list{margin:14px 0 22px;}
+  .player-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border:2px solid var(--ink);
+    margin-bottom:8px;font-size:14px;font-weight:700;background:#fff;}
+  .player-row .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:2px solid rgba(26,26,24,.35);}
+  .player-row .status{margin-left:auto;font-size:11px;color:var(--ink-mid);font-weight:400;}
+  .tag-host{font-size:10px;background:var(--red);color:#fff;padding:2px 7px;margin-left:6px;}
 
   /* ===== 游戏界面 ===== */
-  .game-box { max-width: 560px; margin: 0 auto; }
-  .status-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 10px; font-size: 13px;
-  }
-  .status-bar .turn {
-    font-weight: 900; padding: 6px 12px; border: 2px solid var(--ink);
-    background: var(--paper);
-  }
-  .status-bar .turn.me { background: var(--cinnabar); color: var(--paper); border-color: var(--cinnabar); }
-  .status-bar .dice-box {
-    display: flex; align-items: center; gap: 8px;
-  }
-  .dice-face {
-    width: 44px; height: 44px; border: 2px solid var(--ink);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; font-weight: 900; font-family: ui-monospace, monospace;
-    background: var(--paper);
-  }
-  .dice-face.roll { animation: diceShake 0.4s ease-in-out 2; }
-  @keyframes diceShake {
-    0%,100% { transform: rotate(0); }
-    25% { transform: rotate(-12deg) scale(1.1); }
-    75% { transform: rotate(12deg) scale(0.95); }
+  .game-box{max-width:560px;margin:0 auto;}
+  .roster{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+  .chip{display:flex;align-items:center;gap:6px;border:2px solid var(--ink);background:#fff;
+    padding:5px 10px;font-size:12px;font-weight:900;}
+  .chip .dot{width:11px;height:11px;border-radius:50%;border:2px solid rgba(26,26,24,.3);}
+  .chip.cur{background:var(--ink);color:var(--paper);}
+  .chip .fin{font-family:var(--mono);font-size:10px;color:var(--ink-mid);}
+  .chip.cur .fin{color:var(--c4);}
+  .status-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:13px;}
+  .status-bar .turn{font-weight:900;padding:7px 14px;border:2px solid var(--ink);background:#fff;}
+  .status-bar .turn.me{background:var(--red);color:#fff;border-color:var(--red);
+    box-shadow:3px 3px 0 rgba(26,26,24,.25);}
+
+  .dice{width:48px;height:48px;border:2.5px solid var(--ink);background:#fff;
+    display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+    padding:6px;box-shadow:3px 3px 0 rgba(26,26,24,.25);}
+  .dice .pip{width:8px;height:8px;border-radius:50%;background:var(--red);
+    align-self:center;justify-self:center;}
+  .dice .pip.off{visibility:hidden;}
+  .dice.roll{animation:diceShake .38s ease-in-out 2;}
+  @keyframes diceShake{
+    0%,100%{transform:rotate(0);}
+    25%{transform:rotate(-14deg) scale(1.12);}
+    75%{transform:rotate(14deg) scale(.94);}
   }
 
-  #board { width: 100%; display: block; background: var(--paper); border: 2px solid var(--ink); }
+  #board{width:100%;display:block;background:var(--paper);border:3px solid var(--ink);
+    box-shadow:7px 7px 0 rgba(26,26,24,.16);}
 
-  .action-bar {
-    margin-top: 12px; text-align: center;
-  }
-  .action-bar .btn { font-size: 16px; padding: 14px 32px; }
+  .action-bar{margin-top:14px;text-align:center;}
+  .action-bar .btn{font-size:16px;padding:15px 36px;}
+  .hint-bar{margin-top:9px;text-align:center;font-size:13px;color:var(--ink-mid);min-height:20px;}
+  .log-box{margin-top:14px;border:2px solid var(--ink);padding:10px 12px;max-height:130px;overflow-y:auto;
+    font-size:12px;line-height:1.9;color:var(--ink-mid);background:#fff;}
+  .log-box div:first-child{color:var(--ink);font-weight:700;}
 
-  .hint-bar {
-    margin-top: 8px; text-align: center;
-    font-size: 13px; color: var(--ink-mid); letter-spacing: 0.05em; min-height: 20px;
+  /* 棋盘 SVG */
+  .cell{stroke:rgba(26,26,24,.4);stroke-width:1.4;}
+  .cell-text{text-anchor:middle;dominant-baseline:central;pointer-events:none;}
+  .runway{stroke:rgba(26,26,24,.4);stroke-width:1.4;}
+  .plane{pointer-events:all;cursor:default;}
+  .plane.movable{cursor:pointer;animation:planeBob 0.9s ease-in-out infinite;}
+  @keyframes planeBob{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-5px);}
   }
+  .winner-banner{position:fixed;inset:0;z-index:50;background:rgba(26,26,24,.78);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--paper);}
+  .winner-banner .w-title{font-family:'Ma Shan Zheng',serif;font-size:clamp(40px,10vw,80px);}
+  .winner-banner .w-title em{font-style:normal;color:var(--c4);}
+  .winner-banner .w-sub{font-size:13px;letter-spacing:.3em;color:rgba(250,244,230,.75);margin:12px 0 30px;}
+  .winner-banner .btn{color:var(--paper);border-color:var(--paper);background:transparent;}
+  .winner-banner .btn:hover{background:var(--paper);color:var(--ink);box-shadow:none;}
+  .winner-banner .btn.primary{background:var(--red);border-color:var(--red);}
 
-  .log-box {
-    margin-top: 14px; border: 2px solid var(--ink); padding: 10px 12px;
-    max-height: 130px; overflow-y: auto; font-size: 12px; line-height: 1.9;
-    color: var(--ink-mid); background: rgba(239,232,216,0.5);
-  }
-  .log-box div:first-child { color: var(--ink); font-weight: 700; }
+  .cf{position:fixed;top:-16px;width:9px;height:14px;z-index:60;pointer-events:none;animation:cfFall linear forwards;}
+  @keyframes cfFall{0%{transform:translateY(0) rotate(0);}100%{transform:translateY(105vh) rotate(720deg);}}
 
-  /* 棋盘格 */
-  .cell { stroke: rgba(22,19,15,0.25); stroke-width: 1; }
-  .cell.special { stroke-width: 2; }
-  .cell-text { font-size: 15px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
-  .runway { stroke: rgba(22,19,15,0.3); stroke-width: 1; }
-  .plane { pointer-events: all; cursor: pointer; }
-  .plane.movable { animation: pulse 1s ease-in-out infinite; }
-  @keyframes pulse {
-    0%,100% { r: 11; }
-    50% { r: 14; }
-  }
-  .plane-circle { stroke: #fff; stroke-width: 1.5; }
-
-  .winner-banner {
-    position: fixed; inset: 0; z-index: 50;
-    background: rgba(22,19,15,0.75);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; color: var(--paper);
-  }
-  .winner-banner .w-title {
-    font-family: 'Ma Shan Zheng', serif;
-    font-size: clamp(40px, 10vw, 80px); margin-bottom: 10px;
-  }
-  .winner-banner .w-sub { font-size: 14px; letter-spacing: 0.3em; color: rgba(239,232,216,0.8); margin-bottom: 30px; }
-  .winner-banner .btn { color: var(--paper); border-color: var(--paper); }
-  .winner-banner .btn:hover { background: var(--paper); color: var(--ink); }
-  .winner-banner .btn.primary { background: var(--cinnabar); border-color: var(--cinnabar); }
-
-  .toast {
-    position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
-    background: var(--cinnabar); color: var(--paper);
-    padding: 10px 22px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em;
-    z-index: 60; opacity: 0; transition: opacity 0.3s; pointer-events: none;
-  }
-  .toast.show { opacity: 1; }
-
-  .hidden { display: none !important; }
+  .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;
+    padding:10px 22px;font-size:13px;font-weight:700;letter-spacing:.1em;z-index:70;
+    opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:4px 4px 0 rgba(26,26,24,.3);}
+  .toast.show{opacity:1;}
+  .hidden{display:none !important;}
 </style>
-  <link rel="stylesheet" href="fonts/mashanzheng.css">
 </head>
 <body>
 
-<a class="back" href="play.html">← 回大厅</a>
+<a class="back" href="index.html#play">← 回基地</a>
 
 <!-- ===== 加入界面 ===== -->
 <div id="joinView">
-  <div class="page-title">飞行棋</div>
-  <div class="page-sub">多人实时 · 2-4人 · 完整规则</div>
-  <div class="join-box">
+  <div class="head">
+    <span class="star s1">✦</span><span class="star s2">✶</span><span class="star s3">❉</span>
+    <div class="badge">多 人 实 时</div>
+    <h1>飞行棋</h1>
+    <div class="sub">LUDO · 2-4 人 · 掷骰起飞 · 踩人回巢</div>
+  </div>
+  <div class="box">
     <input class="field" id="inpName" placeholder="你的名字" maxlength="12">
     <div class="row">
       <input class="field" id="inpRoom" placeholder="房间号(4位)" maxlength="4" inputmode="numeric">
       <button class="btn primary" id="btnJoin" onclick="joinRoom()">加入</button>
     </div>
-    <div style="margin:16px 0;font-size:11px;color:var(--ink-mid);letter-spacing:0.2em;">— 或 —</div>
+    <div style="margin:16px 0;font-size:11px;color:var(--ink-mid);letter-spacing:.2em;">— 或 —</div>
     <button class="btn" id="btnCreate" onclick="createRoom()">创建房间</button>
   </div>
 </div>
 
 <!-- ===== 等待界面 ===== -->
 <div id="waitView" class="hidden">
-  <div class="page-title">飞行棋</div>
-  <div class="wait-box">
+  <div class="box">
     <div class="room-num" id="roomNum">----</div>
     <div class="room-hint">把房间号发给朋友，他们就能加入</div>
     <div class="player-list" id="waitPlayers"></div>
@@ -195,13 +158,15 @@
 
 <!-- ===== 游戏界面 ===== -->
 <div id="gameView" class="hidden">
-  <div class="page-title" style="font-size:26px;margin:26px 0 2px;">飞行棋 · 房间 <span id="roomNum2" style="font-family:ui-monospace;font-size:20px;"></span></div>
+  <div class="head" style="margin-top:46px;">
+    <h1 style="font-size:30px;">飞行棋</h1>
+    <div class="sub">房间 <span id="roomNum2" style="color:var(--red);font-weight:700;">----</span></div>
+  </div>
   <div class="game-box">
+    <div class="roster" id="roster"></div>
     <div class="status-bar">
       <span class="turn" id="turnLabel">等待…</span>
-      <div class="dice-box">
-        <div class="dice-face" id="diceFace">·</div>
-      </div>
+      <div class="dice" id="dice"></div>
     </div>
     <svg id="board" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg"></svg>
     <div class="action-bar">
@@ -224,10 +189,10 @@
 <script>
 // ============ 常量 ============
 const COLORS = {
-  red:    { name: '红', hex: '#C0362C', light: '#F2D5D0' },
-  yellow: { name: '黄', hex: '#D9A11C', light: '#F5E8C8' },
-  blue:   { name: '蓝', hex: '#2E5FA3', light: '#D5E0F2' },
-  green:  { name: '绿', hex: '#2E7D46', light: '#D5EAD8' }
+  red:    { name: '红', hex: '#EE3A2B', light: '#FBDFDB' },
+  yellow: { name: '黄', hex: '#F4B400', light: '#FCEEC9' },
+  blue:   { name: '蓝', hex: '#2D6CDF', light: '#DCE6FA' },
+  green:  { name: '绿', hex: '#13A87A', light: '#D2EFE3' }
 };
 const START = { red: 39, yellow: 13, blue: 26, green: 0 };
 const SPECIAL = {
@@ -238,13 +203,8 @@ const SPECIAL = {
 const DOCK = 0, TRACK_MAX = 52, FINISH = 59;
 
 // ============ 状态 ============
-let ws = null;
-let roomId = null;
-let myId = null;
-let myColor = null;
-let state = null;
-let reconnTimer = null;
-
+let ws = null, roomId = null, myId = null, myColor = null, state = null, reconnTimer = null;
+let lastDice = null;
 const $ = id => document.getElementById(id);
 
 // ============ 创建/加入 ============
@@ -277,55 +237,31 @@ function connect() {
   const name = localStorage.getItem('booe_ludo_name') || '玩家';
   const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
   ws = new WebSocket(`${proto}//${location.host}/ws/ludo/${roomId}`);
-  ws.onopen = () => {
-    ws.send(JSON.stringify({ type: 'join', name }));
-  };
-  ws.onmessage = (e) => {
-    const msg = JSON.parse(e.data);
-    handleMsg(msg);
-  };
+  ws.onopen = () => { ws.send(JSON.stringify({ type: 'join', name })); };
+  ws.onmessage = (e) => { handleMsg(JSON.parse(e.data)); };
   ws.onclose = () => {
-    if (state && state.phase === 'playing') {
-      toast('连接断开，正在重连…');
-      scheduleReconnect();
-    }
+    if (state && state.phase === 'playing') { toast('连接断开，正在重连…'); scheduleReconnect(); }
   };
   ws.onerror = () => {};
 }
-
 function scheduleReconnect() {
   clearTimeout(reconnTimer);
-  reconnTimer = setTimeout(() => {
-    try { connect(); } catch (e) {}
-  }, 2000);
+  reconnTimer = setTimeout(() => { try { connect(); } catch (e) {} }, 2000);
 }
-
-function send(obj) {
-  if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj));
-}
+function send(obj) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj)); }
 
 // ============ 消息处理 ============
 function handleMsg(msg) {
   switch (msg.type) {
-    case 'joined':
-      myId = msg.playerId;
-      myColor = msg.color;
-      break;
-    case 'state':
-      state = msg;
-      render();
-      break;
-    case 'error':
-      toast(msg.msg);
-      break;
+    case 'joined': myId = msg.playerId; myColor = msg.color; break;
+    case 'state': state = msg; render(); break;
+    case 'error': toast(msg.msg); break;
   }
 }
 
 // ============ 渲染 ============
 function render() {
   if (!state) return;
-
-  // 界面切换
   if (state.phase === 'waiting') {
     $('joinView').classList.add('hidden');
     $('gameView').classList.add('hidden');
@@ -349,9 +285,9 @@ function renderWaiting() {
     row.className = 'player-row';
     row.innerHTML = `
       <span class="dot" style="background:${c.hex}"></span>
-      <span>${p.name}</span>
+      <span>${escapeHtml(p.name)}</span>
       ${i === 0 ? '<span class="tag-host">房主</span>' : ''}
-      ${p.id === myId ? '<span style="margin-left:4px;font-size:10px;color:var(--cinnabar)">(你)</span>' : ''}
+      ${p.id === myId ? '<span style="margin-left:4px;font-size:10px;color:var(--red)">(你)</span>' : ''}
       <span class="status">${p.connected ? '在线' : '掉线'}</span>`;
     list.appendChild(row);
   });
@@ -361,11 +297,27 @@ function renderWaiting() {
 
 function renderGame() {
   $('roomNum2').textContent = state.roomId;
+  renderRoster();
   renderTurn();
   renderDice();
   renderBoard();
   renderLog();
   renderWinner();
+}
+
+// 玩家状态条
+function renderRoster() {
+  const box = $('roster');
+  box.innerHTML = '';
+  state.players.forEach((p, i) => {
+    const c = COLORS[p.color];
+    const fin = p.planes.filter(pos => pos === FINISH).length;
+    const chip = document.createElement('span');
+    chip.className = 'chip' + (i === state.current && state.phase === 'playing' ? ' cur' : '');
+    chip.innerHTML = `<span class="dot" style="background:${c.hex}"></span>` +
+      `${escapeHtml(p.name)}<span class="fin">🏁${fin}</span>`;
+    box.appendChild(chip);
+  });
 }
 
 function renderTurn() {
@@ -377,10 +329,23 @@ function renderTurn() {
   el.className = 'turn' + (isMe ? ' me' : '');
 }
 
+// 点数骰
+const PIP_MAP = { 1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8] };
 function renderDice() {
   const d = state.dice;
-  $('diceFace').textContent = d === null ? '·' : d;
-  // 掷骰按钮状态
+  const dice = $('dice');
+  dice.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const pip = document.createElement('span');
+    pip.className = 'pip' + (d !== null && PIP_MAP[d] && PIP_MAP[d].includes(i) ? '' : ' off');
+    dice.appendChild(pip);
+  }
+  if (d !== null && d !== lastDice) {
+    dice.classList.remove('roll');
+    void dice.offsetWidth;
+    dice.classList.add('roll');
+  }
+  lastDice = d;
   const cur = state.players[state.current];
   const isMeTurn = cur && cur.id === myId;
   const canRoll = state.phase === 'playing' && isMeTurn && state.turnStage === 'roll';
@@ -401,169 +366,136 @@ function renderLog() {
 function renderWinner() {
   if (state.phase === 'ended' && state.winner !== null) {
     const w = state.players[state.winner];
-    $('winnerName').textContent = w ? `${w.name} 获胜！` : '游戏结束';
+    $('winnerName').innerHTML = w ? `${escapeHtml(w.name)}<em> 获胜！</em>` : '游戏结束';
+    if ($('winnerBanner').classList.contains('hidden')) confetti();
     $('winnerBanner').classList.remove('hidden');
   } else {
     $('winnerBanner').classList.add('hidden');
   }
 }
 
+function confetti() {
+  const colors = ['#EE3A2B','#F4B400','#2D6CDF','#13A87A','#8A5CD7','#F5821F'];
+  for (let i = 0; i < 70; i++) {
+    const d = document.createElement('div');
+    d.className = 'cf';
+    d.style.left = Math.random() * 100 + 'vw';
+    d.style.background = colors[Math.floor(Math.random() * colors.length)];
+    d.style.animationDuration = (2.2 + Math.random() * 2.2) + 's';
+    d.style.animationDelay = (Math.random() * 0.6) + 's';
+    document.body.appendChild(d);
+    setTimeout(el => el.remove(), 5200, d);
+  }
+}
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
 // ============ 棋盘 ============
+const DOCKS = {
+  green:  { x: 0,   y: 0 },
+  yellow: { x: 512, y: 0 },
+  blue:   { x: 512, y: 512 },
+  red:    { x: 0,   y: 512 }
+};
+const RUNWAYS = {
+  green:  { x0: 320, y0: 192, dx: 0,   dy: 32 },
+  yellow: { x0: 448, y0: 320, dx: -32, dy: 0 },
+  blue:   { x0: 320, y0: 448, dx: 0,   dy: -32 },
+  red:    { x0: 192, y0: 320, dx: 32,  dy: 0 }
+};
+
 function buildBoardSVG() {
   const svg = $('board');
   svg.innerHTML = '';
   const NS = 'http://www.w3.org/2000/svg';
-  const G = 32; // 格子大小
-  const cells = [];
-  const edges = { green: 'top', yellow: 'right', blue: 'bottom', red: 'left' };
+  const G = 32;
+  const el = (tag, attrs, text) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    svg.appendChild(n);
+    return n;
+  };
+  const cellCoords = abs => {
+    if (abs <= 12) return { x: 128 + abs * G, y: 128 };
+    if (abs <= 25) return { x: 512, y: 128 + (abs - 13) * G };
+    if (abs <= 38) return { x: 512 - (abs - 26) * G, y: 512 };
+    return { x: 128, y: 512 - (abs - 39) * G };
+  };
+  const absColor = abs => abs <= 12 ? 'green' : abs <= 25 ? 'yellow' : abs <= 38 ? 'blue' : 'red';
 
-  // 计算主路格子坐标
-  function cellCoords(abs) {
-    // 上边 0-12, 右边 13-25, 下边 26-38, 左边 39-51
-    if (abs <= 12) return { x: 128 + abs * G, y: 128 };          // 上（左→右）
-    if (abs <= 25) return { x: 512, y: 128 + (abs - 13) * G };    // 右（上→下）
-    if (abs <= 38) return { x: 512 - (abs - 26) * G, y: 512 };    // 下（右→左）
-    return { x: 128, y: 512 - (abs - 39) * G };                   // 左（下→上）
-  }
-  function absColor(abs) {
-    if (abs <= 12) return 'green';
-    if (abs <= 25) return 'yellow';
-    if (abs <= 38) return 'blue';
-    return 'red';
-  }
+  // 中央四色风车（先画，被跑道与中心压住）
+  const pin = [
+    { pts: '192,192 320,192 192,320', c: 'green'  },
+    { pts: '320,192 448,192 448,320', c: 'yellow' },
+    { pts: '448,320 448,448 320,448', c: 'blue'   },
+    { pts: '192,320 320,448 192,448', c: 'red'    }
+  ];
+  pin.forEach(p => el('polygon', { points: p.pts, fill: COLORS[p.c].light, stroke: COLORS[p.c].hex, 'stroke-width': 2.5 }));
 
   // 主路格子
   for (let abs = 0; abs < 52; abs++) {
     const { x, y } = cellCoords(abs);
     const color = absColor(abs);
     const c = COLORS[color];
-    let cls = 'cell';
     let mark = null;
-    if (SPECIAL.jump[color] === abs) { cls += ' special'; mark = '↗'; }
-    else if (SPECIAL.bomb[color] === abs) { cls += ' special'; mark = '💣'; }
-    else if (SPECIAL.meteor[color] === abs) { cls += ' special'; mark = '⭐'; }
-    const rect = document.createElementNS(NS, 'rect');
-    rect.setAttribute('x', x); rect.setAttribute('y', y);
-    rect.setAttribute('width', G); rect.setAttribute('height', G);
-    rect.setAttribute('fill', c.light);
-    rect.setAttribute('class', cls);
-    rect.dataset.abs = abs;
-    svg.appendChild(rect);
-    if (mark) {
-      const t = document.createElementNS(NS, 'text');
-      t.setAttribute('x', x + G/2); t.setAttribute('y', y + G/2);
-      t.setAttribute('class', 'cell-text');
-      t.setAttribute('font-size', mark === '↗' ? 20 : 16);
-      t.textContent = mark;
-      svg.appendChild(t);
+    let isStart = START[color] === abs;
+    if (SPECIAL.jump[color] === abs) mark = '↗';
+    else if (SPECIAL.bomb[color] === abs) mark = '💣';
+    else if (SPECIAL.meteor[color] === abs) mark = '⭐';
+    el('rect', {
+      x, y, width: G, height: G,
+      fill: isStart ? c.hex : c.light,
+      class: 'cell', 'stroke-width': isStart ? 2 : 1.4
+    });
+    if (isStart) {
+      el('text', { x: x + G/2, y: y + G/2 + 1, class: 'cell-text', 'font-size': 16, fill: '#fff' }, '✈');
+    } else if (mark) {
+      el('text', { x: x + G/2, y: y + G/2 + 1, class: 'cell-text', 'font-size': mark === '↗' ? 19 : 15 }, mark);
     }
   }
 
-  // 终点跑道（每色 6 格，从主路内缘到中央）
-  const runways = {
-    green:  { x0: 320, y0: 192, dx: 0,   dy: G },   // 上边向下
-    yellow: { x0: 448, y0: 320, dx: -G,  dy: 0 },   // 右边向左
-    blue:   { x0: 320, y0: 448, dx: 0,   dy: -G },  // 下边向上
-    red:    { x0: 192, y0: 320, dx: G,   dy: 0 }    // 左边向右
-  };
+  // 终点跑道
   for (const color of ['green', 'yellow', 'blue', 'red']) {
-    const r = runways[color];
-    const c = COLORS[color];
+    const r = RUNWAYS[color], c = COLORS[color];
     for (let i = 0; i < 6; i++) {
-      const rect = document.createElementNS(NS, 'rect');
-      rect.setAttribute('x', r.x0 + r.dx * i);
-      rect.setAttribute('y', r.y0 + r.dy * i);
-      rect.setAttribute('width', G); rect.setAttribute('height', G);
-      rect.setAttribute('fill', c.light);
-      rect.setAttribute('class', 'runway');
-      svg.appendChild(rect);
-      // 跑道箭头
-      const t = document.createElementNS(NS, 'text');
-      t.setAttribute('x', r.x0 + r.dx * i + G/2);
-      t.setAttribute('y', r.y0 + r.dy * i + G/2);
-      t.setAttribute('class', 'cell-text');
-      t.setAttribute('font-size', 11);
-      t.textContent = i + 1;
-      t.setAttribute('fill', c.hex);
-      svg.appendChild(t);
+      el('rect', { x: r.x0 + r.dx * i, y: r.y0 + r.dy * i, width: G, height: G, fill: c.light, class: 'runway' });
+      el('text', { x: r.x0 + r.dx * i + G/2, y: r.y0 + r.dy * i + G/2 + 1, class: 'cell-text', 'font-size': 11, fill: c.hex, 'font-weight': 700 }, i + 1);
     }
   }
 
   // 停机坪（四角）
-  const docks = {
-    green:  { x: 0,  y: 0 },   // 左上
-    yellow: { x: 512, y: 0 },  // 右上
-    blue:   { x: 512, y: 512 },// 右下
-    red:    { x: 0,  y: 512 }  // 左下
-  };
   for (const color of ['green', 'yellow', 'blue', 'red']) {
-    const d = docks[color];
-    const c = COLORS[color];
-    const rect = document.createElementNS(NS, 'rect');
-    rect.setAttribute('x', d.x); rect.setAttribute('y', d.y);
-    rect.setAttribute('width', 128); rect.setAttribute('height', 128);
-    rect.setAttribute('fill', c.light);
-    rect.setAttribute('class', 'runway');
-    svg.appendChild(rect);
-    const t = document.createElementNS(NS, 'text');
-    t.setAttribute('x', d.x + 64); t.setAttribute('y', d.y + 40);
-    t.setAttribute('class', 'cell-text');
-    t.setAttribute('font-size', 13);
-    t.setAttribute('fill', c.hex);
-    t.textContent = `${c.name} 停机坪`;
-    svg.appendChild(t);
-    const t2 = document.createElementNS(NS, 'text');
-    t2.setAttribute('x', d.x + 64); t2.setAttribute('y', d.y + 64);
-    t2.setAttribute('class', 'cell-text');
-    t2.setAttribute('font-size', 11);
-    t2.setAttribute('fill', 'rgba(22,19,15,0.4)');
-    t2.textContent = '掷6起飞';
-    svg.appendChild(t2);
+    const d = DOCKS[color], c = COLORS[color];
+    el('rect', { x: d.x, y: d.y, width: 128, height: 128, fill: c.light, class: 'runway', 'stroke-width': 2.5 });
+    // 4 个虚线机位
+    for (let i = 0; i < 4; i++) {
+      el('circle', {
+        cx: d.x + 36 + (i % 2) * 56, cy: d.y + 88 + Math.floor(i / 2) * 28,
+        r: 13, fill: '#fff', stroke: c.hex, 'stroke-width': 1.5, 'stroke-dasharray': '3 3', opacity: .7
+      });
+    }
+    el('text', { x: d.x + 64, y: d.y + 32, class: 'cell-text', 'font-size': 15, fill: c.hex, 'font-weight': 900,
+      'font-family': "'Noto Sans SC',sans-serif" }, `${c.name} 停机坪`);
+    el('text', { x: d.x + 64, y: d.y + 50, class: 'cell-text', 'font-size': 10, fill: 'rgba(26,26,24,.45)' }, '掷 6 起飞');
   }
 
-  // 中央装饰
-  const ctext = document.createElementNS(NS, 'text');
-  ctext.setAttribute('x', 320); ctext.setAttribute('y', 300);
-  ctext.setAttribute('class', 'cell-text');
-  ctext.setAttribute('font-family', "'Ma Shan Zheng',serif");
-  ctext.setAttribute('font-size', 40);
-  ctext.textContent = '飞行棋';
-  svg.appendChild(ctext);
-  const csub = document.createElementNS(NS, 'text');
-  csub.setAttribute('x', 320); csub.setAttribute('y', 350);
-  csub.setAttribute('class', 'cell-text');
-  csub.setAttribute('font-size', 12);
-  csub.setAttribute('fill', 'rgba(22,19,15,0.4)');
-  csub.textContent = 'LUDO · 2-4人';
-  svg.appendChild(csub);
+  // 中央圆盘 + 刊字
+  el('circle', { cx: 320, cy: 320, r: 40, fill: '#fff', stroke: 'rgba(26,26,24,.5)', 'stroke-width': 2 });
+  el('text', { x: 320, y: 314, class: 'cell-text', 'font-family': "'Ma Shan Zheng',serif", 'font-size': 26, fill: '#EE3A2B' }, '飞行棋');
+  el('text', { x: 320, y: 338, class: 'cell-text', 'font-size': 8, fill: 'rgba(26,26,24,.45)', 'font-family': 'var(--mono)' }, 'LUDO');
 }
 
-// ============ 飞机渲染 ============
 function planePos(color, pos) {
-  // 返回 SVG 中心坐标
   if (pos === DOCK) {
-    const docks = {
-      green:  { x: 0,  y: 0 },
-      yellow: { x: 512, y: 0 },
-      blue:   { x: 512, y: 512 },
-      red:    { x: 0,  y: 512 }
-    };
-    const d = docks[color];
-    return { x: d.x + 32, y: d.y + 96 };
+    const d = DOCKS[color];
+    return { x: d.x + 36, y: d.y + 88 };
   }
   if (pos >= 53 && pos <= 58) {
-    // 终点跑道：跑道位置 1-6
-    const step = pos - 52; // 1-6
-    const runways = {
-      green:  { x0: 320, y0: 192, dx: 0,  dy: 32 },
-      yellow: { x0: 448, y0: 320, dx: -32, dy: 0 },
-      blue:   { x0: 320, y0: 448, dx: 0,  dy: -32 },
-      red:    { x0: 192, y0: 320, dx: 32, dy: 0 }
-    };
-    const r = runways[color];
-    return { x: r.x0 + r.dx * (step-1) + 16, y: r.y0 + r.dy * (step-1) + 16 };
+    const step = pos - 52;
+    const r = RUNWAYS[color];
+    return { x: r.x0 + r.dx * (step - 1) + 16, y: r.y0 + r.dy * (step - 1) + 16 };
   }
-  // 主路
   const G = 32;
   const abs = (START[color] + pos - 1) % 52;
   let x, y;
@@ -580,25 +512,18 @@ function renderBoard() {
   const NS = 'http://www.w3.org/2000/svg';
   const movableSet = new Set(state.movable || []);
 
-  state.players.forEach((p, idx) => {
+  state.players.forEach(p => {
     const c = COLORS[p.color];
-    // 停机坪内飞机
     p.planes.forEach((pos, planeIdx) => {
+      let x, y;
       if (pos === DOCK) {
-        // 4 架停在停机坪，错开排列
-        const docks = {
-          green:  { x: 0,  y: 0 },
-          yellow: { x: 512, y: 0 },
-          blue:   { x: 512, y: 512 },
-          red:    { x: 0,  y: 512 }
-        };
-        const d = docks[p.color];
-        const px = d.x + 24 + (planeIdx % 2) * 36;
-        const py = d.y + 88 + Math.floor(planeIdx / 2) * 24;
-        drawPlane(svg, NS, px, py, c.hex, planeIdx, false);
-        return;
+        const d = DOCKS[p.color];
+        x = d.x + 36 + (planeIdx % 2) * 56;
+        y = d.y + 88 + Math.floor(planeIdx / 2) * 28;
+      } else {
+        const pt = planePos(p.color, pos);
+        x = pt.x; y = pt.y;
       }
-      const { x, y } = planePos(p.color, pos);
       const isMe = p.id === myId;
       const movable = isMe && movableSet.has(planeIdx);
       drawPlane(svg, NS, x, y, c.hex, planeIdx, movable);
@@ -609,24 +534,40 @@ function renderBoard() {
 function drawPlane(svg, NS, x, y, color, idx, movable) {
   const g = document.createElementNS(NS, 'g');
   g.setAttribute('class', 'plane' + (movable ? ' movable' : ''));
-  g.dataset.plane = idx;
   if (movable) {
-    g.style.cursor = 'pointer';
     g.addEventListener('click', () => send({ type: 'move', plane: idx }));
+    // 选中光环
+    const halo = document.createElementNS(NS, 'circle');
+    halo.setAttribute('cx', x); halo.setAttribute('cy', y);
+    halo.setAttribute('r', 15);
+    halo.setAttribute('fill', 'none');
+    halo.setAttribute('stroke', '#EE3A2B');
+    halo.setAttribute('stroke-width', 2);
+    halo.setAttribute('stroke-dasharray', '4 3');
+    g.appendChild(halo);
   }
+  // 硬阴影
+  const shadow = document.createElementNS(NS, 'circle');
+  shadow.setAttribute('cx', x + 2); shadow.setAttribute('cy', y + 3);
+  shadow.setAttribute('r', 11);
+  shadow.setAttribute('fill', 'rgba(26,26,24,.25)');
+  g.appendChild(shadow);
+  // 机身
   const circle = document.createElementNS(NS, 'circle');
   circle.setAttribute('cx', x); circle.setAttribute('cy', y);
-  circle.setAttribute('r', movable ? 11 : 9);
+  circle.setAttribute('r', 11);
   circle.setAttribute('fill', color);
-  circle.setAttribute('class', 'plane-circle');
+  circle.setAttribute('stroke', '#fff');
+  circle.setAttribute('stroke-width', 2);
   g.appendChild(circle);
-  const label = document.createElementNS(NS, 'text');
-  label.setAttribute('x', x); label.setAttribute('y', y + 3);
-  label.setAttribute('class', 'cell-text');
-  label.setAttribute('font-size', 9);
-  label.setAttribute('fill', '#fff');
-  label.textContent = idx + 1;
-  g.appendChild(label);
+  // ✈ 图标
+  const glyph = document.createElementNS(NS, 'text');
+  glyph.setAttribute('x', x); glyph.setAttribute('y', y + 1);
+  glyph.setAttribute('class', 'cell-text');
+  glyph.setAttribute('font-size', 11);
+  glyph.setAttribute('fill', '#fff');
+  glyph.textContent = '✈';
+  g.appendChild(glyph);
   svg.appendChild(g);
 }
 
@@ -639,7 +580,7 @@ function updateHint() {
   if (state.phase === 'ended') { bar.textContent = '游戏结束'; return; }
   if (!isMe) { bar.textContent = `等待 ${cur.name} 操作…`; return; }
   if (state.turnStage === 'roll') { bar.textContent = '点击「掷骰子」'; return; }
-  if (state.movable && state.movable.length > 0) { bar.textContent = '点击一架高亮的飞机移动'; return; }
+  if (state.movable && state.movable.length > 0) { bar.textContent = '点击一架跳动的飞机移动'; return; }
   bar.textContent = '';
 }
 
@@ -651,14 +592,26 @@ function toast(text) {
   toast._t = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-// 名字预填
+// ============ 初始化 ============
 (function init() {
   const saved = localStorage.getItem('booe_ludo_name');
   if (saved) $('inpName').value = saved;
-  // 响应式刷新
   window.addEventListener('resize', () => { if (state && state.phase !== 'waiting') renderBoard(); });
-  // 定时更新提示
   setInterval(updateHint, 500);
+  // ?demo=1 模拟一盘中盘局面（不连服务器，供截图/演示）
+  if (location.search.indexOf('demo=1') > -1) {
+    state = { roomId: '4321', phase: 'playing', current: 0, dice: 5, turnStage: 'move',
+      players: [
+        { id: 'p1', name: '止一', color: 'red',    connected: true, planes: [5, 12, 0, 0] },
+        { id: 'p2', name: '阿星', color: 'yellow', connected: true, planes: [19, 0, 0, 0] },
+        { id: 'p3', name: '老周', color: 'blue',   connected: true, planes: [33, 33, 7, 0] },
+        { id: 'p4', name: '小美', color: 'green',  connected: true, planes: [45, 52, 58, 59] }
+      ],
+      movable: [0, 1],
+      log: ['演示：小美的飞机率先到达终点', '演示：轮到 止一 掷出 5 点', '演示：阿星踩中炸弹回巢'] };
+    myId = 'p1';
+    render();
+  }
 })();
 </script>
 </body>

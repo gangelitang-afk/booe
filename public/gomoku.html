@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>五子棋 · 一起玩</title>
+<meta name="theme-color" content="#EE3A2B">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts/mashanzheng.css">
+<style>
+  :root{
+    --paper:#FAF4E6; --ink:#1A1A18; --red:#EE3A2B;
+    --c2:#2D6CDF; --c3:#13A87A; --c4:#F4B400; --c5:#8A5CD7;
+    --gray:#6A6A60; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{background:var(--paper);color:var(--ink);font-family:'Noto Sans SC',sans-serif;
+    min-height:100vh;padding:14px 14px 60px;position:relative;}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(rgba(26,26,24,.04) 1px,transparent 1px);background-size:3px 3px;}
+  .back{position:fixed;top:12px;left:12px;z-index:10;color:var(--ink);text-decoration:none;
+    font-size:12px;font-weight:900;letter-spacing:.2em;padding:7px 13px;
+    border:2px solid var(--ink);background:var(--paper);}
+  .back:hover{background:var(--ink);color:var(--paper);}
+
+  .head{text-align:center;margin:44px 0 4px;position:relative;}
+  .head .badge{display:inline-block;background:var(--c3);color:#fff;font-weight:900;font-size:10px;
+    letter-spacing:.28em;padding:5px 12px;transform:rotate(-3deg);}
+  .head h1{font-family:'Ma Shan Zheng',serif;font-weight:400;font-size:52px;line-height:1.1;
+    color:var(--ink);margin:10px 0 2px;}
+  .head h1 em{font-style:normal;color:var(--c3);}
+  .head .sub{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--gray);}
+  .head .star{position:absolute;font-size:20px;}
+  .head .s1{top:6px;left:16%;color:var(--red);transform:rotate(-14deg);}
+  .head .s2{top:30px;right:15%;color:var(--c4);font-size:16px;}
+  .head .s3{bottom:2px;left:24%;color:var(--c5);font-size:14px;}
+
+  .modes{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:18px 0 12px;}
+  .mbtn{border:2px solid var(--ink);background:#fff;color:var(--ink);font-family:inherit;font-weight:900;
+    font-size:12px;letter-spacing:.1em;padding:9px 14px;cursor:pointer;transition:all .15s;}
+  .mbtn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink);}
+  .mbtn.on{background:var(--c3);border-color:var(--c3);color:#fff;}
+  .mbtn.on:hover{box-shadow:3px 3px 0 var(--ink);}
+
+  .board-wrap{max-width:600px;margin:0 auto;}
+  .bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;flex-wrap:wrap;}
+  .turn-chip{display:flex;align-items:center;gap:8px;border:2px solid var(--ink);background:#fff;
+    padding:8px 14px;font-weight:900;font-size:13px;}
+  .turn-chip .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--ink);flex-shrink:0;}
+  .turn-chip.me{background:var(--c3);border-color:var(--c3);color:#fff;}
+  .turn-chip.me .dot{border-color:#fff;}
+  .score{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--gray);}
+  .score b{color:var(--ink);}
+
+  #board{width:100%;display:block;background:#FBF6EA;border:3px solid var(--ink);
+    box-shadow:6px 6px 0 rgba(26,26,24,.18);cursor:pointer;}
+  .acts{display:flex;justify-content:center;gap:10px;margin-top:14px;}
+  .btn{border:2px solid var(--ink);background:#fff;color:var(--ink);font-family:inherit;font-weight:900;
+    font-size:13px;letter-spacing:.14em;padding:11px 24px;cursor:pointer;transition:all .15s;}
+  .btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink);}
+  .btn.primary{background:var(--red);border-color:var(--red);color:#fff;}
+  .btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+  .hint{text-align:center;margin-top:10px;font-size:12px;color:var(--gray);letter-spacing:.06em;min-height:18px;}
+
+  /* 胜利横幅 */
+  .win{position:fixed;inset:0;z-index:50;background:rgba(26,26,24,.78);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--paper);}
+  .win .wt{font-family:'Ma Shan Zheng',serif;font-size:clamp(44px,11vw,84px);line-height:1.1;}
+  .win .wt em{font-style:normal;color:var(--c4);}
+  .win .ws{font-size:13px;letter-spacing:.3em;color:rgba(250,244,230,.75);margin:14px 0 28px;}
+  .win .btn{color:var(--paper);border-color:var(--paper);background:transparent;}
+  .win .btn:hover{background:var(--paper);color:var(--ink);box-shadow:none;}
+  .win .btn.primary{background:var(--red);border-color:var(--red);}
+
+  /* 彩带 */
+  .cf{position:fixed;top:-16px;width:9px;height:14px;z-index:60;pointer-events:none;
+    animation:cfFall linear forwards;}
+  @keyframes cfFall{
+    0%{transform:translateY(0) rotate(0);}
+    100%{transform:translateY(105vh) rotate(720deg);}
+  }
+  .hidden{display:none !important;}
+  @media (max-width:640px){
+    .head h1{font-size:40px;}
+    .back{font-size:11px;padding:6px 10px;}
+  }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html#play">← 回基地</a>
+
+<div class="head">
+  <span class="star s1">✦</span><span class="star s2">✶</span><span class="star s3">❉</span>
+  <div class="badge">黑 白 手 谈</div>
+  <h1>五<em>子</em>棋</h1>
+  <div class="sub">GOMOKU · 15 路 · 先成五子者胜</div>
+</div>
+
+<div class="modes">
+  <button class="mbtn on" id="mPvp"  onclick="setMode('pvp')">双人同屏</button>
+  <button class="mbtn"    id="mPveB" onclick="setMode('pveb')">人机 · 我先手</button>
+  <button class="mbtn"    id="mPveW" onclick="setMode('pvew')">人机 · AI 先手</button>
+</div>
+
+<div class="board-wrap">
+  <div class="bar">
+    <div class="turn-chip" id="turnChip"><span class="dot" id="turnDot"></span><span id="turnText">黑方落子</span></div>
+    <div class="score">局分　黑 <b id="sB">0</b> : <b id="sW">0</b> 白 · 第 <b id="moveNo">0</b> 手</div>
+  </div>
+  <canvas id="board" width="660" height="660"></canvas>
+  <div class="acts">
+    <button class="btn" id="btnUndo" onclick="undo()">悔棋</button>
+    <button class="btn primary" onclick="restart()">重新开局</button>
+  </div>
+  <div class="hint" id="hint">点击棋盘交叉点落子</div>
+</div>
+
+<div class="win hidden" id="winBanner">
+  <div class="wt" id="winTitle"></div>
+  <div class="ws" id="winSub">五 子 连 珠 · 本 局 获 胜</div>
+  <div style="display:flex;gap:12px;">
+    <button class="btn primary" onclick="restart()">再来一局</button>
+  </div>
+</div>
+
+<script src="gomoku-core.js"></script>
+<script>
+var C = window.GomokuCore;
+var PAD = 36, CELL = 42;                 // 660 = 36*2 + 42*14
+var cv = document.getElementById('board');
+var ctx = cv.getContext('2d');
+
+var board, turn, mode, over, hist, winInfo, thinking;
+var score = { b: 0, w: 0 };
+var lastMover = null; // 悔棋后轮到谁
+
+// ============ 绘制 ============
+function px(i){ return PAD + i * CELL; }
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  // 底色
+  ctx.fillStyle = '#FBF6EA';
+  ctx.fillRect(0,0,cv.width,cv.height);
+  // 网格
+  ctx.strokeStyle = 'rgba(26,26,24,.7)';
+  ctx.lineWidth = 1;
+  for (var i=0;i<C.SIZE;i++){
+    ctx.beginPath(); ctx.moveTo(px(0),px(i)+0.5); ctx.lineTo(px(C.SIZE-1),px(i)+0.5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px(i)+0.5,px(0)); ctx.lineTo(px(i)+0.5,px(C.SIZE-1)); ctx.stroke();
+  }
+  // 外框加粗
+  ctx.lineWidth = 2.5;
+  ctx.strokeRect(px(0),px(0),CELL*14,CELL*14);
+  // 星位
+  ctx.fillStyle = 'rgba(26,26,24,.8)';
+  [[3,3],[11,3],[7,7],[3,11],[11,11]].forEach(function(p){
+    ctx.beginPath(); ctx.arc(px(p[0]),px(p[1]),4,0,7); ctx.fill();
+  });
+  // 棋子
+  for (var y=0;y<C.SIZE;y++){
+    for (var x=0;x<C.SIZE;x++){
+      if (board[y][x] !== C.EMPTY) drawStone(x,y,board[y][x],false);
+    }
+  }
+  // 最后一手标记
+  if (hist.length && !over){
+    var lm = hist[hist.length-1];
+    ctx.fillStyle = '#EE3A2B';
+    ctx.beginPath(); ctx.arc(px(lm.x),px(lm.y),5.5,0,7); ctx.fill();
+  }
+  // 胜利连线
+  if (winInfo){
+    ctx.strokeStyle = 'rgba(238,58,43,.85)';
+    ctx.lineWidth = 5; ctx.lineCap = 'round';
+    var a = winInfo[0], b = winInfo[winInfo.length-1];
+    ctx.beginPath(); ctx.moveTo(px(a[0]),px(a[1])); ctx.lineTo(px(b[0]),px(b[1])); ctx.stroke();
+    winInfo.forEach(function(p){
+      ctx.strokeStyle = '#EE3A2B'; ctx.lineWidth = 3.5;
+      ctx.beginPath(); ctx.arc(px(p[0]),px(p[1]),21,0,7); ctx.stroke();
+    });
+  }
+}
+
+function drawStone(x,y,color,isLast){
+  var cx = px(x), cy = px(y), r = 19;
+  // 硬阴影
+  ctx.fillStyle = 'rgba(26,26,24,.22)';
+  ctx.beginPath(); ctx.arc(cx+3,cy+3.5,r,0,7); ctx.fill();
+  if (color === C.BLACK){
+    var g = ctx.createRadialGradient(cx-6,cy-7,2,cx,cy,r);
+    g.addColorStop(0,'#5a5a54'); g.addColorStop(1,'#141412');
+    ctx.fillStyle = g;
+  } else {
+    var g2 = ctx.createRadialGradient(cx-6,cy-7,2,cx,cy,r);
+    g2.addColorStop(0,'#ffffff'); g2.addColorStop(1,'#dcd5c2');
+    ctx.fillStyle = g2;
+  }
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,7); ctx.fill();
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = color === C.BLACK ? '#0a0a09' : 'rgba(26,26,24,.75)';
+  ctx.stroke();
+}
+
+// ============ 状态与流程 ============
+function resetState(){
+  board = C.createBoard(); turn = C.BLACK; over = false; hist = []; winInfo = null; thinking = false;
+}
+
+function restart(){
+  resetState();
+  document.getElementById('winBanner').classList.add('hidden');
+  document.getElementById('btnUndo').disabled = false;
+  if (mode === 'pvew'){ // AI 执黑先行
+    thinking = true; updateUI();
+    setTimeout(function(){ aiTurn(); }, 300);
+  } else updateUI();
+  draw();
+}
+
+function setMode(m){
+  mode = m;
+  document.getElementById('mPvp').classList.toggle('on', m==='pvp');
+  document.getElementById('mPveB').classList.toggle('on', m==='pveb');
+  document.getElementById('mPveW').classList.toggle('on', m==='pvew');
+  restart();
+}
+
+function place(x,y){
+  board[y][x] = turn;
+  hist.push({x:x,y:y,color:turn});
+  var line = C.winLine(board,x,y);
+  if (line){
+    over = true; winInfo = line;
+    if (turn === C.BLACK) score.b++; else score.w++;
+    showWin(turn);
+  } else if (C.isFull(board)){
+    over = true;
+    document.getElementById('hint').textContent = '棋盘满了，平局！';
+  } else {
+    turn = turn === C.BLACK ? C.WHITE : C.BLACK;
+  }
+  document.getElementById('btnUndo').disabled = false;
+}
+
+function cvClick(ev){
+  if (over || thinking) return;
+  if (mode === 'pveb' && turn === C.WHITE) return; // 等 AI
+  var r = cv.getBoundingClientRect();
+  var sx = cv.width / r.width;
+  var x = Math.round(((ev.clientX - r.left) * sx - PAD) / CELL);
+  var y = Math.round(((ev.clientY - r.top) * sx - PAD) / CELL);
+  if (x < 0 || x >= C.SIZE || y < 0 || y >= C.SIZE) return;
+  if (board[y][x] !== C.EMPTY){ document.getElementById('hint').textContent = '这里已经有子了'; return; }
+  document.getElementById('hint').textContent = mode==='pvp' ? '点击棋盘交叉点落子' : (turn===C.BLACK?'你落子后 AI 思考中…':'');
+  place(Math.round(x),Math.round(y));
+  draw(); updateUI();
+  if (!over && mode !== 'pvp' && turn !== humanColor()){
+    thinking = true; updateUI();
+    setTimeout(function(){ aiTurn(); }, 280);
+  }
+}
+
+function humanColor(){
+  if (mode === 'pveb') return C.BLACK;  // 人执黑
+  if (mode === 'pvew') return C.WHITE;  // 人执白
+  return null;                           // 双人无人机
+}
+
+function aiTurn(){
+  var ai = turn;
+  var opp = ai === C.BLACK ? C.WHITE : C.BLACK;
+  var m = C.aiMove(board, ai, opp);
+  thinking = false;
+  if (m) place(m.x, m.y);
+  draw(); updateUI();
+}
+
+function undo(){
+  if (thinking || !hist.length) return;
+  document.getElementById('winBanner').classList.add('hidden');
+  var steps = 1;
+  if (mode !== 'pvp'){
+    // 人机：撤到轮到自己（若最后一手是 AI 则撤 2）
+    if (hist[hist.length-1].color !== humanColor() && hist.length >= 2) steps = 2;
+  }
+  while (steps-- && hist.length){
+    var mv = hist.pop();
+    board[mv.y][mv.x] = C.EMPTY;
+  }
+  over = false; winInfo = null; thinking = false;
+  turn = hist.length ? (hist[hist.length-1].color === C.BLACK ? C.WHITE : C.BLACK) : C.BLACK;
+  // 双人模式：undo 后轮到刚被撤掉那手的颜色
+  if (mode === 'pvp' && hist.length) turn = hist[hist.length-1].color === C.BLACK ? C.WHITE : C.BLACK;
+  document.getElementById('btnUndo').disabled = !hist.length;
+  draw(); updateUI();
+}
+
+function showWin(color){
+  var t = document.getElementById('winTitle');
+  var name = color === C.BLACK ? '黑方' : '白方';
+  var isAI = (mode === 'pveb' && color === C.WHITE) || (mode === 'pvew' && color === C.BLACK);
+  if (isAI){ t.innerHTML = 'AI 五子<em>连珠</em>'; document.getElementById('winSub').textContent = '再 来 必 翻 盘'; }
+  else if (mode === 'pvp'){ t.innerHTML = name + ' 五子<em>连珠</em>'; document.getElementById('winSub').textContent = '五 子 连 珠 · 本 局 获 胜'; }
+  else { t.innerHTML = '你五子<em>连珠</em>'; document.getElementById('winSub').textContent = '赢 了 AI · 香'; }
+  document.getElementById('winBanner').classList.remove('hidden');
+  confetti();
+}
+
+function updateUI(){
+  document.getElementById('sB').textContent = score.b;
+  document.getElementById('sW').textContent = score.w;
+  document.getElementById('moveNo').textContent = hist.length;
+  var chip = document.getElementById('turnChip'), dot = document.getElementById('turnDot'),
+      txt = document.getElementById('turnText');
+  var hc = humanColor();
+  var myTurn = over ? false : (mode === 'pvp' ? true : turn === hc);
+  chip.classList.toggle('me', myTurn && !over);
+  dot.style.background = turn === C.BLACK ? '#141412' : '#f5efdd';
+  if (over){
+    txt.textContent = winInfo ? ((turn === C.BLACK ? '黑方胜' : '白方胜')) : '平局';
+  } else if (thinking){
+    txt.textContent = 'AI 思考中…';
+  } else if (mode === 'pvp'){
+    txt.textContent = turn === C.BLACK ? '黑方落子' : '白方落子';
+  } else {
+    txt.textContent = turn === hc ? (turn === C.BLACK ? '你执黑 · 请落子' : '你执白 · 请落子') : '等待 AI…';
+  }
+}
+
+function confetti(){
+  var colors = ['#EE3A2B','#F4B400','#2D6CDF','#13A87A','#8A5CD7','#F5821F'];
+  for (var i=0;i<70;i++){
+    var d = document.createElement('div');
+    d.className = 'cf';
+    d.style.left = Math.random()*100 + 'vw';
+    d.style.background = colors[Math.floor(Math.random()*colors.length)];
+    d.style.animationDuration = (2.2 + Math.random()*2.2) + 's';
+    d.style.animationDelay = (Math.random()*0.6) + 's';
+    d.style.transform = 'rotate(' + Math.random()*360 + 'deg)';
+    document.body.appendChild(d);
+    setTimeout(function(el){ return function(){ el.remove(); }; }(d), 5200);
+  }
+}
+
+// ============ 初始化 ============
+cv.addEventListener('click', cvClick);
+resetState();
+mode = 'pvp';
+document.getElementById('btnUndo').disabled = true;
+
+// ?demo=1 摆一盘中盘局面（供截图/演示）
+if (location.search.indexOf('demo=1') > -1){
+  var demo = [[7,7],[7,8],[8,8],[6,8],[6,7],[8,7],[8,9],[5,7]];
+  demo.forEach(function(p){ place(p[0],p[1]); draw(); });
+  turn = C.BLACK;
+}
+
+draw(); updateUI();
+</script>
+</body>
+</html>

@@ -2,224 +2,360 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>不仁 · 止一的数字基地</title>
-<meta name="description" content="ONE 的数字基地 —— 不仁。一份持续增补中、不设栏目的私人刊物。">
-<meta property="og:title" content="不仁 · ONE 的数字基地">
-<meta property="og:description" content="供应链老手 / AI学习者 / 网瘾少年 / 兼职冥想家 / 嘴炮爱好者。这是止一的数字基地。">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://booe.xyz">
-<meta property="og:image" content="https://booe.xyz/og-image.png">
-<meta name="theme-color" content="#FCFAF3">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>不仁 / 求是 · 止一数字基地</title>
+<meta name="description" content="止一的数字基地：一个人白天营建、夜里折腾的单页刊物。认识我、实验室、一起玩、来信、建造日志，全在这一页里。">
+<meta name="theme-color" content="#EE3A2B">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@400;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="fonts/mashanzheng.css">
 <style>
   :root{
-    --paper:#FCFAF3; --ink:#1A1A18; --red:#C0272D; --red-d:#9E2A1F;
+    --paper:#FAF4E6; --ink:#1A1A18; --red:#EE3A2B;
     --line:rgba(26,26,24,.16); --gray:#6A6A60; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --c1:#F5821F; --c2:#2D6CDF; --c3:#13A87A; --c4:#F4B400; --c5:#8A5CD7; --c6:#C8472E;
+    --bar:54px;
   }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{background:var(--paper);color:var(--ink);font-family:'Noto Serif SC',serif;}
-  body{min-height:100vh;position:relative;overflow-x:hidden;}
-  .grain{position:fixed;inset:0;pointer-events:none;z-index:0;
-    background-image:radial-gradient(rgba(26,26,24,.035) 1px,transparent 1px);background-size:3px 3px;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 40px;position:relative;z-index:1;}
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--paper);color:var(--ink);font-family:'Noto Serif SC',serif;line-height:1.9;
+    overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(rgba(26,26,24,.04) 1px,transparent 1px);background-size:3px 3px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px;position:relative;z-index:1;}
 
-  /* ===== 刊头 ===== */
-  .topbar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;
-    letter-spacing:.28em;color:var(--gray);padding:26px 0 0;}
-  .topbar .r{color:var(--red);font-weight:700;}
-  .mast{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 0 0;}
-  .logo{display:flex;align-items:flex-end;gap:16px;}
-  .logo b{font-family:'Ma Shan Zheng',serif;font-weight:400;font-size:96px;line-height:.86;color:var(--red);letter-spacing:.04em;}
-  .logo i{font-style:normal;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:13px;letter-spacing:.42em;color:var(--ink);padding-bottom:10px;}
-  .issue{text-align:right;font-size:12px;letter-spacing:.14em;color:var(--gray);line-height:2;}
-  .issue b{display:block;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:14px;color:var(--ink);letter-spacing:.1em;}
-  .issue .r{color:var(--red);font-weight:700;}
-  .wx{margin-top:18px;}
-  .wx .thick{height:5px;background:var(--red);}
-  .wx .thin{height:1px;background:var(--ink);margin-top:3px;}
+  /* 顶部吸顶导航 */
+  .top{position:sticky;top:0;z-index:40;background:rgba(250,244,230,.92);backdrop-filter:blur(6px);
+    border-bottom:2px solid var(--ink);display:flex;align-items:center;gap:14px;padding:10px 18px;}
+  .top .brand{display:flex;align-items:baseline;gap:8px;}
+  .top .brand b{font-family:'Ma Shan Zheng',serif;font-size:30px;line-height:1;color:var(--red);}
+  .top .brand i{font-style:normal;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:9px;letter-spacing:.3em;color:var(--gray);}
+  .top nav{margin-left:auto;display:flex;gap:14px;}
+  .top nav a{font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:12px;letter-spacing:.1em;
+    color:var(--ink);text-decoration:none;padding:4px 2px;border-bottom:2px solid transparent;}
+  .top nav a:hover{color:var(--red);border-color:var(--red);}
 
-  /* ===== 导航 ===== */
-  .nav{display:flex;flex-wrap:wrap;gap:30px;padding:20px 0 6px;}
-  .nav a{font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:14px;letter-spacing:.18em;
-    color:var(--ink);text-decoration:none;display:flex;gap:8px;align-items:baseline;
-    padding-bottom:4px;border-bottom:2px solid transparent;}
-  .nav a i{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--red);font-weight:700;}
-  .nav a:hover{color:var(--red);border-color:var(--red);}
+  /* 封面 */
+  .hero{position:relative;padding:54px 22px 46px;text-align:center;overflow:hidden;}
+  .hero .badge{display:inline-block;background:var(--ink);color:var(--paper);font-family:'Noto Sans SC',sans-serif;
+    font-weight:900;font-size:11px;letter-spacing:.3em;padding:6px 14px;transform:rotate(-3deg);}
+  .hero h1{font-family:'Ma Shan Zheng',serif;font-size:clamp(96px,22vw,200px);line-height:.82;color:var(--red);
+    margin:18px 0 6px;letter-spacing:.02em;}
+  .hero .cn-m{display:none;}
+  .hero .wx{max-width:280px;margin:14px auto 0;}
+  .hero .wx .t{height:6px;background:var(--red);}
+  .hero .wx .n{height:1px;background:var(--ink);margin-top:3px;}
+  .hero .iss{margin-top:14px;font-family:'Noto Sans SC',sans-serif;font-size:12px;letter-spacing:.24em;color:var(--gray);}
+  .hero .tag{margin-top:10px;font-size:13px;letter-spacing:.3em;color:var(--ink);}
+  .star{position:absolute;color:var(--c4);font-size:26px;}
+  .star.s1{top:60px;left:8%;color:var(--c1);transform:rotate(-12deg);}
+  .star.s2{top:120px;right:10%;color:var(--c2);font-size:20px;}
+  .star.s3{bottom:40px;left:14%;color:var(--c3);font-size:22px;}
+  .star.s4{bottom:70px;right:12%;color:var(--c5);font-size:24px;}
 
-  /* ===== 三栏 ===== */
-  .cols{display:grid;grid-template-columns:336px 1fr 356px;gap:0;margin:30px 0 10px;}
-  .col{padding:0 34px;}
-  .col+.col{border-left:1px solid var(--line);}
-  .col:first-child{padding-left:0;}
-  .col:last-child{padding-right:0;}
-  .colhead{display:inline-block;background:var(--red);color:#fff;font-family:'Noto Sans SC',sans-serif;
-    font-weight:900;font-size:12px;letter-spacing:.26em;padding:6px 13px;margin-bottom:18px;}
-  .colhead.dark{background:var(--ink);}
+  /* 通用区块 */
+  .sec{margin:14px 0;scroll-margin-top:64px;}
+  .sec-head{display:flex;align-items:center;gap:12px;padding:14px 18px;color:#fff;}
+  .sec-head .no{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.1em;opacity:.9;}
+  .sec-head .t{font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:18px;letter-spacing:.18em;}
+  .sec-head .ln{flex:1;height:2px;background:rgba(255,255,255,.5);}
+  .sec-body{padding:22px 18px 26px;}
+  .c1 .sec-head{background:var(--c1);} .c1{--c:var(--c1);}
+  .c2 .sec-head{background:var(--c2);} .c2{--c:var(--c2);}
+  .c3 .sec-head{background:var(--c3);} .c3{--c:var(--c3);}
+  .c4 .sec-head{background:var(--c4);} .c4{--c:var(--c4);}
+  .c5 .sec-head{background:var(--c5);} .c5{--c:var(--c5);}
+  .c6 .sec-head{background:var(--c6);} .c6{--c:var(--c6);}
 
-  .toc{list-style:none;}
-  .toc li{display:flex;align-items:baseline;gap:9px;padding:14px 0;border-bottom:1px dotted rgba(26,26,24,.24);}
-  .toc li a{color:var(--ink);text-decoration:none;font-size:16px;font-weight:600;letter-spacing:.05em;}
-  .toc li:hover a{color:var(--red);}
-  .toc .no{font-family:var(--mono);font-size:11px;color:var(--red);font-weight:700;}
-  .toc .sq{width:8px;height:8px;background:var(--red);flex-shrink:0;transform:translateY(-2px);}
-  .toc .fill{flex:1;border-bottom:1px dotted rgba(26,26,24,.3);transform:translateY(-5px);}
-  .toc .pg{font-family:var(--mono);font-size:11px;color:#9A9A90;}
-  .toc-note{margin-top:20px;font-size:12.5px;line-height:2;color:var(--gray);letter-spacing:.04em;}
+  /* 卷首语 */
+  .lead-big{font-family:'Ma Shan Zheng',serif;font-size:clamp(38px,9vw,56px);line-height:1.18;margin-bottom:14px;color:var(--ink);}
+  .lead-big em{font-style:normal;color:var(--c1);}
+  .body{font-size:15.5px;line-height:2;color:#33322C;text-align:justify;}
+  .pull{margin-top:16px;border-left:5px solid var(--c1);padding:10px 16px;background:rgba(245,130,31,.08);
+    font-size:14px;line-height:1.9;}
+  .pull b{color:var(--c1);}
 
-  .title{font-size:50px;font-weight:900;line-height:1.32;letter-spacing:.02em;}
-  .title em{font-style:normal;color:var(--red);}
-  .sub{margin-top:16px;font-family:'Noto Sans SC',sans-serif;font-size:12.5px;letter-spacing:.2em;color:var(--gray);}
-  .sub .r{color:var(--red);font-weight:700;}
-  .body{margin-top:24px;font-size:15.5px;line-height:2.1;color:#33322C;text-indent:2em;}
-  .body p+p{margin-top:4px;}
-  .pull{margin-top:26px;padding:16px 20px;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
-    font-size:14px;line-height:1.9;color:#3A3A34;letter-spacing:.03em;}
-  .pull b{color:var(--red);}
-  .rule-red{margin-top:26px;width:130px;height:3px;background:var(--red);}
-  .sign{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:#8A8A80;}
+  /* 要目 */
+  .toc{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .toc a{display:flex;align-items:center;gap:12px;padding:16px;border:2px solid var(--ink);text-decoration:none;
+    color:var(--ink);background:#fff;transition:transform .15s,box-shadow .15s;}
+  .toc a:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);}
+  .toc a .no{font-family:'Ma Shan Zheng',serif;font-size:34px;color:var(--red);width:44px;}
+  .toc a .tx{font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:16px;}
 
-  .portrait{border:2px solid var(--ink);padding:18px;display:flex;gap:16px;align-items:flex-start;}
-  .portrait .vname{writing-mode:vertical-rl;font-family:'Ma Shan Zheng',serif;font-size:58px;letter-spacing:.12em;color:var(--ink);}
-  .portrait .vnote{writing-mode:vertical-rl;font-size:12px;color:var(--gray);letter-spacing:.22em;line-height:2.2;}
-  .seal2{margin-left:auto;width:76px;height:76px;background:var(--red);display:flex;align-items:center;justify-content:center;align-self:flex-end;}
-  .seal2 span{font-family:'Ma Shan Zheng',serif;font-size:36px;color:#fff;}
-  .facts{margin-top:20px;border-top:2px solid var(--ink);}
-  .facts div{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(26,26,24,.14);font-size:13px;}
-  .facts .k{color:var(--gray);letter-spacing:.12em;}
-  .facts .v{font-family:var(--mono);font-weight:700;}
-  .facts .v.r{color:var(--red);}
-  .keys{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px;}
-  .keys span{display:inline-flex;align-items:center;gap:7px;font-size:13px;padding:6px 11px;border:1px solid rgba(26,26,24,.32);letter-spacing:.08em;}
-  .keys span::before{content:'';width:7px;height:7px;background:var(--red);}
+  /* 密码门（认识我） */
+  .gate{border:3px solid var(--c2);background:#fff;padding:26px 22px;text-align:center;position:relative;}
+  .gate .lock{font-size:34px;}
+  .gate h3{font-family:'Ma Shan Zheng',serif;font-size:40px;color:var(--c2);margin:6px 0;}
+  .gate p{font-family:'Noto Sans SC',sans-serif;font-size:13px;letter-spacing:.2em;color:var(--gray);}
+  .field{display:flex;margin:18px auto 0;max-width:340px;border:3px solid var(--ink);}
+  .field.err{animation:shake .4s;}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+  .field input{flex:1;border:0;outline:0;background:transparent;padding:14px 16px;font-size:17px;
+    font-family:'Noto Sans SC',sans-serif;font-weight:700;letter-spacing:.14em;text-transform:uppercase;}
+  .field button{border:0;background:var(--c2);color:#fff;padding:0 22px;font-family:'Noto Sans SC',sans-serif;
+    font-weight:900;letter-spacing:.16em;cursor:pointer;}
+  .hint{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--gray);}
+  .hint b{color:var(--c2);}
+  .reveal{display:none;text-align:left;}
+  .reveal.show{display:block;}
+  .cols{column-count:2;column-gap:30px;column-rule:1px solid var(--line);font-size:14.5px;line-height:2;color:#33322C;text-align:justify;}
+  .cols p{margin-bottom:6px;text-indent:2em;}
+  .cols p:first-child::first-letter{float:left;font-family:'Ma Shan Zheng',serif;font-size:56px;line-height:.9;color:var(--c2);margin:5px 9px 0 0;}
+  .tl2{margin-top:18px;}
+  .tl2 .it{display:grid;grid-template-columns:110px 1fr;gap:16px;padding:12px 0;border-bottom:1px dashed var(--line);}
+  .tl2 .y{font-family:var(--mono);font-size:12px;color:var(--c2);font-weight:700;}
+  .tl2 .r{font-size:14.5px;font-weight:600;}
+  .sticker{display:inline-block;background:var(--c4);color:var(--ink);font-family:'Noto Sans SC',sans-serif;font-weight:900;
+    font-size:11px;letter-spacing:.1em;padding:4px 10px;transform:rotate(-4deg);}
 
-  /* ===== 页脚 ===== */
-  .foot{margin:40px 0 50px;}
-  .foot .f1{height:1px;background:var(--ink);margin-bottom:3px;}
-  .foot .f2{height:3px;background:var(--red);margin-bottom:14px;}
-  .foot .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-size:11.5px;letter-spacing:.14em;color:var(--gray);}
-  .foot .row .r{color:var(--red);font-weight:700;}
-  .foot .row a{color:var(--gray);text-decoration:none;}
-  .foot .row a:hover{color:var(--red);}
+  /* 卡片网格 */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+  .card{border:2px solid var(--ink);background:#fff;padding:18px;transition:transform .15s,box-shadow .15s;text-decoration:none;color:var(--ink);display:block;}
+  .card:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink);}
+  .card .tag{display:inline-block;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:10px;letter-spacing:.14em;
+    padding:3px 9px;color:#fff;margin-bottom:10px;}
+  .card .nm{font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:17px;letter-spacing:.03em;margin-bottom:6px;}
+  .card .ds{font-size:13.5px;line-height:1.8;color:var(--gray);}
+  .c3 .card .tag{background:var(--c3);} .c4 .card .tag{background:var(--c4);color:var(--ink);}
 
-  /* 轻微进场 */
-  .fade{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  /* 留言板 */
+  .form{border:2px solid var(--ink);background:#fff;padding:18px;margin-bottom:18px;}
+  .form .row{display:flex;gap:10px;margin-bottom:10px;}
+  .form input{flex:1;border:2px solid var(--ink);background:transparent;padding:10px 13px;font-size:14px;
+    font-family:'Noto Sans SC',sans-serif;color:var(--ink);outline:0;}
+  .form input:focus{border-color:var(--c5);}
+  .form textarea{width:100%;border:2px solid var(--ink);background:transparent;padding:11px 13px;font-size:14px;
+    font-family:'Noto Sans SC',sans-serif;color:var(--ink);resize:vertical;min-height:84px;outline:0;}
+  .form textarea:focus{border-color:var(--c5);}
+  .form .acts{margin-top:12px;display:flex;align-items:center;justify-content:space-between;}
+  .btn{border:2px solid var(--c5);background:var(--c5);color:#fff;padding:9px 24px;font-family:'Noto Sans SC',sans-serif;
+    font-weight:900;letter-spacing:.18em;cursor:pointer;}
+  .btn:disabled{opacity:.5;cursor:wait;}
+  .msg{font-size:12px;color:var(--c5);font-family:'Noto Sans SC',sans-serif;}
+  .mlist{display:flex;flex-direction:column;gap:12px;}
+  .mitem{border:2px solid var(--ink);background:#fff;padding:15px 17px;}
+  .mitem .mh{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;}
+  .mitem .mn{font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:14px;}
+  .mitem .mn::before{content:'';display:inline-block;width:8px;height:8px;background:var(--c5);margin-right:8px;}
+  .mitem .mt{font-family:var(--mono);font-size:10px;color:var(--gray);}
+  .mitem .mc{font-size:14px;line-height:1.8;color:#33322C;}
+
+  /* 建造日志 */
+  .tl{display:flex;flex-direction:column;}
+  .tl .ti{display:grid;grid-template-columns:90px 1fr;gap:16px;padding:13px 0;border-bottom:1px dashed var(--line);}
+  .tl .td{font-family:var(--mono);font-size:12px;color:var(--c6);font-weight:700;}
+  .tl .tx{font-size:14px;color:#33322C;}
+
+  .note{text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--gray);
+    padding:30px 0 12px;}
+  .foot{margin-top:8px;border-top:4px solid var(--ink);padding:18px;display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--gray);}
+  .foot .r{color:var(--red);font-weight:700;}
+
+  .fade{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease;}
   .fade.in{opacity:1;transform:none;}
 
-  @media (max-width:900px){
-    .wrap{padding:0 22px;}
-    .topbar{font-size:10px;letter-spacing:.2em;}
-    .logo b{font-size:64px;}
-    .logo i{font-size:11px;letter-spacing:.32em;padding-bottom:6px;}
-    .issue{font-size:11px;}
-    .nav{gap:0;justify-content:space-between;}
-    .nav a{font-size:12.5px;letter-spacing:.08em;flex:1;text-align:center;}
-    .cols{grid-template-columns:1fr;gap:0;margin-top:14px;}
-    .col{padding:30px 0 0 !important;border-left:none !important;}
-    .col+.col{border-top:1px solid var(--line);}
-    .title{font-size:38px;}
-    .portrait .vname{font-size:44px;}
-    .seal2{width:60px;height:60px;}
-    .seal2 span{font-size:28px;}
+  @media (max-width:640px){
+    .hero h1 .cn-d{display:none;} .hero h1 .cn-m{display:inline;}
+    .top nav{display:none;}
+    .toc{grid-template-columns:1fr;}
+    .cols{column-count:1;}
+    .tl2 .it{grid-template-columns:84px 1fr;gap:12px;}
   }
 </style>
 </head>
 <body>
-<div class="grain"></div>
 
-<div class="wrap">
-
-  <div class="topbar fade in">
-    <span>BOOE.XYZ · 止一数字基地</span>
-    <span class="r">NO.001 · EST.2026</span>
+  <div class="top">
+    <div class="brand"><b>不仁</b><i>BU REN</i></div>
+    <nav>
+      <a href="#about">认识我</a>
+      <a href="#lab">实验室</a>
+      <a href="#play">一起玩</a>
+      <a href="#talk">来信</a>
+      <a href="#log">日志</a>
+    </nav>
   </div>
 
-  <div class="mast fade in">
-    <div class="logo"><b>不仁</b><i>BU REN</i></div>
-    <div class="issue">
-      <b>2026 年第 1 期 · 总第 001 期</b>
-      主办：<span class="r">止一</span>　出版：BOOE.XYZ
-    </div>
+  <!-- 封面 -->
+  <header class="hero">
+    <span class="star s1">✦</span><span class="star s2">✶</span><span class="star s3">✺</span><span class="star s4">❉</span>
+    <div class="badge">EST. 2026 · 少年刊</div>
+    <h1><span class="cn-d">不仁</span><span class="cn-m">求是</span></h1>
+    <div class="wx"><div class="t"></div><div class="n"></div></div>
+    <div class="iss">2026 年第 1 期 · 总第 001 期 · 止一数字基地</div>
+    <div class="tag">不设栏目 · 不赶进度 · 不解释</div>
+  </header>
+
+  <div class="wrap">
+
+    <!-- 卷首语 -->
+    <section class="sec c1 fade" id="lead">
+      <div class="sec-head"><span class="no">00</span><span class="t">卷 首 语</span><span class="ln"></span></div>
+      <div class="sec-body">
+        <div class="lead-big">一个人的<em>数字基地</em></div>
+        <div class="body">白天的营建与交付，夜里的折腾与胡思乱想，都被摊开在同一张桌子上。这里不做筛选，也不承诺更新——从供应链到 AI Agent，所有东西都还在长。往下滚，整座基地都在这一页里。</div>
+        <div class="pull">本期关键词：<b>不设栏目</b> · <b>不赶进度</b> · <b>不解释</b></div>
+      </div>
+    </section>
+
+    <!-- 要目 -->
+    <section class="sec fade" id="toc">
+      <div class="sec-head" style="background:var(--ink)"><span class="no">·</span><span class="t">本 期 要 目</span><span class="ln"></span></div>
+      <div class="sec-body">
+        <div class="toc">
+          <a href="#about"><span class="no">认</span><span class="tx">认识我</span></a>
+          <a href="#lab"><span class="no">实</span><span class="tx">实验室</span></a>
+          <a href="#play"><span class="no">玩</span><span class="tx">一起玩</span></a>
+          <a href="#talk"><span class="no">信</span><span class="tx">和我聊聊</span></a>
+          <a href="#log"><span class="no">志</span><span class="tx">建造日志</span></a>
+          <a href="#lead"><span class="no">卷</span><span class="tx">卷首语</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 认识我（密码门） -->
+    <section class="sec c2 fade" id="about">
+      <div class="sec-head"><span class="no">01</span><span class="t">认 识 我</span><span class="ln"></span></div>
+      <div class="sec-body">
+        <div class="gate" id="gate">
+          <div class="lock">🔒</div>
+          <h3>此门有锁</h3>
+          <p>输入暗号，方可入内</p>
+          <div class="field" id="gfield">
+            <input type="text" id="gpw" placeholder="暗号" autocomplete="off" spellcheck="false">
+            <button id="gbtn">进</button>
+          </div>
+          <div class="hint">暗号是什么？<br><b>你猜猜看</b>。</div>
+        </div>
+        <div class="reveal" id="reveal">
+          <div class="cols">
+            <p>止一，30 岁，深圳。白天在万科泊寓管全国工程供应链，从一线工程师干到总部副总经理，年交付 3 万间房源。</p>
+            <p>晚上是另一个物种：折腾 AI Agent、OpenWrt、自动化工具，打游戏，写一些没人看的东西。</p>
+            <p>这个网站是这两种生活的交汇点——既是数字名片，也是实验室，也是朋友们来玩的地方。</p>
+            <p>它不打算服务任何人，也不承诺更新。想到什么就往上放什么，放久了自然长出形状。</p>
+          </div>
+          <div class="tl2">
+            <div class="it"><span class="y">2013—2017</span><span class="r">华中农业大学 · 工程管理</span></div>
+            <div class="it"><span class="y">2017—2019</span><span class="r">武汉万科 · 工程师 / 泊寓项目经理</span></div>
+            <div class="it"><span class="y">2020—2021</span><span class="r">万科泊寓总部 · 建造统筹</span></div>
+            <div class="it"><span class="y">2022—2023</span><span class="r">万科泊寓总部 · 供应链负责人</span></div>
+            <div class="it"><span class="y">2024—</span><span class="r">万科泊寓总部 · 工程管理部副总经理</span></div>
+          </div>
+          <p style="margin-top:16px;"><span class="sticker">折腾中</span> AI Agent · OpenWrt · 自动化 · Hermes · 剧本杀 · 桌游 · 冥想 · 游戏</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 实验室 -->
+    <section class="sec c3 fade" id="lab">
+      <div class="sec-head"><span class="no">02</span><span class="t">实 验 室</span><span class="ln"></span></div>
+      <div class="sec-body">
+        <div class="grid">
+          <a class="card" href="hermes.html"><span class="tag">进行中</span><div class="nm">Hermes Agent</div><div class="ds">个人 AI 助手系统。管日程、推情报、控家居、写内容。这个网站本身就是它的作品之一。</div></a>
+          <a class="card" href="reddit.html"><span class="tag">进行中</span><div class="nm">Reddit 每日情报</div><div class="ds">每天抓 Reddit 热帖，AI 翻译生成中英对照日报，推送到企微。</div></a>
+          <a class="card" href="#log"><span class="tag">进行中</span><div class="nm">booe.xyz</div><div class="ds">你现在看的这个网站。从白纸长成有游戏、有互动、有朋友的数字空间。</div></a>
+          <a class="card" href="#"><span class="tag" style="background:var(--gray)">搁置</span><div class="nm">剧本杀线上平台</div><div class="ds">多人实时剧本杀，等基地再长大一点。</div></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 一起玩 -->
+    <section class="sec c4 fade" id="play">
+      <div class="sec-head"><span class="no">03</span><span class="t">一 起 玩</span><span class="ln"></span></div>
+      <div class="sec-body">
+        <div class="grid">
+          <a class="card" href="gomoku.html"><span class="tag" style="background:var(--c3);color:#fff">新上架</span><div class="nm">⚫ 五子棋</div><div class="ds">15 路棋盘。双人同屏、人机对战都行，AI 会堵你的活四——不服来下一盘。</div></a>
+          <a class="card" href="ludo.html"><span class="tag" style="background:var(--red);color:#fff">多人·实时</span><div class="nm">🎲 飞行棋</div><div class="ds">2-4 人桌游。掷骰起飞、踩人回巢、炸弹流星。建个房间，把 4 位房间号发给朋友就能开玩。</div></a>
+          <a class="card" href="reflex.html"><span class="tag" style="background:var(--gray);color:#fff">单机</span><div class="nm">⚡ 眼明手快</div><div class="ds">等画面变红的一瞬间点下去，测你的反应速度（毫秒）。最佳纪录存在本地。</div></a>
+        </div>
+        <p style="margin-top:16px;font-size:13.5px;color:var(--gray);">更多游戏在路：谁是卧底、猜数字、你画我猜……手机打开网址即可加入，无需注册。</p>
+      </div>
+    </section>
+
+    <!-- 和我聊聊 -->
+    <section class="sec c5 fade" id="talk">
+      <div class="sec-head"><span class="no">04</span><span class="t">和 我 聊 聊</span><span class="ln"></span></div>
+      <div class="sec-body">
+        <div class="form">
+          <div class="row"><input type="text" id="msgName" placeholder="怎么称呼你" maxlength="20"></div>
+          <textarea id="msgContent" placeholder="想对止一说什么？" maxlength="500"></textarea>
+          <div class="acts"><span class="msg" id="formMsg"></span><button class="btn" id="submitBtn" onclick="submitMsg()">落笔</button></div>
+        </div>
+        <div class="mlist" id="msgList">
+          <div class="mitem"><div class="mh"><span class="mn">阿星</span><span class="mt">2026-08-30</span></div><div class="mc">飞行棋太上头了，昨晚拉了三个朋友开房间，输赢不重要，主要是又聚起来了。</div></div>
+          <div class="mitem"><div class="mh"><span class="mn">老周</span><span class="mt">2026-08-28</span></div><div class="mc">供应链那篇说到心坎里，规模一大手感就容易丢，你这个角度 rare。</div></div>
+          <div class="mitem"><div class="mh"><span class="mn">匿名</span><span class="mt">2026-08-25</span></div><div class="mc">基地还挺安静的，但我就喜欢这种不吵不闹的感觉。</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 建造日志 -->
+    <section class="sec c6 fade" id="log">
+      <div class="sec-head"><span class="no">05</span><span class="t">建 造 日 志</span><span class="ln"></span></div>
+      <div class="sec-body">
+        <div class="tl">
+          <div class="ti"><span class="td">08-22</span><span class="tx">仓库建立，v5 首页上线：不仁义满屏巨字 + 朱砂干涉</span></div>
+          <div class="ti"><span class="td">08-23</span><span class="tx">域名绑定 booe.xyz，DNS 生效，正式开门</span></div>
+          <div class="ti"><span class="td">09-05</span><span class="tx">全站重做：单页长滚 + 少年版求是配色，桌面不仁 / 手机求是</span></div>
+          <div class="ti"><span class="td">09-05</span><span class="tx">五子棋上架，飞行棋界面焕新：点数骰、小飞机、四色风车</span></div>
+          <div class="ti"><span class="td">进行中</span><span class="tx">Phase 2 互动：留言板、聊天、更多小游戏</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="note">邮发代号 BOEE-001 · 定价：无价</div>
+    <div class="foot"><span>BOOE.XYZ · 止一数字基地</span><span class="r">来访 <span id="busuanzi_value_site_uv">0</span></span></div>
+
   </div>
-  <div class="wx fade in"><div class="thick"></div><div class="thin"></div></div>
-
-  <nav class="nav fade in">
-    <a href="gate.html"><i>01</i>认识我</a>
-    <a href="lab.html"><i>02</i>实验室</a>
-    <a href="play.html"><i>03</i>一起玩</a>
-    <a href="talk.html"><i>04</i>和我聊聊</a>
-    <a href="booe.html"><i>05</i>建造日志</a>
-  </nav>
-
-  <div class="cols">
-
-    <div class="col fade">
-      <div class="colhead">本期要目</div>
-      <ul class="toc">
-        <li><span class="no">01</span><span class="sq"></span><a href="gate.html">认识我</a><span class="fill"></span><span class="pg">P02</span></li>
-        <li><span class="no">02</span><span class="sq"></span><a href="lab.html">实验室</a><span class="fill"></span><span class="pg">P03</span></li>
-        <li><span class="no">03</span><span class="sq"></span><a href="play.html">一起玩</a><span class="fill"></span><span class="pg">P04</span></li>
-        <li><span class="no">04</span><span class="sq"></span><a href="talk.html">和我聊聊</a><span class="fill"></span><span class="pg">P05</span></li>
-        <li><span class="no">05</span><span class="sq"></span><a href="booe.html">建造日志</a><span class="fill"></span><span class="pg">P06</span></li>
-      </ul>
-      <div class="toc-note">全部内容免费开放，无需注册。<br>来访即读者，留言即来信。</div>
-    </div>
-
-    <div class="col fade">
-      <div class="colhead dark">卷 首 语</div>
-      <div class="title">一个人的<em>数字基地</em></div>
-      <div class="sub">NO.001 · 营造中 · EST.2026 · 深圳 <span class="r"><span id="busuanzi_value_site_pv">0</span> 人来过</span></div>
-      <div class="body">
-        <p>白天的营建与交付，夜里的折腾与胡思乱想，都被摊开在同一张桌子上。这里不做筛选，也不承诺更新。</p>
-        <p>从供应链到 AI Agent，从飞行棋到留言板，所有的东西都还在长。它们彼此没什么关系，唯一的共同点是都由同一个人折腾出来。</p>
-      </div>
-      <div class="pull">本期关键词：<b>不设栏目</b> · <b>不赶进度</b> · <b>不解释</b></div>
-      <div class="rule-red"></div>
-      <div class="sign">止一 / BOOE.XYZ / 2026</div>
-    </div>
-
-    <div class="col fade">
-      <div class="colhead">本 期 人 物</div>
-      <div class="portrait">
-        <div class="vname">止一</div>
-        <div class="vnote">主编兼唯一的撰稿人</div>
-        <div class="seal2"><span>止</span></div>
-      </div>
-      <div class="facts">
-        <div><span class="k">期　号</span><span class="v">NO.001</span></div>
-        <div><span class="k">创　刊</span><span class="v">EST.2026</span></div>
-        <div><span class="k">来　访</span><span class="v r"><span id="busuanzi_value_site_uv">0</span></span></div>
-        <div><span class="k">状　态</span><span class="v">营造中</span></div>
-      </div>
-      <div class="keys">
-        <span>供应链老手</span><span>AI 学习者</span><span>网瘾少年</span><span>兼职冥想家</span><span>嘴炮爱好者</span>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="foot fade">
-    <div class="f1"></div><div class="f2"></div>
-    <div class="row">
-      <span>主办单位：止一数字基地</span>
-      <span>邮发代号：BOOE-001</span>
-      <span class="r">定价：无价</span>
-      <span><a href="index.html">booe.xyz</a></span>
-    </div>
-  </div>
-
-</div>
 
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
-  // 进场淡入（求是风不宜花哨）
-  var els = document.querySelectorAll('.fade');
-  var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, {threshold:0.06});
-  els.forEach(function(el){ io.observe(el); });
+  // 密码门（认识我）
+  var _0xk=[78,73,67,65,73,67,65,73,75,65,78];
+  var _pw=_0xk.map(function(c){return String.fromCharCode(c)}).join('');
+  var gpw=document.getElementById('gpw'),gfield=document.getElementById('gfield'),gbtn=document.getElementById('gbtn');
+  function gcheck(){var v=gpw.value.trim().toUpperCase();
+    if(v===_pw){document.getElementById('gate').style.display='none';document.getElementById('reveal').classList.add('show');}
+    else{gfield.classList.add('err');gpw.value='';gpw.focus();setTimeout(function(){gfield.classList.remove('err');},450);}}
+  gpw.addEventListener('keydown',function(e){if(e.key==='Enter')gcheck();});
+  gbtn.addEventListener('click',gcheck);
+
+  // 留言板（真实 /api/guestbook）
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+  function loadMessages(){
+    fetch('/api/guestbook').then(function(r){return r.json();}).then(function(d){
+      if(!d.ok||!d.messages)return;
+      var list=document.getElementById('msgList');list.innerHTML='';
+      d.messages.forEach(function(m){
+        var div=document.createElement('div');div.className='mitem';
+        var dt=String(m.created_at||'').slice(0,10);
+        div.innerHTML='<div class="mh"><span class="mn">'+escapeHtml(m.name||'匿名')+'</span><span class="mt">'+dt+'</span></div><div class="mc">'+escapeHtml(m.content)+'</div>';
+        list.appendChild(div);
+      });
+      if(!d.messages.length)list.innerHTML='<div class="mitem"><div class="mc">还没有留言，来做第一个。</div></div>';
+    }).catch(function(){/* 加载失败保留静态内容 */});
+  }
+  function submitMsg(){
+    var n=document.getElementById('msgName').value.trim(),c=document.getElementById('msgContent').value.trim(),
+        fm=document.getElementById('formMsg'),btn=document.getElementById('submitBtn');
+    if(!c){fm.textContent='写点什么再落笔';return;}
+    btn.disabled=true;fm.textContent='落笔中…';
+    fetch('/api/guestbook',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:n,content:c})})
+      .then(function(r){return r.json();})
+      .then(function(d){btn.disabled=false;
+        if(d.ok){fm.textContent='留好啦';document.getElementById('msgContent').value='';loadMessages();
+          setTimeout(function(){fm.textContent='';},2600);}
+        else{fm.textContent=d.error||'没留住，再试试';}})
+      .catch(function(){btn.disabled=false;fm.textContent='网络打了个盹，再试试';});
+  }
+  loadMessages();
+
+  // 进场淡入
+  var els=document.querySelectorAll('.fade');
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.06});
+  els.forEach(function(el){io.observe(el);});
 </script>
 </body>
 </html>
