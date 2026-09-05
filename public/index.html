@@ -156,11 +156,17 @@
   .fade.in{opacity:1;transform:none;}
 
   @media (max-width:640px){
-    .hero h1 .cn-d{display:none;} .hero h1 .cn-m{display:inline;}
-    .top nav{display:none;}
     .toc{grid-template-columns:1fr;}
     .cols{column-count:1;}
     .tl2 .it{grid-template-columns:84px 1fr;gap:12px;}
+    .top{gap:8px;padding:9px 12px;}
+    .top nav{gap:8px;}
+    .top nav a{font-size:10px;letter-spacing:.04em;}
+  }
+  /* 手机版（求是品牌）仅窄屏 + 触屏设备生效；桌面窄窗口/高分屏缩放仍显示电脑版 */
+  @media (max-width:640px) and (pointer:coarse){
+    .hero h1 .cn-d{display:none;} .hero h1 .cn-m{display:inline;}
+    .top nav{display:none;}
   }
 </style>
 </head>
