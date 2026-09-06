@@ -34,10 +34,13 @@ export class LudoRoom {
     this.current = 0;
     this.dice = null;
     this.sixStreak = 0;
-    this.turnStage = 'roll';  // roll | choose
+    this.turnStage = 'roll';  // roll | choose | wait
     this.movable = [];        // 可移动飞机索引
     this.winner = null;
     this.log = [];
+    this.fx = null;           // 最近一次动作特效（客户端据此播放）
+    this.fxSeq = 0;           // 特效序号，避免重复播放
+    this._autoTimer = null;   // 自动走子兜底计时器
   }
 
   // ============ WebSocket 入口 ============
@@ -102,6 +105,7 @@ export class LudoRoom {
       movable: this.movable,
       winner: this.winner,
       log: this.log.slice(-12),
+      fx: this.fx,
       myId: null
     });
   }
@@ -236,6 +240,7 @@ export class LudoRoom {
 
   // ============ 规则引擎 ============
   doRoll() {
+    this.clearAuto();
     const cur = this.players[this.current];
     const dice = Math.floor(Math.random() * 6) + 1;
     this.dice = dice;
@@ -246,7 +251,8 @@ export class LudoRoom {
       if (this.sixStreak >= 3) {
         // 连续三次 6：作废，罚停
         this.sixStreak = 0;
-        this.turnStage = 'roll';
+        this.turnStage = 'wait';
+        this.fx = { kind: 'roll', dice, six: true, penalty: true, seq: ++this.fxSeq };
         this.pushLog('连续三次 6！作废罚停');
         this.emitState();
         setTimeout(() => { this.nextTurn(); }, 1500);
@@ -257,22 +263,32 @@ export class LudoRoom {
     }
 
     this.movable = this.getMovable(cur, dice);
+    this.turnStage = 'choose';
+    this.fx = { kind: 'roll', dice, six: dice === 6, seq: ++this.fxSeq };
     if (this.movable.length === 0) {
+      // 没有可移动的飞机（如全在停机坪且未掷出 6）→ 明确告知，过场
+      this.turnStage = 'wait';
       this.pushLog('没有可移动的飞机');
       this.emitState();
-      setTimeout(() => { this.nextTurn(); }, 1200);
+      setTimeout(() => { this.nextTurn(); }, 1300);
       return;
     }
-    if (this.movable.length === 1) {
-      // 唯一选择，自动移动
-      this.turnStage = 'choose';
-      this.emitState();
-      setTimeout(() => { this.doMove(this.movable[0]); }, 800);
-      return;
-    }
-    // 多个选择：等待玩家点击
-    this.turnStage = 'choose';
     this.emitState();
+    if (this.movable.length === 1) {
+      // 唯一选择：给玩家 ~1.6s 手动点击窗口，否则自动走
+      this._autoTimer = setTimeout(() => {
+        if (this.turnStage === 'choose' && this.movable.length === 1) this.doMove(this.movable[0]);
+      }, 1600);
+    } else {
+      // 多个选择：等待玩家点击；长时间无操作则自动走第一架，避免卡死
+      this._autoTimer = setTimeout(() => {
+        if (this.turnStage === 'choose') this.doMove(this.movable[0]);
+      }, 12000);
+    }
+  }
+
+  clearAuto() {
+    if (this._autoTimer) { clearTimeout(this._autoTimer); this._autoTimer = null; }
   }
 
   getMovable(player, dice) {
@@ -292,9 +308,11 @@ export class LudoRoom {
   }
 
   doMove(planeIdx) {
+    this.clearAuto();
     const cur = this.players[this.current];
     const dice = this.dice;
-    let pos = cur.planes[planeIdx];
+    const from = cur.planes[planeIdx];
+    let pos = from;
     const wasDock = pos === DOCK;
     const name = cur.name;
 
@@ -312,12 +330,14 @@ export class LudoRoom {
     }
 
     let bounced = false; // 是否因炸弹回巢
+    let jumped = false;  // 是否踩到跳格/流星
 
     // 特殊格判定（主路内）
     if (pos >= 1 && pos <= TRACK_MAX) {
       const abs = (START[cur.color] + pos - 1) % 52;
       if (SPECIAL.jump[cur.color] === abs) {
         pos += 4;
+        jumped = true;
         this.pushLog(`${name} 踩到跳格，飞跃 4 格！`);
       } else if (SPECIAL.bomb[cur.color] === abs) {
         pos = DOCK;
@@ -325,6 +345,7 @@ export class LudoRoom {
         this.pushLog(`${name} 踩到炸弹，飞机回巢！`);
       } else if (SPECIAL.meteor[cur.color] === abs) {
         pos += 4;
+        jumped = true;
         this.pushLog(`${name} 踩到流星，前进 4 格！`);
       }
     }
@@ -332,9 +353,9 @@ export class LudoRoom {
     cur.planes[planeIdx] = pos;
 
     // 踩踏判定（主路上）
+    const kicked = [];
     if (!bounced && pos >= 1 && pos <= TRACK_MAX) {
       const abs = (START[cur.color] + pos - 1) % 52;
-      let kicked = false;
       for (const other of this.players) {
         if (other.id === cur.id) continue;
         for (let j = 0; j < 4; j++) {
@@ -343,13 +364,20 @@ export class LudoRoom {
             const oAbs = (START[other.color] + op - 1) % 52;
             if (oAbs === abs) {
               other.planes[j] = DOCK;
-              kicked = true;
+              kicked.push({ color: other.color, plane: j });
             }
           }
         }
       }
-      if (kicked) this.pushLog(`${name} 踢飞了敌人的飞机！`);
+      if (kicked.length) this.pushLog(`${name} 踢飞了敌人的飞机！`);
     }
+
+    // 特效数据
+    this.fx = {
+      kind: 'move', color: cur.color, plane: planeIdx,
+      from, to: pos, launched: wasDock, bomb: bounced, jump: jumped,
+      kicked, seq: ++this.fxSeq
+    };
 
     // 到达终点
     const finishedCount = cur.planes.filter(p => p === FINISH).length;
@@ -365,8 +393,8 @@ export class LudoRoom {
     }
 
     // 奖励再掷：掷出 6 起飞/移动 或 踢飞敌人
-    const reward = (dice === 6) || kicked;
-    if (reward && this.movable.length >= 0) {
+    const reward = (dice === 6) || kicked.length > 0;
+    if (reward) {
       this.pushLog('奖励再掷一次！');
       this.turnStage = 'roll';
       this.emitState();
@@ -379,6 +407,8 @@ export class LudoRoom {
 
   nextTurn() {
     if (this.phase !== 'playing') return;
+    this.clearAuto();
+    this.fx = null;
     this.dice = null;
     this.turnStage = 'roll';
     this.movable = [];
