@@ -18,6 +18,10 @@
       {
         "name": "LUDO_ROOM",
         "class_name": "LudoRoom"
+      },
+      {
+        "name": "GOMOKU_ROOM",
+        "class_name": "GomokuRoom"
       }
     ]
   },
@@ -25,6 +29,10 @@
     {
       "tag": "v1",
       "new_sqlite_classes": ["LudoRoom"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["GomokuRoom"]
     }
   ],
   "compatibility_date": "2026-08-01"

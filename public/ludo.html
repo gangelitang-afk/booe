@@ -167,6 +167,7 @@
     </div>
     <div style="margin:16px 0;font-size:11px;color:var(--ink-mid);letter-spacing:.2em;">— 或 —</div>
     <button class="btn" id="btnCreate" onclick="createRoom()">创建房间</button>
+    <button class="btn" id="btnSolo" onclick="enterDemo()" style="margin-top:10px;">单人试玩 · 不用等人</button>
   </div>
 </div>
 
@@ -715,18 +716,19 @@ function toast(text) {
   }
 })();
 
-// ============ 单机演示引擎 ============
+// ============ 单机演示引擎（单人试玩：三个自动对手陪练） ============
 function enterDemo() {
+  const nm = ($('inpName') && $('inpName').value.trim()) || '止一';
   state = {
     roomId: '4321', phase: 'playing', current: 0, dice: null, turnStage: 'roll',
     players: [
-      { id: 'p1', name: '止一', color: 'red',    connected: true, planes: [0, 0, 6, 12] },
+      { id: 'p1', name: nm,        color: 'red',    connected: true, planes: [0, 0, 6, 12] },
       { id: 'p2', name: '阿星', color: 'yellow', connected: true, planes: [0, 19, 0, 0] },
       { id: 'p3', name: '老周', color: 'blue',   connected: true, planes: [33, 33, 7, 0] },
       { id: 'p4', name: '小美', color: 'green',  connected: true, planes: [45, 52, 58, 59] }
     ],
     movable: [], fx: null, winner: null,
-    log: ['演示模式：点击掷骰子，再点跳动的飞机移动']
+    log: ['单人试玩：点击掷骰子，再点跳动的飞机移动']
   };
   myId = 'p1';
   boardReady = false;
@@ -768,19 +770,41 @@ function demoMove(plane) {
   if (wasDock) pos = 1 + (state.dice - 1);
   else pos += state.dice;
   if (pos > FINISH) pos = FINISH - (pos - FINISH);
-  cur.planes[plane] = pos;
-  let jumped = false;
+  let bounced = false, jumped = false;
   if (pos >= 1 && pos <= TRACK_MAX) {
     const abs = (START[cur.color] + pos - 1) % 52;
-    if (SPECIAL.jump[cur.color] === abs || SPECIAL.meteor[cur.color] === abs) { pos += 4; jumped = true; cur.planes[plane] = pos; }
+    if (SPECIAL.jump[cur.color] === abs || SPECIAL.meteor[cur.color] === abs) { pos += 4; jumped = true; }
+    else if (SPECIAL.bomb[cur.color] === abs) { pos = DOCK; bounced = true; }
   }
-  state.fx = { kind: 'move', color: cur.color, plane, from, to: pos, launched: wasDock, bomb: false, jump: jumped, kicked: [], seq: ++demoSeq };
+  cur.planes[plane] = pos;
+  // 踩踏判定（与服务器同规则：主路同格踢回停机坪）
+  const kicked = [];
+  if (!bounced && pos >= 1 && pos <= TRACK_MAX) {
+    const abs = (START[cur.color] + pos - 1) % 52;
+    for (const other of state.players) {
+      if (other === cur) continue;
+      for (let j = 0; j < 4; j++) {
+        const op = other.planes[j];
+        if (op >= 1 && op <= TRACK_MAX && (START[other.color] + op - 1) % 52 === abs) {
+          other.planes[j] = DOCK; kicked.push({ color: other.color, plane: j });
+        }
+      }
+    }
+  }
+  state.fx = { kind: 'move', color: cur.color, plane, from, to: pos, launched: wasDock, bomb: bounced, jump: jumped, kicked, seq: ++demoSeq };
   render();
+  // 胜利判定
+  if (cur.planes.every(p => p === FINISH)) {
+    state.phase = 'ended'; state.winner = state.current; render(); return;
+  }
   setTimeout(demoNext, 900);
 }
 function demoNext() {
   state.dice = null; state.turnStage = 'roll'; state.movable = []; state.fx = null;
-  state.current = (state.current + 1) % state.players.length;
+  if (state.phase !== 'playing') return;
+  do {
+    state.current = (state.current + 1) % state.players.length;
+  } while (state.players[state.current].planes.every(p => p === FINISH));
   render();
   if (state.current !== 0) setTimeout(demoAutoPlay, 800);
 }

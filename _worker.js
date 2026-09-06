@@ -7,7 +7,8 @@
 // ============================================================
 
 import { LudoRoom, COLORS } from './ludo-room.js';
-export { LudoRoom };
+import { GomokuRoom } from './gomoku-room.js';
+export { LudoRoom, GomokuRoom };
 
 export default {
   async fetch(request, env) {
@@ -34,6 +35,22 @@ export default {
       return Response.json({ ok: false, error: '房间号格式不对' }, { status: 400 });
     }
 
+    // ---- 创建五子棋房间 ----
+    if (url.pathname === '/api/gomoku/create' && request.method === 'POST') {
+      return handleGomokuCreate(request, env);
+    }
+
+    // ---- 五子棋房间 WebSocket ----
+    if (url.pathname.startsWith('/ws/gomoku/')) {
+      const roomId = url.pathname.split('/')[3];
+      if (roomId && /^\d{4}$/.test(roomId)) {
+        const id = env.GOMOKU_ROOM.idFromName(roomId);
+        const stub = env.GOMOKU_ROOM.get(id);
+        return stub.fetch(request);
+      }
+      return Response.json({ ok: false, error: '房间号格式不对' }, { status: 400 });
+    }
+
     // ---- 其余请求：静态资产 ----
     return env.ASSETS.fetch(request);
   }
@@ -47,6 +64,23 @@ async function handleLudoCreate(request, env) {
     roomId = String(Math.floor(1000 + Math.random() * 9000));
     const id = env.LUDO_ROOM.idFromName(roomId);
     const stub = env.LUDO_ROOM.get(id);
+    try {
+      const res = await stub.fetch('https://room/status');
+      if (res.status === 404) break; // 房间不存在，可用
+    } catch (_) {
+      break;
+    }
+  }
+  return Response.json({ ok: true, roomId });
+}
+
+// ================= 五子棋房间创建 =================
+async function handleGomokuCreate(request, env) {
+  let roomId;
+  for (let i = 0; i < 20; i++) {
+    roomId = String(Math.floor(1000 + Math.random() * 9000));
+    const id = env.GOMOKU_ROOM.idFromName(roomId);
+    const stub = env.GOMOKU_ROOM.get(id);
     try {
       const res = await stub.fetch('https://room/status');
       if (res.status === 404) break; // 房间不存在，可用

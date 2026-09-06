@@ -80,6 +80,15 @@
     100%{transform:translateY(105vh) rotate(720deg);}
   }
   .hidden{display:none !important;}
+
+  /* 远程对战 */
+  #remoteBox{border:2px dashed var(--ink);background:#fff;padding:14px;margin-bottom:12px;}
+  #remoteBox .rt{font-weight:900;font-size:12px;letter-spacing:.28em;margin-bottom:10px;color:var(--c3);}
+  .rrow{display:flex;gap:8px;margin-bottom:8px;}
+  .rfield{flex:1;border:2px solid var(--ink);background:var(--paper);font-family:inherit;font-weight:700;
+    font-size:14px;padding:9px 10px;outline:none;min-width:0;}
+  .rfield:focus{border-color:var(--c3);}
+  .rnum{font-family:var(--mono);font-size:30px;font-weight:900;color:var(--red);letter-spacing:.18em;margin:4px 0;}
   @media (max-width:640px){
     .head h1{font-size:40px;}
     .back{font-size:11px;padding:6px 10px;}
@@ -101,9 +110,29 @@
   <button class="mbtn on" id="mPvp"  onclick="setMode('pvp')">双人同屏</button>
   <button class="mbtn"    id="mPveB" onclick="setMode('pveb')">人机 · 我先手</button>
   <button class="mbtn"    id="mPveW" onclick="setMode('pvew')">人机 · AI 先手</button>
+  <button class="mbtn"    id="mRemote" onclick="setMode('remote')">远程对战</button>
 </div>
 
 <div class="board-wrap">
+
+  <div id="remoteBox" class="hidden">
+    <div class="rt">远 程 对 战</div>
+    <div id="remoteForm">
+      <div class="rrow"><input class="rfield" id="rName" placeholder="你的名字" maxlength="12"></div>
+      <div class="rrow">
+        <input class="rfield" id="rRoom" placeholder="房间号(4位)" maxlength="4" inputmode="numeric">
+        <button class="btn" onclick="rJoin()">加入</button>
+      </div>
+      <button class="btn primary" id="rCreate" style="width:100%;" onclick="rCreate()">创建房间</button>
+      <div class="hint" id="rHint" style="margin-top:10px;">和远方的朋友用房间号连线对弈，先到执黑</div>
+    </div>
+    <div id="remoteWait" class="hidden" style="text-align:center;">
+      <div style="font-size:11px;letter-spacing:.28em;color:var(--gray);">房 间 号</div>
+      <div class="rnum" id="rRoomNum">----</div>
+      <div style="font-size:12px;color:var(--gray);">把号码发给朋友，对方加入后自动开局</div>
+    </div>
+  </div>
+
   <div class="bar">
     <div class="turn-chip" id="turnChip"><span class="dot" id="turnDot"></span><span id="turnText">黑方落子</span></div>
     <div class="score">局分　黑 <b id="sB">0</b> : <b id="sW">0</b> 白 · 第 <b id="moveNo">0</b> 手</div>
@@ -134,6 +163,7 @@ var ctx = cv.getContext('2d');
 var board, turn, mode, over, hist, winInfo, thinking;
 var score = { b: 0, w: 0 };
 var lastMover = null; // 悔棋后轮到谁
+var lastRemote = null; // 远程模式最后一手 {x,y,color}
 
 // ============ 绘制 ============
 function px(i){ return PAD + i * CELL; }
@@ -165,10 +195,12 @@ function draw(){
     }
   }
   // 最后一手标记
-  if (hist.length && !over){
-    var lm = hist[hist.length-1];
-    ctx.fillStyle = '#EE3A2B';
-    ctx.beginPath(); ctx.arc(px(lm.x),px(lm.y),5.5,0,7); ctx.fill();
+  if (!over){
+    var lm = (mode === 'remote') ? lastRemote : (hist.length ? hist[hist.length-1] : null);
+    if (lm){
+      ctx.fillStyle = '#EE3A2B';
+      ctx.beginPath(); ctx.arc(px(lm.x),px(lm.y),5.5,0,7); ctx.fill();
+    }
   }
   // 胜利连线
   if (winInfo){
@@ -206,9 +238,15 @@ function drawStone(x,y,color,isLast){
 // ============ 状态与流程 ============
 function resetState(){
   board = C.createBoard(); turn = C.BLACK; over = false; hist = []; winInfo = null; thinking = false;
+  lastRemote = null;
 }
 
 function restart(){
+  if (mode === 'remote'){
+    if (rws && rws.readyState === 1) rws.send(JSON.stringify({ type:'restart' }));
+    document.getElementById('winBanner').classList.add('hidden');
+    return;
+  }
   resetState();
   document.getElementById('winBanner').classList.add('hidden');
   document.getElementById('btnUndo').disabled = false;
@@ -224,6 +262,17 @@ function setMode(m){
   document.getElementById('mPvp').classList.toggle('on', m==='pvp');
   document.getElementById('mPveB').classList.toggle('on', m==='pveb');
   document.getElementById('mPveW').classList.toggle('on', m==='pvew');
+  document.getElementById('mRemote').classList.toggle('on', m==='remote');
+  document.getElementById('remoteBox').classList.toggle('hidden', m!=='remote');
+  document.getElementById('btnUndo').disabled = (m === 'remote');
+  document.getElementById('winBanner').classList.add('hidden');
+  if (m === 'remote'){
+    resetState(); draw();
+    document.getElementById('hint').textContent = '创建或加入房间开始远程对弈';
+    if (rState) rSync(); else updateUI();
+    return;
+  }
+  if (rws){ try{ rws.close(); }catch(e){} rws = null; rState = null; rMyColor = null; }
   restart();
 }
 
@@ -246,6 +295,17 @@ function place(x,y){
 
 function cvClick(ev){
   if (over || thinking) return;
+  if (mode === 'remote'){
+    if (!rState || rState.phase !== 'playing') return;
+    if (!rMyColor || turn !== (rMyColor === 'black' ? C.BLACK : C.WHITE)) return;
+    var rr = cv.getBoundingClientRect();
+    var sx2 = cv.width / rr.width;
+    var x2 = Math.round(((ev.clientX - rr.left) * sx2 - PAD) / CELL);
+    var y2 = Math.round(((ev.clientY - rr.top) * sx2 - PAD) / CELL);
+    if (x2 < 0 || x2 >= C.SIZE || y2 < 0 || y2 >= C.SIZE) return;
+    if (rws && rws.readyState === 1) rws.send(JSON.stringify({ type:'move', x:x2, y:y2 }));
+    return;
+  }
   if (mode === 'pveb' && turn === C.WHITE) return; // 等 AI
   var r = cv.getBoundingClientRect();
   var sx = cv.width / r.width;
@@ -278,6 +338,7 @@ function aiTurn(){
 }
 
 function undo(){
+  if (mode === 'remote') return;
   if (thinking || !hist.length) return;
   document.getElementById('winBanner').classList.add('hidden');
   var steps = 1;
@@ -311,17 +372,28 @@ function showWin(color){
 function updateUI(){
   document.getElementById('sB').textContent = score.b;
   document.getElementById('sW').textContent = score.w;
-  document.getElementById('moveNo').textContent = hist.length;
+  document.getElementById('moveNo').textContent = (mode === 'remote' && rState) ? rState.moveCount : hist.length;
   var chip = document.getElementById('turnChip'), dot = document.getElementById('turnDot'),
       txt = document.getElementById('turnText');
   var hc = humanColor();
-  var myTurn = over ? false : (mode === 'pvp' ? true : turn === hc);
+  var myTurn = over ? false :
+    (mode === 'remote' ? (!!(rState && rState.phase === 'playing' && rMyColor) && rState.turn === rMyColor)
+                       : (mode === 'pvp' ? true : turn === hc));
   chip.classList.toggle('me', myTurn && !over);
   dot.style.background = turn === C.BLACK ? '#141412' : '#f5efdd';
   if (over){
-    txt.textContent = winInfo ? ((turn === C.BLACK ? '黑方胜' : '白方胜')) : '平局';
+    if (mode === 'remote'){
+      txt.textContent = rState && rState.winner === 'draw' ? '平局'
+        : (rState && rMyColor ? (rState.winner === rMyColor ? '你赢了！' : '你输了') : (turn === C.BLACK ? '黑方胜' : '白方胜'));
+    } else {
+      txt.textContent = winInfo ? ((turn === C.BLACK ? '黑方胜' : '白方胜')) : '平局';
+    }
   } else if (thinking){
     txt.textContent = 'AI 思考中…';
+  } else if (mode === 'remote'){
+    if (!rState) txt.textContent = '未连接';
+    else if (rState.phase === 'waiting') txt.textContent = '等待对手加入…';
+    else txt.textContent = myTurn ? (rMyColor === 'black' ? '你执黑 · 请落子' : '你执白 · 请落子') : '等对手落子…';
   } else if (mode === 'pvp'){
     txt.textContent = turn === C.BLACK ? '黑方落子' : '白方落子';
   } else {
@@ -344,11 +416,108 @@ function confetti(){
   }
 }
 
+// ============ 远程对战 ============
+var rws = null, rState = null, rMyColor = null, rPrevWinner = undefined;
+
+function rShow(msg){ document.getElementById('rHint').textContent = msg; }
+function rProto(){ return location.protocol === 'https:' ? 'wss:' : 'ws:'; }
+
+function rConnect(roomId){
+  var name = document.getElementById('rName').value.trim() || '玩家';
+  try{ localStorage.setItem('booe_gomoku_name', name); }catch(e){}
+  if (rws){ try{ rws.close(); }catch(e){} }
+  rState = null; rMyColor = null; rPrevWinner = undefined;
+  rws = new WebSocket(rProto() + '//' + location.host + '/ws/gomoku/' + roomId);
+  rws.onopen = function(){ rws.send(JSON.stringify({ type:'join', name:name })); };
+  rws.onmessage = function(e){ var m; try{ m = JSON.parse(e.data); }catch(err){ return; } rHandle(m); };
+  rws.onclose = function(){ if (rState && rState.phase === 'playing') rShow('连接断开，请重新加入'); };
+  rws.onerror = function(){};
+}
+
+function rCreate(){
+  var name = document.getElementById('rName').value.trim();
+  if (!name){ rShow('先填名字'); return; }
+  document.getElementById('rCreate').disabled = true;
+  fetch('/api/gomoku/create', { method:'POST' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      document.getElementById('rCreate').disabled = false;
+      if (!d.ok){ rShow(d.error || '创建失败'); return; }
+      rShow('房间已创建，等待对手…');
+      rConnect(d.roomId);
+    })
+    .catch(function(){ document.getElementById('rCreate').disabled = false; rShow('网络错误'); });
+}
+
+function rJoin(){
+  var name = document.getElementById('rName').value.trim();
+  var rid = document.getElementById('rRoom').value.trim();
+  if (!name){ rShow('先填名字'); return; }
+  if (!/^\d{4}$/.test(rid)){ rShow('房间号是 4 位数字'); return; }
+  rConnect(rid);
+}
+
+function rHandle(m){
+  if (m.type === 'joined'){
+    rMyColor = m.color; // 'black' | 'white' | null(观战)
+  } else if (m.type === 'state'){
+    rState = m;
+    rSync();
+  } else if (m.type === 'error'){
+    rShow(m.msg);
+  }
+}
+
+function rSync(){
+  var m = rState;
+  document.getElementById('winBanner').classList.add('hidden');
+  board = m.board.map(function(row){ return row.slice(); });
+  turn = m.turn === 'black' ? C.BLACK : C.WHITE;
+  winInfo = (m.winLine && m.winLine !== 'draw') ? m.winLine : null;
+  over = m.phase === 'ended';
+  thinking = false;
+  hist = [];
+  lastRemote = m.lastMove;
+
+  // 房间面板显隐
+  var showWait = (m.phase !== 'playing');
+  document.getElementById('remoteForm').classList.add('hidden');
+  document.getElementById('remoteWait').classList.toggle('hidden', !showWait);
+  document.getElementById('remoteBox').classList.toggle('hidden', m.phase === 'playing');
+  document.getElementById('rRoomNum').textContent = m.roomId;
+  if (showWait && m.phase === 'ended'){
+    document.getElementById('rRoomNum').textContent = m.roomId;
+    rShow(''); document.getElementById('rHint').textContent = '对局结束，点下方「重新开局」换色再来';
+  }
+
+  // 胜负横幅 + 计分
+  if (m.winner && m.winner !== rPrevWinner){
+    if (m.winner === 'black') score.b++; else if (m.winner === 'white') score.w++;
+    if (m.winner !== 'draw'){
+      var isMe = rMyColor && m.winner === rMyColor;
+      var t = document.getElementById('winTitle');
+      t.innerHTML = isMe ? '你五子<em>连珠</em>'
+        : (rMyColor ? '对方五子<em>连珠</em>'
+                    : ((m.winner === 'black' ? '黑方' : '白方') + ' 五子<em>连珠</em>'));
+      document.getElementById('winSub').textContent = isMe ? '远 程 手 谈 · 你 赢 了'
+        : (rMyColor ? '再 来 必 翻 盘' : '五 子 连 珠');
+      document.getElementById('winBanner').classList.remove('hidden');
+      confetti();
+    }
+  }
+  rPrevWinner = m.winner;
+  draw(); updateUI();
+}
+
 // ============ 初始化 ============
 cv.addEventListener('click', cvClick);
 resetState();
 mode = 'pvp';
 document.getElementById('btnUndo').disabled = true;
+try{
+  var savedGk = localStorage.getItem('booe_gomoku_name');
+  if (savedGk) document.getElementById('rName').value = savedGk;
+}catch(e){}
 
 // ?demo=1 摆一盘中盘局面（供截图/演示）
 if (location.search.indexOf('demo=1') > -1){
