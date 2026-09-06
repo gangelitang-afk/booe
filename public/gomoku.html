@@ -460,6 +460,7 @@ function rJoin(){
 function rHandle(m){
   if (m.type === 'joined'){
     rMyColor = m.color; // 'black' | 'white' | null(观战)
+    if (rState) updateUI(); // 重开换色后即时刷新轮次提示
   } else if (m.type === 'state'){
     rState = m;
     rSync();

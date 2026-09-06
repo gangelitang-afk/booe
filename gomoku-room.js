@@ -208,6 +208,13 @@ export class GomokuRoom {
         this.phase = 'playing';
         this.pushLog('再来一局！黑白互换，黑先行');
         this.emitState();
+        // 换色后重发 joined，让每个客户端知道自己的新颜色
+        for (const [cws, c] of this.conns) {
+          if (c.playerId) {
+            const p = this.players.find(pp => pp.id === c.playerId);
+            if (p) this.send(cws, { type: 'joined', playerId: p.id, color: p.color });
+          }
+        }
         break;
       }
     }
