@@ -89,6 +89,44 @@
     font-size:14px;padding:9px 10px;outline:none;min-width:0;}
   .rfield:focus{border-color:var(--c3);}
   .rnum{font-family:var(--mono);font-size:30px;font-weight:900;color:var(--red);letter-spacing:.18em;margin:4px 0;}
+  .rfield-wrap{margin-bottom:12px;}
+  .rlabel{display:block;font-size:10px;font-weight:900;letter-spacing:.22em;color:var(--gray);margin-bottom:5px;}
+  .rblock{border:2px solid var(--ink);padding:11px;margin-bottom:10px;background:var(--paper);}
+  .rbt{font-weight:900;font-size:12px;letter-spacing:.12em;margin-bottom:4px;}
+  .rbdesc{font-size:11px;color:var(--gray);margin-bottom:9px;line-height:1.5;}
+  /* 提示条 */
+  #noticeBar{border:2px solid var(--red);background:#FFF3F1;color:var(--red);font-weight:900;font-size:12px;
+    padding:10px 12px;margin-bottom:10px;line-height:1.6;}
+  /* 房间条：座位 + 身份 */
+  #roomStrip{border:2px solid var(--ink);background:#fff;padding:10px;margin-bottom:10px;}
+  .seat{display:flex;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px dashed #ddd;font-size:12px;}
+  .seat:last-child{border-bottom:none;}
+  .seat.off{opacity:.45;}
+  .seat.empty .sname{color:var(--gray);}
+  .sdot{width:15px;height:15px;border-radius:50%;border:2px solid var(--ink);flex-shrink:0;background:var(--paper);}
+  .sdot.ghost{border-style:dashed;}
+  .sname{font-weight:900;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .sname em{font-style:normal;background:var(--red);color:#fff;font-size:10px;padding:1px 5px;margin-left:6px;}
+  .scolor{font-family:var(--mono);font-size:11px;color:var(--gray);}
+  .sconn{font-size:10px;color:var(--c3);min-width:30px;text-align:right;}
+  .seat.off .sconn{color:var(--red);}
+  .strip-foot{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .role-badge{font-weight:900;font-size:11px;letter-spacing:.1em;padding:5px 10px;border:2px solid var(--ink);background:var(--c4);}
+  .role-badge.spectator{background:#fff;color:var(--gray);border-style:dashed;}
+  .role-badge.player{background:var(--c3);color:#fff;border-color:var(--c3);}
+  .spect{font-size:11px;color:var(--gray);flex:1;}
+  .btn.tiny{padding:6px 12px;font-size:11px;letter-spacing:.1em;}
+  /* 战绩 */
+  #recordsBox{border:2px solid var(--ink);background:#fff;padding:11px;margin-top:12px;}
+  #recordsBox .tbl{font-weight:900;font-size:11px;letter-spacing:.22em;color:var(--c3);margin-bottom:8px;}
+  #recordsBox .rec{display:flex;align-items:center;gap:8px;font-size:11px;padding:5px 0;border-bottom:1px dotted #e5e5e5;}
+  #recordsBox .rec:last-child{border-bottom:none;}
+  #recordsBox .rw{font-weight:900;padding:1px 6px;font-size:11px;}
+  #recordsBox .rw.win{background:var(--c3);color:#fff;}
+  #recordsBox .rw.lose{background:#eee;color:var(--gray);}
+  #recordsBox .rmeta{flex:1;color:var(--gray);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #recordsBox .rdate{font-family:var(--mono);font-size:10px;color:var(--gray);}
+  #recordsBox .rempty{font-size:11px;color:var(--gray);}
   @media (max-width:640px){
     .head h1{font-size:40px;}
     .back{font-size:11px;padding:6px 10px;}
@@ -117,19 +155,44 @@
 
   <div id="remoteBox" class="hidden">
     <div class="rt">远 程 对 战</div>
-    <div id="remoteForm">
-      <div class="rrow"><input class="rfield" id="rName" placeholder="你的名字" maxlength="12"></div>
+
+    <div class="rfield-wrap">
+      <label class="rlabel">你的名字</label>
+      <input class="rfield" id="rName" placeholder="固定后会自动记住" maxlength="12">
+    </div>
+
+    <div class="rblock">
+      <div class="rbt">① 开新局</div>
+      <div class="rbdesc">只需要名字，点下面的按钮系统自动给你一个 4 位房号</div>
+      <button class="btn primary" id="rCreate" style="width:100%;" onclick="rCreate()">创建房间</button>
+    </div>
+
+    <div class="rblock">
+      <div class="rbt">② 加入别人的房间</div>
+      <div class="rbdesc">需要朋友给你的 4 位房号</div>
       <div class="rrow">
         <input class="rfield" id="rRoom" placeholder="房间号(4位)" maxlength="4" inputmode="numeric">
         <button class="btn" onclick="rJoin()">加入</button>
       </div>
-      <button class="btn primary" id="rCreate" style="width:100%;" onclick="rCreate()">创建房间</button>
-      <div class="hint" id="rHint" style="margin-top:10px;">和远方的朋友用房间号连线对弈，先到执黑</div>
     </div>
-    <div id="remoteWait" class="hidden" style="text-align:center;">
+
+    <div class="hint" id="rHint" style="margin-top:10px;">先到的人执黑先行，第三人进入自动成为观看者</div>
+
+    <div id="remoteWait" class="hidden" style="text-align:center;margin-top:12px;">
       <div style="font-size:11px;letter-spacing:.28em;color:var(--gray);">房 间 号</div>
       <div class="rnum" id="rRoomNum">----</div>
       <div style="font-size:12px;color:var(--gray);">把号码发给朋友，对方加入后自动开局</div>
+    </div>
+  </div>
+
+  <div id="noticeBar" class="hidden"></div>
+
+  <div id="roomStrip" class="hidden">
+    <div id="seats"></div>
+    <div class="strip-foot">
+      <span id="roleBadge" class="role-badge"></span>
+      <span id="spectCount" class="spect"></span>
+      <button class="btn tiny" onclick="leaveRemote()">离开房间</button>
     </div>
   </div>
 
@@ -143,6 +206,12 @@
     <button class="btn primary" onclick="restart()">重新开局</button>
   </div>
   <div class="hint" id="hint">点击棋盘交叉点落子</div>
+
+  <div id="recordsBox" class="hidden">
+    <div class="tbl">战 绩 记 录</div>
+    <div id="recSummary" style="font-size:11px;color:var(--gray);margin-bottom:8px;"></div>
+    <div id="recList"></div>
+  </div>
 </div>
 
 <div class="win hidden" id="winBanner">
@@ -264,14 +333,22 @@ function setMode(m){
   document.getElementById('mPveW').classList.toggle('on', m==='pvew');
   document.getElementById('mRemote').classList.toggle('on', m==='remote');
   document.getElementById('remoteBox').classList.toggle('hidden', m!=='remote');
+  document.getElementById('recordsBox').classList.toggle('hidden', m!=='remote');
   document.getElementById('btnUndo').disabled = (m === 'remote');
   document.getElementById('winBanner').classList.add('hidden');
+  document.getElementById('noticeBar').classList.add('hidden');
   if (m === 'remote'){
     resetState(); draw();
     document.getElementById('hint').textContent = '创建或加入房间开始远程对弈';
-    if (rState) rSync(); else updateUI();
+    renderRecords();
+    if (rState){ rSync(); } else {
+      document.getElementById('roomStrip').classList.add('hidden');
+      document.getElementById('remoteWait').classList.add('hidden');
+      updateUI();
+    }
     return;
   }
+  document.getElementById('roomStrip').classList.add('hidden');
   if (rws){ try{ rws.close(); }catch(e){} rws = null; rState = null; rMyColor = null; }
   restart();
 }
@@ -462,17 +539,74 @@ function rHandle(m){
     rMyColor = m.color; // 'black' | 'white' | null(观战)
     if (rState) updateUI(); // 重开换色后即时刷新轮次提示
   } else if (m.type === 'state'){
+    // 版本号去重：内容没变就不重绘棋盘（多人进出房间时服务器不会发多余 state，双保险）
+    if (rState && rState.rev === m.rev && rState.phase === m.phase && rState.moveCount === m.moveCount) return;
     rState = m;
     rSync();
+  } else if (m.type === 'roster'){
+    // 轻量名单同步：只更新座位与人数，不动棋盘
+    if (!rState) return;
+    rState.players = m.players; rState.spectators = m.spectators; rState.phase = m.phase;
+    renderSeats(); updateUI();
+  } else if (m.type === 'notice'){
+    showNotice(m.msg);
   } else if (m.type === 'error'){
     rShow(m.msg);
   }
 }
 
+// 顶部横幅提示（比 hint 更醒目）
+function showNotice(msg){
+  var el = document.getElementById('noticeBar');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  clearTimeout(showNotice._t);
+  showNotice._t = setTimeout(function(){ el.classList.add('hidden'); }, 6000);
+}
+
+// 座位表：明确谁在下棋、谁来观战
+function renderSeats(){
+  var host = document.getElementById('seats');
+  if (!rState){ host.innerHTML = ''; return; }
+  var html = '';
+  for (var i = 0; i < 2; i++){
+    var p = rState.players[i];
+    var colorName = i === 0 ? '黑' : '白';
+    var dot = i === 0 ? '#141412' : '#f5efdd';
+    if (p){
+      var isMe = rMyColor === p.color;
+      html += '<div class="seat' + (p.connected ? '' : ' off') + '">'
+        + '<span class="sdot" style="background:' + dot + (i === 1 ? ';border-color:#999' : '') + '"></span>'
+        + '<span class="sname">' + escapeHtmlLite(p.name) + (isMe ? '<em>你</em>' : '') + '</span>'
+        + '<span class="scolor">' + colorName + '方</span>'
+        + '<span class="sconn">' + (p.connected ? '在线' : '掉线') + '</span>'
+        + '</div>';
+    } else {
+      html += '<div class="seat empty"><span class="sdot ghost"></span><span class="sname">虚位以待</span>'
+        + '<span class="scolor">' + colorName + '方</span><span class="sconn"></span></div>';
+    }
+  }
+  host.innerHTML = html;
+  var badge = document.getElementById('roleBadge');
+  var spect = '观众 ' + (rState.spectators || 0) + ' 人';
+  if (rMyColor === 'black') badge.textContent = '你是黑方 · 执黑先行';
+  else if (rMyColor === 'white') badge.textContent = '你是白方';
+  else badge.textContent = '你是观看者 · 不能落子';
+  badge.className = 'role-badge ' + (rMyColor ? 'player' : 'spectator');
+  document.getElementById('spectCount').textContent = spect;
+}
+function escapeHtmlLite(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
+
 function rSync(){
   var m = rState;
   document.getElementById('winBanner').classList.add('hidden');
-  board = m.board.map(function(row){ return row.slice(); });
+  board = m.board.map(function(row){
+    return (typeof row === 'string') ? row.split('').map(Number) : row.slice();
+  });
   turn = m.turn === 'black' ? C.BLACK : C.WHITE;
   winInfo = (m.winLine && m.winLine !== 'draw') ? m.winLine : null;
   over = m.phase === 'ended';
@@ -480,20 +614,17 @@ function rSync(){
   hist = [];
   lastRemote = m.lastMove;
 
-  // 房间面板显隐
-  var showWait = (m.phase !== 'playing');
-  document.getElementById('remoteForm').classList.add('hidden');
-  document.getElementById('remoteWait').classList.toggle('hidden', !showWait);
-  document.getElementById('remoteBox').classList.toggle('hidden', m.phase === 'playing');
+  // 面板显隐：等待/结束显示房间号面板，对局中收起表单只留房间条
+  var waiting = (m.phase === 'waiting');
+  document.getElementById('remoteBox').classList.toggle('hidden', !waiting);
+  document.getElementById('remoteWait').classList.toggle('hidden', !waiting);
   document.getElementById('rRoomNum').textContent = m.roomId;
-  if (showWait && m.phase === 'ended'){
-    document.getElementById('rRoomNum').textContent = m.roomId;
-    rShow(''); document.getElementById('rHint').textContent = '对局结束，点下方「重新开局」换色再来';
-  }
+  if (m.phase === 'ended') document.getElementById('rHint').textContent = '对局结束，点下方「重新开局」黑白互换再来';
 
   // 胜负横幅 + 计分
   if (m.winner && m.winner !== rPrevWinner){
     if (m.winner === 'black') score.b++; else if (m.winner === 'white') score.w++;
+    saveRecord(m); // 写战绩
     if (m.winner !== 'draw'){
       var isMe = rMyColor && m.winner === rMyColor;
       var t = document.getElementById('winTitle');
@@ -507,7 +638,73 @@ function rSync(){
     }
   }
   rPrevWinner = m.winner;
+  document.getElementById('roomStrip').classList.remove('hidden');
+  renderSeats();
   draw(); updateUI();
+}
+
+// ---------- 战绩记录（固定名字后自动留存） ----------
+var REC_KEY = 'booe_gomoku_records';
+function loadRecords(){
+  try{
+    var raw = localStorage.getItem(REC_KEY);
+    var arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function saveRecord(m){
+  try{
+    var list = loadRecords();
+    var me = rMyColor;
+    var opp = null;
+    (m.players || []).forEach(function(p){ if (me && p.color !== me) opp = p.name; });
+    var result = (m.winner === 'draw') ? 'draw' : (me ? (m.winner === me ? 'win' : 'lose') : 'watch');
+    list.unshift({
+      t: Date.now(),
+      room: m.roomId,
+      opp: opp || '—',
+      color: me === 'black' ? '黑' : (me === 'white' ? '白' : '观战'),
+      result: result,
+      moves: m.moveCount
+    });
+    if (list.length > 20) list = list.slice(0, 20);
+    localStorage.setItem(REC_KEY, JSON.stringify(list));
+    renderRecords();
+  }catch(e){}
+}
+function renderRecords(){
+  var list = loadRecords();
+  var host = document.getElementById('recList');
+  var sum = document.getElementById('recSummary');
+  if (!host) return;
+  var w = 0, l = 0, d = 0;
+  list.forEach(function(r){ if (r.result === 'win') w++; else if (r.result === 'lose') l++; else if (r.result === 'draw') d++; });
+  sum.textContent = list.length ? ('近 ' + list.length + ' 局：' + w + ' 胜 ' + l + ' 负 ' + d + ' 平') : '';
+  if (!list.length){ host.innerHTML = '<div class="rempty">还没有远程对局记录，赢一局就有了</div>'; return; }
+  var html = '';
+  list.forEach(function(r){
+    var tag = r.result === 'win' ? '<span class="rw win">胜</span>'
+      : (r.result === 'lose' ? '<span class="rw lose">负</span>' : '<span class="rw">平</span>');
+    var d = new Date(r.t);
+    var ds = (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+    html += '<div class="rec">' + tag
+      + '<span class="rmeta">vs ' + escapeHtmlLite(r.opp) + ' · 执' + r.color + ' · ' + r.moves + ' 手 · 房 ' + escapeHtmlLite(String(r.room)) + '</span>'
+      + '<span class="rdate">' + ds + '</span></div>';
+  });
+  host.innerHTML = html;
+}
+
+// 离开房间：断开连接，回到表单
+function leaveRemote(){
+  if (rws){ try{ rws.close(); }catch(e){} }
+  rws = null; rState = null; rMyColor = null; rPrevWinner = undefined; lastRemote = null;
+  document.getElementById('roomStrip').classList.add('hidden');
+  document.getElementById('remoteBox').classList.remove('hidden');
+  document.getElementById('remoteWait').classList.add('hidden');
+  document.getElementById('winBanner').classList.add('hidden');
+  resetState(); draw();
+  document.getElementById('hint').textContent = '已离开房间，可重新创建或加入';
+  updateUI();
 }
 
 // ============ 初始化 ============

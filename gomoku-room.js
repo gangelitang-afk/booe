@@ -35,6 +35,11 @@ function emptyBoard() {
   return Array.from({ length: SIZE }, () => new Array(SIZE).fill(EMPTY));
 }
 
+// 棋盘瘦身：二维 -> 15 行字符串（"01212..."），比二维数组 JSON 小 3 倍
+function encodeBoard(board) {
+  return board.map(row => row.join(''));
+}
+
 export class GomokuRoom {
   constructor(state, env) {
     this.state = state;
@@ -49,6 +54,7 @@ export class GomokuRoom {
     this.winLine = null;      // [[x,y],...] 或 'draw'
     this.moveCount = 0;
     this.log = [];
+    this.rev = 0;             // 棋局版本号：仅对局状态变化时才自增
   }
 
   // ============ WebSocket 入口 ============
@@ -97,19 +103,51 @@ export class GomokuRoom {
   }
 
   emitState() {
-    this.broadcast({
-      type: 'state',
+    this.broadcast(this.buildState());
+  }
+
+  // 轻量广播：只同步「谁在房间」，不含棋盘 —— 避免多人进出时的广播风暴
+  emitRoster(excludeWs) {
+    const payload = {
+      type: 'roster',
       roomId: this.roomId,
+      rev: this.rev,
       phase: this.phase,
       players: this.players.map(p => ({ id: p.id, name: p.name, color: p.color, connected: p.connected })),
-      board: this.board,
+      spectators: this.spectatorCount()
+    };
+    for (const ws of this.conns.keys()) {
+      if (ws !== excludeWs) this.send(ws, payload);
+    }
+  }
+
+  // 只发给某一个连接（入座时给新人同步完整棋盘，不给全员增加负载）
+  emitStateTo(ws) {
+    this.send(ws, this.buildState());
+  }
+
+  buildState() {
+    return {
+      type: 'state',
+      roomId: this.roomId,
+      rev: this.rev,
+      phase: this.phase,
+      players: this.players.map(p => ({ id: p.id, name: p.name, color: p.color, connected: p.connected })),
+      spectators: this.spectatorCount(),
+      board: encodeBoard(this.board),
       turn: this.turn,
       lastMove: this.lastMove,
       winner: this.winner,
       winLine: this.winLine,
       moveCount: this.moveCount,
       log: this.log.slice(-12)
-    });
+    };
+  }
+
+  spectatorCount() {
+    let n = 0;
+    for (const c of this.conns.values()) if (c.spectator) n++;
+    return n;
   }
 
   // ============ 消息处理 ============
@@ -132,15 +170,26 @@ export class GomokuRoom {
           this.send(ws, { type: 'joined', playerId: player.id, color });
           if (this.players.length === 2 && this.phase === 'waiting') {
             this.phase = 'playing';
+            this.rev++;
             this.pushLog('游戏开始！黑先行');
           }
-        } else {
-          // 满员：观战
-          conn.spectator = true;
-          this.pushLog(`${name} 进入观战`);
-          this.send(ws, { type: 'joined', playerId: null, color: null });
+          // 自己拿完整棋盘，其他在场的人只收轻量名单
+          this.emitStateTo(ws);
+          this.emitRoster(ws);
+          break;
         }
-        this.emitState();
+        // 满员：明确告知是观看者身份
+        conn.spectator = true;
+        this.pushLog(`${name} 进入观战`);
+        this.send(ws, {
+          type: 'joined', playerId: null, color: null, spectator: true
+        });
+        this.send(ws, {
+          type: 'notice',
+          msg: '对局位置已满（黑、白两个座位都有人了），你已进入观看模式：只能看棋，不能落子。'
+        });
+        this.emitStateTo(ws);
+        this.emitRoster(ws);
         break;
       }
 
@@ -170,6 +219,7 @@ export class GomokuRoom {
         const v = this.turn === 'black' ? BLACK : WHITE;
         this.board[y][x] = v;
         this.moveCount++;
+        this.rev++;
         this.lastMove = { x, y, color: this.turn };
         const line = winLineAt(this.board, x, y);
         if (line) {
@@ -206,6 +256,7 @@ export class GomokuRoom {
         this.winLine = null;
         this.moveCount = 0;
         this.phase = 'playing';
+        this.rev++;
         this.pushLog('再来一局！黑白互换，黑先行');
         this.emitState();
         // 换色后重发 joined，让每个客户端知道自己的新颜色
@@ -221,6 +272,7 @@ export class GomokuRoom {
   }
 
   onClose(ws) {
+    const changed = !!this.conns.get(ws) && (!!this.conns.get(ws).playerId || !!this.conns.get(ws).spectator);
     const conn = this.conns.get(ws);
     if (conn && conn.playerId) {
       const p = this.players.find(x => x.id === conn.playerId);
@@ -228,9 +280,11 @@ export class GomokuRoom {
         p.connected = false;
         this.pushLog(`${p.name} 掉线了`);
       }
+    } else if (conn && conn.spectator) {
+      this.pushLog('一位观看者离开了');
     }
     this.conns.delete(ws);
-    this.emitState();
+    if (changed) this.emitRoster();   // 离开只同步名单，不重发全棋盘
   }
 
   getPlayer(ws) {
