@@ -168,14 +168,21 @@ export class GomokuRoom {
           conn.playerId = player.id;
           this.pushLog(`${name} 加入（${color === 'black' ? '黑' : '白'}）`);
           this.send(ws, { type: 'joined', playerId: player.id, color });
-          if (this.players.length === 2 && this.phase === 'waiting') {
+          const startedNow = (this.players.length === 2 && this.phase === 'waiting');
+          if (startedNow) {
             this.phase = 'playing';
             this.rev++;
             this.pushLog('游戏开始！黑先行');
           }
-          // 自己拿完整棋盘，其他在场的人只收轻量名单
+          // 自己先拿完整棋盘
           this.emitStateTo(ws);
-          this.emitRoster(ws);
+          if (startedNow) {
+            // 开局是「棋局状态变化」，必须全员同步 state（否则只监听 state 的客户端永远等不到开局）
+            this.emitState();
+          } else {
+            // 纯成员变动：在场的人只收轻量名单
+            this.emitRoster(ws);
+          }
           break;
         }
         // 满员：明确告知是观看者身份
