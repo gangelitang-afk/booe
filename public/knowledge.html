@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#efe8d8">
+  <title>知识库问答 · 止一的数字基地</title>
+  <link rel="stylesheet" href="assets/base.css">
+  <link rel="stylesheet" href="assets/knowledge.css">
+  <script defer src="assets/knowledge.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <div class="shell">
+    <header>
+      <a class="logo" href="index.html">不仁<span>止一的数字基地<small>BOOE.XYZ / 私人刊物</small></span></a>
+      <nav aria-label="主导航"><a href="lab.html">返回实验室</a></nav>
+    </header>
+    <main id="main" class="knowledge-main">
+      <section class="lab-title"><h1>知识库问答</h1><p>从已收录的资料中查找答案和出处。</p></section>
+      <section class="knowledge-panel">
+        <form id="unlock-form">
+          <label for="password">访问密码</label>
+          <input id="password" type="password" autocomplete="current-password" maxlength="256" required>
+          <button type="submit">解锁问答</button>
+        </form>
+        <form id="ask-form" hidden>
+          <label for="question">你的问题</label>
+          <textarea id="question" rows="4" maxlength="1500" required placeholder="输入你想查的问题"></textarea>
+          <button type="submit">提问</button>
+        </form>
+        <p id="knowledge-status" role="status" aria-live="polite"></p>
+        <article id="answer-panel" hidden aria-labelledby="answer-title">
+          <h2 id="answer-title">回答</h2>
+          <p id="answer-text"></p>
+          <div id="sources-panel" hidden><h3>引用资料</h3><ul id="sources"></ul></div>
+        </article>
+      </section>
+    </main>
+    <footer><span>止一 / BOOE.XYZ</span><a href="lab.html">实验室</a></footer>
+  </div>
+</body>
+</html>

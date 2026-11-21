@@ -1,6 +1,13 @@
 {
   "name": "booe",
   "main": "_worker.js",
+  "ratelimits": [
+    {
+      "name": "KNOWLEDGE_LIMIT",
+      "namespace_id": "808101",
+      "simple": { "limit": 8, "period": 60 }
+    }
+  ],
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",

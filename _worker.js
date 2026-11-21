@@ -8,11 +8,16 @@
 
 import { LudoRoom, COLORS } from './ludo-room.js';
 import { GomokuRoom } from './gomoku-room.js';
+import { handleKnowledgeChat } from './knowledge-chat.js';
 export { LudoRoom, GomokuRoom };
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (url.pathname.startsWith('/api/knowledge/')) {
+      return handleKnowledgeChat(request, env);
+    }
 
     // ---- 留言板 API ----
     if (url.pathname === '/api/guestbook') {

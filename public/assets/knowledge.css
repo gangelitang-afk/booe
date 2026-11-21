@@ -1,0 +1,15 @@
+.knowledge-main { max-width: 52rem; margin-inline: auto; padding-bottom: 4rem; }
+.knowledge-main .lab-title { padding-block: clamp(2rem, 6vw, 4rem) 1.75rem; }
+.knowledge-panel { border: 1px solid #bfb29e; border-top: 3px solid #8e342b; padding: clamp(1rem, 4vw, 2rem); background: #faf4e8; }
+.knowledge-panel form { display: grid; gap: .75rem; }
+.knowledge-panel [hidden] { display: none; }
+.knowledge-panel label { font-weight: 700; }
+.knowledge-panel input, .knowledge-panel textarea { box-sizing: border-box; width: 100%; border: 1px solid #978877; background: #fffcf5; color: #2a241d; padding: .8rem; font: inherit; border-radius: .2rem; }
+.knowledge-panel textarea { resize: vertical; }
+.knowledge-panel button { justify-self: start; border: 0; border-radius: .2rem; background: #843329; color: #fffaf0; font: inherit; padding: .65rem 1.2rem; cursor: pointer; }
+.knowledge-panel button:disabled { opacity: .65; cursor: wait; }
+.knowledge-panel :focus-visible { outline: 2px solid #843329; outline-offset: 3px; }
+#knowledge-status:empty { display: none; }
+#knowledge-status { margin: .8rem 0 0; color: #713126; }
+#answer-panel { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #bfb29e; }
+#answer-text { white-space: pre-wrap; overflow-wrap: anywhere; }
