@@ -6,7 +6,8 @@
     "play": "一起玩",
     "talk": "来信",
     "india": "印度社会观察",
-    "procurement": "采购机会看板"
+    "procurement": "采购机会看板",
+    "twenty-four": "24 点"
   });
   const currentPage = location.pathname.replace(/\/$/, '').split('/').pop().replace(/\.html$/, '');
   const isKnownPage = (page) => Object.hasOwn(pages, page);

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#efe8d8">
+  <title>24 点 · 止一的数字基地</title>
+  <link rel="stylesheet" href="assets/digital-base.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; color: var(--db-ink); font: 16px/1.55 "Microsoft YaHei", "PingFang SC", sans-serif; }
+    main { width: min(100%, 560px); margin: clamp(24px, 5vh, 58px) auto; padding-bottom: 16px; }
+    .back { color: var(--db-muted); font-size: .875rem; text-underline-offset: .2em; }
+    .game-heading { margin: 12px 0 0; font: 900 clamp(42px, 8vw, 68px)/1.15 SimSun, "Songti SC", serif; }
+    .game-heading span { color: var(--db-red); }
+    .game-rules { margin: 6px 0 18px; color: var(--db-muted); }
+    .game { padding: clamp(12px, 4vw, 24px); border: 1px solid var(--db-line); background: #f9f4e7; }
+    .numbers, .operators, .actions { display: grid; gap: 8px; }
+    .numbers { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 14px; }
+    button { min-width: 0; min-height: 44px; border: 1px solid var(--db-line); background: #fffbf1; color: inherit; font: inherit; cursor: pointer; }
+    button:hover:not(:disabled) { border-color: var(--db-red); color: #952a22; }
+    button:focus-visible, input:focus-visible { outline: 2px solid var(--db-red); outline-offset: 2px; }
+    .numbers button { min-height: 62px; border-bottom: 3px solid var(--db-red); font: 700 2rem/1 Georgia, serif; }
+    .numbers button:disabled { border-bottom-color: var(--db-line); color: var(--db-muted); opacity: .58; cursor: default; }
+    label { display: block; margin-bottom: 5px; color: var(--db-muted); font-size: .875rem; }
+    input { width: 100%; min-height: 49px; border: 1px solid var(--db-line); background: #fffdf7; color: inherit; padding: 7px 10px; font: 1.15rem/1.35 Consolas, "Microsoft YaHei", monospace; }
+    .operators { grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 9px 0; }
+    .actions { grid-template-columns: 1.3fr 1fr 1fr; }
+    .primary { background: #9c3529; border-color: #9c3529; color: #fff; }
+    .primary:hover:not(:disabled) { background: #7b2b22; color: #fff; }
+    .result { min-height: 1.6em; margin: 10px 0 0; overflow-wrap: anywhere; }
+    .result[data-state="win"] { color: #2e5743; font-weight: 700; }
+    .result[data-state="error"] { color: #952a22; }
+  </style>
+  <script src="assets/twenty-four.js" defer></script>
+  <script src="assets/resume-browsing.js" defer></script>
+</head>
+<body class="db-secondary">
+  <div class="wrap">
+    <header class="db-header" aria-label="站点页首">
+      <a class="db-brand" href="index.html"><strong>数字基地</strong><small>止一 · BOOE.XYZ</small></a>
+      <nav class="db-nav" aria-label="主导航">
+        <a href="gate.html">认识我</a>
+        <a href="lab.html">实验室</a>
+        <a href="play.html" aria-current="true">一起玩</a>
+        <a href="talk.html">来信</a>
+      </nav>
+    </header>
+    <main>
+      <a class="back" href="play.html">回到一起玩</a>
+      <h1 class="game-heading"><span>24</span> 点</h1>
+      <p class="game-rules">四个数字各用一次，用加减乘除和括号凑出 24。</p>
+      <form class="game" id="game">
+        <div class="numbers" id="numbers" role="group" aria-label="本题数字"></div>
+        <label for="expression">算式</label>
+        <input id="expression" type="text" maxlength="64" autocomplete="off" spellcheck="false" inputmode="none">
+        <div class="operators" role="group" aria-label="运算与编辑">
+          <button type="button" data-token="+">+</button>
+          <button type="button" data-token="−">−</button>
+          <button type="button" data-token="×">×</button>
+          <button type="button" data-token="÷">÷</button>
+          <button type="button" data-token="(">(</button>
+          <button type="button" data-token=")">)</button>
+          <button type="button" id="undo">退格</button>
+          <button type="button" id="clear">清空</button>
+        </div>
+        <div class="actions">
+          <button type="submit" class="primary">提交答案</button>
+          <button type="button" id="hint">提示</button>
+          <button type="button" id="next">换一题</button>
+        </div>
+        <p class="result" id="result" role="status" aria-atomic="true"></p>
+      </form>
+      <noscript>请启用 JavaScript 后开始游戏。</noscript>
+    </main>
+  </div>
+</body>
+</html>
