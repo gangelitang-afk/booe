@@ -105,21 +105,31 @@
     <div class="ph fade"><span class="no">06</span><span class="nm">建 造 日 志</span><span class="ln"></span><span class="pg">P06</span></div>
     <div class="title fade">本站 · <em>建造日志</em></div>
     <div class="sub fade">从一张白纸，长成一个有游戏、有互动、有朋友的数字空间。</div>
-    <div class="updated fade" id="updatedAt"></div>
+    <div class="updated fade">日志更新于 2026-11-22</div>
 
+    <div class="updated fade" id="statsAt">站点统计快照</div>
     <div class="stats fade">
       <div class="stat hot"><div class="num" id="commits">…</div><div class="lab">代码提交</div></div>
       <div class="stat"><div class="num" id="pages">…</div><div class="lab">页面数</div></div>
       <div class="stat"><div class="num" id="launched">…</div><div class="lab">上线日期</div></div>
-      <div class="stat"><div class="num" id="phase">Phase 1</div><div class="lab">当前阶段</div></div>
+      <div class="stat"><div class="num" id="phase">小迭代</div><div class="lab">当前阶段</div></div>
     </div>
 
     <div class="colhead fade">建 造 记 录</div>
-    <div class="list fade" id="logList"></div>
+    <div class="list fade" id="logList">
+      <div class="post"><time class="pdate" datetime="2026-11-22">2026-11-22</time><div class="ptext">实验室新增<a href="procurement.html">采购机会看板</a>。可以查看采购与供应链岗位的方向相关占比、公司分布，并按公司和岗位方向筛选。</div></div>
+      <div class="post"><time class="pdate" datetime="2026-11-22">2026-11-22</time><div class="ptext">统一站点标识和次级页导航，从认识我、实验室、一起玩和来信都能回到基地。</div></div>
+      <div class="post"><time class="pdate" datetime="2026-11-19">2026-11-19</time><div class="ptext">整理项目档案，汇总已有栏目和每周迭代想法。做出开发计划台账的离线试用版，用来记录目标日期、进度和验收事项。</div></div>
+      <div class="post"><time class="pdate" datetime="2026-11-05">2026-11-05</time><div class="ptext">新版首页和实验室上线，更新首页插画和栏目入口，并检查手机浏览体验。</div></div>
+      <div class="post"><time class="pdate" datetime="2026-11-05">2026-11-05</time><div class="ptext">发布<a href="india.html">《印度社会观察》</a>专题，配套提供 24 页 PDF，方便转发和下载。</div></div>
+      <div class="post"><time class="pdate" datetime="2026-08-22">2026-08-22</time><div class="ptext">实验室详情页上线：Hermes 统计 / Reddit 情报 / 本站日志。</div></div>
+      <div class="post"><time class="pdate" datetime="2026-08-22">2026-08-22</time><div class="ptext">新增认识我（密码门）/ 实验室 / 一起玩（反应力游戏）/ 留言板占位。</div></div>
+      <div class="post"><time class="pdate" datetime="2026-08-22">2026-08-22</time><div class="ptext">域名绑定 booe.xyz，DNS 生效，正式开门。</div></div>
+      <div class="post"><time class="pdate" datetime="2026-08-22">2026-08-22</time><div class="ptext">仓库建立，v5 首页上线：不仁义满屏巨字 + 朱砂干涉。</div></div>
+    </div>
 
     <div class="note fade">
-      止一的数字基地 · 站点建造记录基地（首页 / 认识我 / 实验室 / 一起玩）已上线。<br>
-      下一步：Phase 2 互动（留言板、聊天、小游戏）。
+      现在可以进实验室看专题，去「一起玩」体验小游戏，也可以到「来信」留言。下一步会从每周一个小功能做起。
     </div>
 
   </div>
@@ -138,24 +148,11 @@
 <script>
   fetch('stats.json').then(r => r.json()).then(data => {
     const s = data.site;
-    document.getElementById('updatedAt').textContent = '数据更新于 ' + data.updated_at;
+    document.getElementById('statsAt').textContent = '站点统计快照 · ' + data.updated_at;
     document.getElementById('commits').textContent = s.commits;
     document.getElementById('pages').textContent = s.pages;
     document.getElementById('launched').textContent = s.launched;
 
-    const logs = [
-      { date: s.first_commit, text: '仓库建立，v5 首页上线：不仁义满屏巨字 + 朱砂干涉' },
-      { date: s.launched, text: '域名绑定 booe.xyz，DNS 生效，正式开门' },
-      { date: s.launched, text: '新增认识我（密码门）/ 实验室 / 一起玩（反应力游戏）/ 留言板占位' },
-      { date: s.launched, text: '实验室详情页上线：Hermes 统计 / Reddit 情报 / 本站日志' }
-    ];
-    const list = document.getElementById('logList');
-    logs.forEach(l => {
-      const item = document.createElement('div');
-      item.className = 'post';
-      item.innerHTML = `<div class="pdate">${l.date}</div><div class="ptext">${l.text}</div>`;
-      list.appendChild(item);
-    });
   }).catch(() => {
     ['commits','pages','launched'].forEach(id => document.getElementById(id).textContent = '—');
   });
