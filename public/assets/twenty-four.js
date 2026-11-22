@@ -5,160 +5,181 @@
     [1, 2, 7, 8], [2, 2, 3, 9], [4, 4, 7, 7], [1, 6, 6, 8],
     [2, 3, 5, 7], [3, 5, 7, 9], [4, 5, 6, 7], [1, 3, 7, 9]
   ];
+  const symbols = { '+': '+', '-': '−', '*': '×', '/': '÷' };
 
-  // Keep results as exact fractions so expressions with thirds can reach 24.
+  function simplify(numerator, denominator) {
+    let a = Math.abs(numerator);
+    let b = Math.abs(denominator);
+    while (b) [a, b] = [b, a % b];
+    const divisor = denominator < 0 ? -a : a;
+    return [numerator / divisor, denominator / divisor];
+  }
+
   function calculate([a, b], op, [c, d]) {
     switch (op) {
-      case '+': return [a * d + b * c, b * d];
-      case '-': return [a * d - b * c, b * d];
-      case '*': return [a * c, b * d];
-      case '/': return c === 0 ? null : [a * d, b * c];
+      case '+': return simplify(a * d + b * c, b * d);
+      case '-': return simplify(a * d - b * c, b * d);
+      case '*': return simplify(a * c, b * d);
+      case '/': return c === 0 ? null : simplify(a * d, b * c);
     }
   }
 
-  const isTwentyFour = ([numerator, denominator]) => numerator === 24 * denominator;
-  const symbols = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+  const display = ([n, d]) => d === 1 ? String(n) : n + '/' + d;
+  const equals24 = ([n, d]) => n === 24 * d;
+  const stepText = (left, op, right) => display(left) + ' ' + symbols[op] + ' ' + display(right);
 
-  function solve(items, first = '') {
-    if (items.length === 1) {
-      return isTwentyFour(items[0].value) ? { answer: items[0].text, first } : null;
+  function solve(cards, firstStep = '') {
+    if (cards.length === 1) {
+      return equals24(cards[0].value) ? { firstStep, expression: cards[0].expression } : null;
     }
-    for (const [i, left] of items.entries()) {
-      for (const [j, right] of items.entries()) {
+    for (const [i, left] of cards.entries()) {
+      for (const [j, right] of cards.entries()) {
         if (i === j) continue;
-        const rest = items.filter((_, index) => index !== i && index !== j);
-        for (const [op, symbol] of Object.entries(symbols)) {
+        const rest = cards.filter((_, index) => index !== i && index !== j);
+        for (const op of Object.keys(symbols)) {
           const value = calculate(left.value, op, right.value);
           if (!value) continue;
-          const step = left.text + ' ' + symbol + ' ' + right.text;
-          const answer = solve([...rest, { value, text: '(' + step + ')' }], first || step);
-          if (answer) return answer;
+          const expression = '(' + left.expression + symbols[op] + right.expression + ')';
+          const solution = solve([...rest, { value, expression }], firstStep || stepText(left.value, op, right.value));
+          if (solution) return solution;
         }
       }
     }
     return null;
   }
 
-  const normalize = (text) => text.replace(/−/g, '-').replace(/[×＊]/g, '*')
-    .replace(/[÷／]/g, '/').replace(/（/g, '(').replace(/）/g, ')');
-
-  function checkExpression(input, numbers) {
-    const text = normalize(input);
-    if (/[^1-9+*/()\s-]/.test(text)) throw new Error('请只使用题目数字、四则运算符和括号。');
-    const tokens = text.match(/[1-9]+|[+*/()-]/g) || [];
-    const used = tokens.filter(token => /^[1-9]+$/.test(token)).sort().join(',');
-    if (used !== [...numbers].sort().join(',')) throw new Error('请把题目的四个数字各用一次。');
-
-    let index = 0;
-    const invalid = () => new Error('算式还不完整，请检查运算符和括号。');
-    function term() {
-      const token = tokens[index++];
-      if (/^[1-9]$/.test(token || '')) return [Number(token), 1];
-      if (token !== '(') throw invalid();
-      const value = expression();
-      if (tokens[index++] !== ')') throw invalid();
-      return value;
-    }
-    function combine(readOperand, operators) {
-      let value = readOperand();
-      while (operators.includes(tokens[index])) {
-        const op = tokens[index++];
-        value = calculate(value, op, readOperand());
-        if (!value) throw new Error('除数不能为 0，请换一种算法。');
-      }
-      return value;
-    }
-    const product = () => combine(term, ['*', '/']);
-    const expression = () => combine(product, ['+', '-']);
-    const result = expression();
-    if (index !== tokens.length) throw invalid();
-    return isTwentyFour(result);
-  }
-
-  const form = document.getElementById('game');
-  const input = document.getElementById('expression');
   const tiles = document.getElementById('numbers');
+  const operators = document.getElementById('operators');
+  const prompt = document.getElementById('selection-prompt');
   const result = document.getElementById('result');
+  const undo = document.getElementById('undo');
   const hint = document.getElementById('hint');
-  let remaining = [];
+  const next = document.getElementById('next');
+  const seal = document.getElementById('win-seal');
+  const moves = document.getElementById('moves');
+  const remaining = [];
+  const history = [];
   let current = -1;
-  let solution;
-  let puzzle;
+  let cards = [];
+  let selected = [];
+  let feedback = '';
+  let hintShown = false;
+  let mergedIndex = -1;
 
-  function message(text = '', state = '') {
-    result.textContent = text;
-    result.dataset.state = state;
+  function render() {
+    const finished = cards.length === 1;
+    const won = finished && equals24(cards[0].value);
+    tiles.replaceChildren(...cards.map((card, index) => {
+      const button = document.createElement('button');
+      const order = selected.indexOf(index);
+      const value = display(card.value);
+      button.type = 'button';
+      button.dataset.index = index;
+      button.textContent = value;
+      button.disabled = finished;
+      button.setAttribute('aria-pressed', String(order !== -1));
+      if (order !== -1) {
+        button.dataset.order = order + 1;
+        button.setAttribute('aria-label', value + '，第 ' + (order + 1) + ' 张');
+      }
+      if (index === mergedIndex) button.classList.add('merged');
+      return button;
+    }));
+
+    const [left, right] = selected.map(index => cards[index]);
+    operators.hidden = !right;
+    if (right) {
+      for (const button of operators.children) {
+        const op = button.dataset.op;
+        const value = calculate(left.value, op, right.value);
+        button.disabled = !value;
+        button.querySelector('span').textContent = stepText(left.value, op, right.value);
+        button.querySelector('strong').textContent = value ? '= ' + display(value) : '除数为 0';
+      }
+    }
+
+    prompt.textContent = finished ? '剩下 1 张牌' : right ? '选择合并结果' :
+      left ? '已选 ' + display(left.value) + '，再选一张牌' : '先选两张牌';
+    undo.disabled = !history.length;
+    hint.disabled = won;
+    hint.textContent = hintShown ? '看答案' : '提示';
+    next.classList.toggle('primary', won);
+    seal.hidden = !won;
+    moves.replaceChildren(...history.map(move => {
+      const li = document.createElement('li');
+      li.textContent = move.label;
+      return li;
+    }));
+    result.textContent = won ? '凑成 24！' : finished && !feedback ?
+      '算到了 ' + display(cards[0].value) + '。撤销一步，再试试看。' : feedback;
   }
 
-  function updateInput() {
-    const used = normalize(input.value).match(/[1-9]/g) || [];
-    for (const tile of tiles.children) {
-      const index = used.indexOf(tile.dataset.token);
-      tile.disabled = index !== -1;
-      if (tile.disabled) used.splice(index, 1);
-    }
-    message();
+  function clearSelection() {
+    selected = [];
+    feedback = '';
+    hintShown = false;
+    mergedIndex = -1;
   }
 
   function nextPuzzle() {
-    if (!remaining.length) remaining = puzzles.map((_, index) => index).filter(index => index !== current);
-    const choice = Math.floor(Math.random() * remaining.length);
-    [current] = remaining.splice(choice, 1);
-    puzzle = puzzles[current];
-    solution = solve(puzzle.map(number => ({ value: [number, 1], text: String(number) })));
-    tiles.replaceChildren(...puzzle.map(number => {
-      const tile = document.createElement('button');
-      tile.type = 'button';
-      tile.textContent = tile.dataset.token = String(number);
-      return tile;
-    }));
-    input.value = '';
-    hint.textContent = '提示';
-    message();
+    if (!remaining.length) remaining.push(...puzzles.map((_, i) => i).filter(i => i !== current));
+    [current] = remaining.splice(Math.floor(Math.random() * remaining.length), 1);
+    cards = puzzles[current].map(number => ({ value: [number, 1], expression: String(number) }));
+    history.length = 0;
+    clearSelection();
+    render();
   }
 
-  form.addEventListener('click', (event) => {
-    const token = event.target.dataset.token;
-    if (!token) return;
-    const { selectionStart, selectionEnd } = input;
-    if (input.value.length - (selectionEnd - selectionStart) >= input.maxLength) return;
-    input.setRangeText(token, selectionStart, selectionEnd, 'end');
-    updateInput();
-    if (event.target.disabled) input.focus({ preventScroll: true });
+  tiles.addEventListener('click', event => {
+    const tile = event.target.closest('button[data-index]');
+    if (!tile || tile.disabled) return;
+    const index = Number(tile.dataset.index);
+    if (selected.includes(index)) selected = selected.filter(item => item !== index);
+    else selected = selected.length === 2 ? [index] : [...selected, index];
+    feedback = '';
+    hintShown = false;
+    mergedIndex = -1;
+    render();
+    if (event.detail === 0) tiles.children[index].focus();
   });
-  input.addEventListener('input', updateInput);
-  document.getElementById('clear').addEventListener('click', () => {
-    input.value = '';
-    updateInput();
+
+  operators.addEventListener('click', event => {
+    const button = event.target.closest('button[data-op]');
+    if (!button || button.disabled || selected.length !== 2) return;
+    const [left, right] = selected.map(index => cards[index]);
+    const op = button.dataset.op;
+    const value = calculate(left.value, op, right.value);
+    const index = Math.min(...selected);
+    history.push({ cards, label: stepText(left.value, op, right.value) + ' = ' + display(value) });
+    cards = cards.filter((_, position) => !selected.includes(position));
+    cards.splice(index, 0, { value, expression: '(' + left.expression + symbols[op] + right.expression + ')' });
+    clearSelection();
+    mergedIndex = index;
+    render();
+    if (event.detail === 0) (cards.length === 1 ? next : tiles.children[index]).focus();
   });
-  document.getElementById('undo').addEventListener('click', () => {
-    const { selectionStart, selectionEnd } = input;
-    if (selectionEnd > 0) {
-      const start = selectionStart === selectionEnd ? selectionStart - 1 : selectionStart;
-      input.setRangeText('', start, selectionEnd, 'end');
-      updateInput();
-    }
+
+  undo.addEventListener('click', () => {
+    if (!history.length) return;
+    cards = history.pop().cards;
+    clearSelection();
+    render();
+    if (!history.length && document.activeElement === undo) tiles.firstElementChild.focus();
   });
+  next.addEventListener('click', nextPuzzle);
   hint.addEventListener('click', () => {
-    if (hint.textContent === '提示') {
-      message('可以先算 ' + solution.first + '。');
-      hint.textContent = '看答案';
+    const solution = solve(cards);
+    if (!solution) {
+      feedback = '这条路凑不到 24，撤销一步再试试。';
+    } else if (hintShown) {
+      feedback = solution.expression.slice(1, -1) + ' = 24';
     } else {
-      message(solution.answer.slice(1, -1) + ' = 24');
+      feedback = '下一步可以先算 ' + solution.firstStep + '。';
+      hintShown = true;
     }
+    mergedIndex = -1;
+    render();
   });
-  document.getElementById('next').addEventListener('click', nextPuzzle);
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    try {
-      if (checkExpression(input.value, puzzle)) {
-        message('算对了！可以换一题继续。', 'win');
-      } else {
-        message('这道算式没有得到 24，再试试。', 'error');
-      }
-    } catch (error) {
-      message(error.message, 'error');
-    }
-  });
+
   nextPuzzle();
 })();

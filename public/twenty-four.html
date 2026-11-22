@@ -20,19 +20,36 @@
     button { min-width: 0; min-height: 44px; border: 1px solid var(--db-line); background: #fffbf1; color: inherit; font: inherit; cursor: pointer; }
     button:hover:not(:disabled) { border-color: var(--db-red); color: #952a22; }
     button:focus-visible, input:focus-visible { outline: 2px solid var(--db-red); outline-offset: 2px; }
-    .numbers button { min-height: 62px; border-bottom: 3px solid var(--db-red); font: 700 2rem/1 Georgia, serif; }
+    .numbers button { position: relative; min-height: 66px; border-bottom: 3px solid var(--db-red); font: 700 clamp(1.4rem, 5.5vw, 2rem)/1 Georgia, serif; }
     .numbers button:disabled { border-bottom-color: var(--db-line); color: var(--db-muted); opacity: .58; cursor: default; }
-    label { display: block; margin-bottom: 5px; color: var(--db-muted); font-size: .875rem; }
-    input { width: 100%; min-height: 49px; border: 1px solid var(--db-line); background: #fffdf7; color: inherit; padding: 7px 10px; font: 1.15rem/1.35 Consolas, "Microsoft YaHei", monospace; }
-    .operators { grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 9px 0; }
-    .actions { grid-template-columns: 1.3fr 1fr 1fr; }
+    .numbers button[aria-pressed="true"] { border-color: var(--db-red); background: #f5e3d1; }
+    .numbers button[data-order]::after { content: attr(data-order); position: absolute; top: 4px; right: 5px; color: #952a22; font: 700 .75rem/1 sans-serif; }
+    .numbers .merged { animation: settle 160ms ease-out; }
+    .selection-prompt { margin: 0 0 8px; font-size: .875rem; color: var(--db-muted); }
+    .operators { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0 0 12px; }
+    [hidden] { display: none !important; }
+    .operators button { min-height: 54px; padding: 5px; line-height: 1.2; }
+    .operators span, .operators strong { display: block; }
+    .operators strong { margin-top: 3px; font-size: 1.05rem; }
+    .operators button:disabled, .actions button:disabled { opacity: .55; cursor: default; }
+    .actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .primary { background: #9c3529; border-color: #9c3529; color: #fff; }
     .primary:hover:not(:disabled) { background: #7b2b22; color: #fff; }
-    .result { min-height: 1.6em; margin: 10px 0 0; overflow-wrap: anywhere; }
-    .result[data-state="win"] { color: #2e5743; font-weight: 700; }
-    .result[data-state="error"] { color: #952a22; }
+    .feedback { display: flex; align-items: center; gap: 12px; min-height: 30px; margin-top: 10px; }
+    .result { margin: 0; overflow-wrap: anywhere; }
+    .seal { flex: none; padding: 4px 7px; border: 2px solid currentColor; color: #952a22; font: 900 1.1rem/1.1 SimSun, serif; transform: rotate(-7deg); animation: stamp 340ms cubic-bezier(.18,.72,.33,1) both; }
+    .moves { margin: 4px 0 0; padding-left: 1.4em; color: var(--db-muted); font-size: .875rem; }
+    @keyframes settle { from { transform: scale(.94); } to { transform: scale(1); } }
+    @keyframes stamp {
+      0% { opacity: 0; transform: translateY(-7px) rotate(-13deg) scale(1.35); }
+      65% { opacity: 1; transform: translateY(1px) rotate(-5deg) scale(.96); }
+      100% { opacity: 1; transform: rotate(-7deg) scale(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .numbers .merged, .seal { animation: none; }
+    }
   </style>
-  <script src="assets/twenty-four.js" defer></script>
+  <script src="assets/twenty-four.js?v=cards" defer></script>
   <script src="assets/resume-browsing.js" defer></script>
 </head>
 <body class="db-secondary">
@@ -49,28 +66,27 @@
     <main>
       <a class="back" href="play.html">回到一起玩</a>
       <h1 class="game-heading"><span>24</span> 点</h1>
-      <p class="game-rules">四个数字各用一次，用加减乘除和括号凑出 24。</p>
-      <form class="game" id="game">
-        <div class="numbers" id="numbers" role="group" aria-label="本题数字"></div>
-        <label for="expression">算式</label>
-        <input id="expression" type="text" maxlength="64" autocomplete="off" spellcheck="false" inputmode="none">
-        <div class="operators" role="group" aria-label="运算与编辑">
-          <button type="button" data-token="+">+</button>
-          <button type="button" data-token="−">−</button>
-          <button type="button" data-token="×">×</button>
-          <button type="button" data-token="÷">÷</button>
-          <button type="button" data-token="(">(</button>
-          <button type="button" data-token=")">)</button>
-          <button type="button" id="undo">退格</button>
-          <button type="button" id="clear">清空</button>
+      <p class="game-rules">每次选两张牌，合成一张。让最后一张牌等于 24。</p>
+      <div class="game">
+        <p class="selection-prompt" id="selection-prompt" aria-live="polite"></p>
+        <div class="numbers" id="numbers" role="group" aria-label="当前数字牌"></div>
+        <div class="operators" id="operators" role="group" aria-label="选择合并结果" hidden>
+          <button type="button" data-op="+"><span></span><strong></strong></button>
+          <button type="button" data-op="-"><span></span><strong></strong></button>
+          <button type="button" data-op="*"><span></span><strong></strong></button>
+          <button type="button" data-op="/"><span></span><strong></strong></button>
         </div>
         <div class="actions">
-          <button type="submit" class="primary">提交答案</button>
+          <button type="button" id="undo">撤销一步</button>
           <button type="button" id="hint">提示</button>
           <button type="button" id="next">换一题</button>
         </div>
-        <p class="result" id="result" role="status" aria-atomic="true"></p>
-      </form>
+        <div class="feedback">
+          <span class="seal" id="win-seal" aria-hidden="true" hidden>成了</span>
+          <p class="result" id="result" role="status" aria-atomic="true"></p>
+        </div>
+        <ol class="moves" id="moves" aria-label="本题运算记录"></ol>
+      </div>
       <noscript>请启用 JavaScript 后开始游戏。</noscript>
     </main>
   </div>
