@@ -1,167 +1,262 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>建造日志 · 止一的数字基地</title>
-<meta name="theme-color" content="#efe8d8">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@400;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="fonts/mashanzheng.css">
-<style>
-  :root{
-    --paper:#FCFAF3; --ink:#1A1A18; --red:#C0272D; --red-d:#9E2A1F;
-    --line:rgba(26,26,24,.16); --gray:#6A6A60; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{background:var(--paper);color:var(--ink);font-family:'Noto Serif SC',serif;min-height:100vh;}
-  body{position:relative;overflow-x:hidden;}
-  .grain{position:fixed;inset:0;pointer-events:none;z-index:0;
-    background-image:radial-gradient(rgba(26,26,24,.035) 1px,transparent 1px);background-size:3px 3px;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 40px;position:relative;z-index:1;}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#efe8d8">
+  <title>建造日志 · 止一的数字基地</title>
+  <meta name="description" content="数字基地从一张白纸到纸本刊物式个人空间的营造记录。">
+  <link rel="canonical" href="https://booe.xyz/booe.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/digital-base.css">
+  <link rel="stylesheet" href="assets/base.css">
+  <style>
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin: 8px 0 44px;
+    }
 
-  .back{position:absolute;top:34px;left:40px;z-index:10;color:var(--ink);text-decoration:none;
-    font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:12px;letter-spacing:.3em;
-    padding:8px 16px;border:2px solid var(--ink);background:var(--paper);transition:all .25s;}
-  .back:hover{background:var(--ink);color:var(--paper);}
+    .stat-card {
+      padding: 20px 22px;
+      background: var(--paper-card);
+      border: 1px solid var(--line);
+    }
 
-  .topbar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;
-    letter-spacing:.28em;color:var(--gray);padding:26px 0 0;}
-  .topbar .r{color:var(--red);font-weight:700;}
-  .mast{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 0 0;}
-  .logo{display:flex;align-items:flex-end;gap:16px;}
-  .logo b{font-family:'Ma Shan Zheng',serif;font-weight:400;font-size:84px;line-height:.86;color:var(--red);letter-spacing:.04em;}
-  .logo i{font-style:normal;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:12px;letter-spacing:.42em;color:var(--ink);padding-bottom:9px;}
-  .issue{text-align:right;font-size:12px;letter-spacing:.14em;color:var(--gray);line-height:2;}
-  .issue b{display:block;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:14px;color:var(--ink);letter-spacing:.1em;}
-  .wx{margin-top:18px;}
-  .wx .thick{height:5px;background:var(--red);}
-  .wx .thin{height:1px;background:var(--ink);margin-top:3px;}
+    .stat-card--accent {
+      border-top: 3px solid var(--red);
+    }
 
-  .page{max-width:820px;margin:0 auto;padding:46px 0 10px;}
+    .stat-card__num {
+      font-family: var(--db-mono);
+      font-size: clamp(24px, 2.8vw, 34px);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--ink);
+    }
 
-  .ph{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;}
-  .ph .no{font-family:var(--mono);font-size:11px;color:var(--red);font-weight:700;}
-  .ph .nm{font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:15px;letter-spacing:.3em;}
-  .ph .ln{flex:1;height:1px;background:rgba(26,26,24,.3);}
-  .ph .pg{font-family:var(--mono);font-size:11px;color:#9A9A90;}
+    .stat-card--accent .stat-card__num {
+      color: var(--red);
+    }
 
-  .title{font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.3;letter-spacing:.02em;margin-top:18px;}
-  .title em{font-style:normal;color:var(--red);}
-  .sub{margin-top:12px;font-family:'Noto Sans SC',sans-serif;font-size:13px;letter-spacing:.22em;color:var(--gray);}
-  .updated{margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--gray);}
+    .stat-card__label {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
 
-  .colhead{display:inline-block;background:var(--red);color:#fff;font-family:'Noto Sans SC',sans-serif;
-    font-weight:900;font-size:12px;letter-spacing:.26em;padding:6px 13px;margin:34px 0 18px;}
+    .log-section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 6px;
+    }
 
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:10px;}
-  .stat{border:2px solid var(--ink);padding:18px 14px;text-align:center;transition:border-color .25s;}
-  .stat:hover{border-color:var(--red);}
-  .stat.hot{background:var(--red);border-color:var(--red);color:#fff;}
-  .stat .num{font-size:clamp(22px,3vw,32px);font-weight:900;font-family:var(--mono);line-height:1.2;}
-  .stat .lab{margin-top:8px;font-size:11px;letter-spacing:.22em;color:var(--gray);font-family:'Noto Sans SC',sans-serif;}
-  .stat.hot .lab{color:rgba(252,250,243,.82);}
+    .log-section-head h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
 
-  .list{display:flex;flex-direction:column;gap:12px;}
-  .post{border:2px solid var(--ink);padding:16px 18px;display:flex;gap:16px;align-items:flex-start;transition:border-color .25s;}
-  .post:hover{border-color:var(--red);}
-  .pdate{font-size:11px;font-family:var(--mono);font-weight:900;color:var(--red);letter-spacing:.05em;
-    min-width:84px;padding-top:3px;}
-  .ptext{font-size:14px;font-weight:600;line-height:1.7;}
+    .log-section-head span {
+      font-family: var(--db-mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
 
-  .note{margin-top:30px;padding:16px 20px;border-left:3px solid var(--red);
-    font-size:12.5px;line-height:2;color:var(--gray);background:rgba(192,39,45,.04);}
+    .timeline {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
 
-  .foot{margin:50px 0 44px;}
-  .foot .f1{height:1px;background:var(--ink);margin-bottom:3px;}
-  .foot .f2{height:3px;background:var(--red);margin-bottom:14px;}
-  .foot .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;color:var(--gray);}
-  .foot .row .r{color:var(--red);font-weight:700;}
-  .foot .row a{color:var(--gray);text-decoration:none;}
-  .foot .row a:hover{color:var(--red);}
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 126px 88px 1fr;
+      gap: 16px 20px;
+      align-items: baseline;
+      padding: 20px 6px;
+      border-bottom: 1px solid var(--line);
+    }
 
-  .fade{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
-  .fade.in{opacity:1;transform:none;}
+    .timeline-date {
+      font-family: var(--db-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--red);
+      white-space: nowrap;
+    }
 
-  @media (max-width:900px){
-    .wrap{padding:0 22px;}
-    .back{top:26px;left:22px;padding:7px 13px;font-size:11px;}
-    .logo b{font-size:56px;}
-    .logo i{font-size:10px;letter-spacing:.32em;}
-    .issue{font-size:11px;}
-    .page{padding-top:34px;}
-    .title{font-size:30px;}
-    .post{flex-direction:column;gap:6px;}
-  }
-</style>
-<link rel="stylesheet" href="assets/digital-base.css"></head>
-<body class="db-secondary">
-<div class="grain"></div>
+    .timeline-text {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--ink-soft);
+    }
 
-<div class="wrap">
-  <header class="db-header" aria-label="站点页首"><a class="db-brand" href="index.html"><strong>数字基地</strong><small>止一 · BOOE.XYZ</small></a><nav class="db-nav" aria-label="主导航"><a href="gate.html">认识我</a><a href="lab.html" aria-current="page">实验室</a><a href="play.html">一起玩</a><a href="talk.html">来信</a></nav></header>
+    .timeline-text a {
+      color: var(--red);
+      text-decoration: underline;
+      text-underline-offset: 0.25em;
+    }
 
-  <div class="page">
+    .timeline-text a:hover {
+      color: var(--red-deep);
+    }
 
-    <div class="ph fade"><span class="no">06</span><span class="nm">建 造 日 志</span><span class="ln"></span><span class="pg">P06</span></div>
-    <div class="title fade">本站 · <em>建造日志</em></div>
-    <div class="sub fade">从一张白纸，长成一个有游戏、有互动、有朋友的数字空间。</div>
-    <div class="updated fade">日志更新于 2026-11-22</div>
+    @media (max-width: 860px) {
+      .stats-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+      .timeline-item {
+        grid-template-columns: auto 1fr;
+        gap: 8px 12px;
+        padding: 18px 2px;
+      }
+      .timeline-text {
+        grid-column: 1 / -1;
+      }
+    }
+  </style>
+  <script src="assets/resume-browsing.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <div class="shell">
+    <header class="db-header" aria-label="站点页首">
+      <a class="db-brand" href="index.html">
+        <strong>数字基地</strong>
+        <small>止一 · BOOE.XYZ</small>
+      </a>
+      <nav class="db-nav" aria-label="主导航">
+        <a href="gate.html">认识我</a>
+        <a href="lab.html" aria-current="page">实验室</a>
+        <a href="play.html">一起玩</a>
+        <a href="talk.html">来信</a>
+      </nav>
+    </header>
 
-    <div class="updated fade" id="statsAt">站点统计快照</div>
-    <div class="stats fade">
-      <div class="stat hot"><div class="num" id="commits">…</div><div class="lab">代码提交</div></div>
-      <div class="stat"><div class="num" id="pages">…</div><div class="lab">页面数</div></div>
-      <div class="stat"><div class="num" id="launched">…</div><div class="lab">上线日期</div></div>
-      <div class="stat"><div class="num" id="phase">小迭代</div><div class="lab">当前阶段</div></div>
-    </div>
+    <main id="main">
+      <div class="db-issue">
+        <span><a href="index.html">基地</a> / <a href="lab.html">实验室</a> / 建造日志</span>
+        <span id="statsAt">日志更新于 2026-11-24</span>
+      </div>
 
-    <div class="colhead fade">建 造 记 录</div>
-    <div class="list fade" id="logList">
-      <div class="post"><time class="pdate" datetime="2026-11-22">2026-11-22</time><div class="ptext">实验室新增<a href="procurement.html">采购机会看板</a>。可以查看采购与供应链岗位的方向相关占比、公司分布，并按公司和岗位方向筛选。</div></div>
-      <div class="post"><time class="pdate" datetime="2026-11-22">2026-11-22</time><div class="ptext">统一站点标识和次级页导航，从认识我、实验室、一起玩和来信都能回到基地。</div></div>
-      <div class="post"><time class="pdate" datetime="2026-11-19">2026-11-19</time><div class="ptext">整理项目档案，汇总已有栏目和每周迭代想法。做出开发计划台账的离线试用版，用来记录目标日期、进度和验收事项。</div></div>
-      <div class="post"><time class="pdate" datetime="2026-11-05">2026-11-05</time><div class="ptext">新版首页和实验室上线，更新首页插画和栏目入口，并检查手机浏览体验。</div></div>
-      <div class="post"><time class="pdate" datetime="2026-11-05">2026-11-05</time><div class="ptext">发布<a href="india.html">《印度社会观察》</a>专题，配套提供 24 页 PDF，方便转发和下载。</div></div>
-      <div class="post"><time class="pdate" datetime="2026-08-22">2026-08-22</time><div class="ptext">实验室详情页上线：Hermes 统计 / Reddit 情报 / 本站日志。</div></div>
-      <div class="post"><time class="pdate" datetime="2026-08-22">2026-08-22</time><div class="ptext">新增认识我（密码门）/ 实验室 / 一起玩（反应力游戏）/ 留言板占位。</div></div>
-      <div class="post"><time class="pdate" datetime="2026-08-22">2026-08-22</time><div class="ptext">域名绑定 booe.xyz，DNS 生效，正式开门。</div></div>
-      <div class="post"><time class="pdate" datetime="2026-08-22">2026-08-22</time><div class="ptext">仓库建立，v5 首页上线：不仁义满屏巨字 + 朱砂干涉。</div></div>
-    </div>
+      <section class="db-page-head">
+        <p class="db-kicker db-kicker--green">过程 / 网站营造</p>
+        <h1>本站 · <em>建造日志</em></h1>
+        <p class="db-page-lead">从一张白纸，慢慢长成一个有研究、有游戏、有来信的数字空间。每一次改版与小迭代都留在这里。</p>
+      </section>
 
-    <div class="note fade">
-      现在可以进实验室看专题，去「一起玩」体验小游戏，也可以到「来信」留言。下一步会从每周一个小功能做起。
-    </div>
+      <section class="stats-bar" aria-label="站点统计">
+        <div class="stat-card stat-card--accent">
+          <div class="stat-card__num" id="pages">15</div>
+          <div class="stat-card__label">站点页面</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__num" id="experiments">05</div>
+          <div class="stat-card__label">实验与专题</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__num" id="games">04</div>
+          <div class="stat-card__label">可玩游戏</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__num" id="launched">2026-08-22</div>
+          <div class="stat-card__label">首次开门</div>
+        </div>
+      </section>
 
+      <section aria-labelledby="log-heading">
+        <div class="log-section-head">
+          <h2 id="log-heading">营造编年</h2>
+          <span>按时间倒序</span>
+        </div>
+
+        <ol class="timeline" id="logList">
+          <li class="timeline-item">
+            <time class="timeline-date" datetime="2026-11-24">2026-11-24</time>
+            <span><span class="db-badge db-badge--red">视觉</span></span>
+            <p class="timeline-text">收拢全站为「一纸、一墨、一朱、一青」纸本刊物视觉体系：升级印刷宋体与字号层级，释放首页插画构图并修复「接着逛」对齐，翻新<a href="play.html">一起玩</a>、<a href="talk.html">来信</a>与建造日志页。</p>
+          </li>
+
+          <li class="timeline-item">
+            <time class="timeline-date" datetime="2026-11-22">2026-11-22</time>
+            <span><span class="db-badge db-badge--green">游戏</span></span>
+            <p class="timeline-text">一起玩上线<a href="twenty-four.html">24 点</a>并改版为选牌合并玩法，支持撤销一步、思路提示、分数运算与朱砂印章动效。</p>
+          </li>
+
+          <li class="timeline-item">
+            <time class="timeline-date" datetime="2026-11-22">2026-11-22</time>
+            <span><span class="db-badge db-badge--green">交互</span></span>
+            <p class="timeline-text">首页增加「接着逛」本地记忆入口，自动记住最近逛过的栏目；同步统一站点标识与次级页主导航。</p>
+          </li>
+
+          <li class="timeline-item">
+            <time class="timeline-date" datetime="2026-11-22">2026-11-22</time>
+            <span><span class="db-badge db-badge--green">工具</span></span>
+            <p class="timeline-text">实验室新增<a href="procurement.html">采购机会看板</a>，支持查看采购与供应链岗位的方向相关占比、公司分布，并按公司和岗位方向筛选。</p>
+          </li>
+
+          <li class="timeline-item">
+            <time class="timeline-date" datetime="2026-11-19">2026-11-19</time>
+            <span><span class="db-badge">规划</span></span>
+            <p class="timeline-text">整理项目档案，汇总已有栏目与每周迭代想法；制作开发计划台账离线试用版，记录目标日期与验收项。</p>
+          </li>
+
+          <li class="timeline-item">
+            <time class="timeline-date" datetime="2026-11-05">2026-11-05</time>
+            <span><span class="db-badge db-badge--red">专题</span></span>
+            <p class="timeline-text">新版首页与<a href="lab.html">实验室</a>上线，更新窗边工作台插画；同步发布<a href="india.html">《印度社会观察》</a>网页专题与 24 页 PDF 报告。</p>
+          </li>
+
+          <li class="timeline-item">
+            <time class="timeline-date" datetime="2026-08-22">2026-08-22</time>
+            <span><span class="db-badge">建站</span></span>
+            <p class="timeline-text">绑定域名 booe.xyz 正式开门：上线初始首页、认识我（密码门）、实验室（<a href="hermes.html">Hermes 统计</a> / <a href="reddit.html">Reddit 情报</a> / 本站日志）、<a href="play.html">一起玩</a>与<a href="talk.html">留言板</a>。</p>
+          </li>
+        </ol>
+      </section>
+
+      <div class="db-note">
+        现在可以去 <a href="lab.html" style="color:var(--red);text-decoration:underline;text-underline-offset:0.25em;">实验室</a> 翻专题、去 <a href="play.html" style="color:var(--red);text-decoration:underline;text-underline-offset:0.25em;">一起玩</a> 消磨十分钟，也可以在 <a href="talk.html" style="color:var(--red);text-decoration:underline;text-underline-offset:0.25em;">来信</a> 留下一句。下一步将继续按“每周一个轻量小迭代”的节奏打磨。
+      </div>
+    </main>
+
+    <footer class="db-footer" aria-label="站点页脚">
+      <div class="db-footer__links">
+        <a href="index.html">← 回基地</a>
+        <a href="gate.html">认识我</a>
+        <a href="lab.html">实验室</a>
+        <a href="play.html">一起玩</a>
+        <a href="talk.html">来信</a>
+      </div>
+      <span class="db-footer__motto">止一 / BOOE.XYZ</span>
+      <a href="#">回到页首 ↑</a>
+    </footer>
   </div>
 
-  <div class="foot fade">
-    <div class="f1"></div><div class="f2"></div>
-    <div class="row">
-      <span><a href="index.html">← 回基地</a> · <a href="gate.html">认识我</a> · <a href="lab.html">实验室</a> · <a href="play.html">一起玩</a> · <a href="talk.html">来信</a></span>
-      <span class="r">来访 <span id="busuanzi_value_site_uv">0</span> · 定价：无价</span>
-    </div>
-  </div>
-
-</div>
-
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<script>
-  fetch('stats.json').then(r => r.json()).then(data => {
-    const s = data.site;
-    document.getElementById('statsAt').textContent = '站点统计快照 · ' + data.updated_at;
-    document.getElementById('commits').textContent = s.commits;
-    document.getElementById('pages').textContent = s.pages;
-    document.getElementById('launched').textContent = s.launched;
-
-  }).catch(() => {
-    ['commits','pages','launched'].forEach(id => document.getElementById(id).textContent = '—');
-  });
-
-  var els = document.querySelectorAll('.fade');
-  var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, {threshold:0.06});
-  els.forEach(function(el){ io.observe(el); });
-</script>
+  <script>
+    fetch('stats.json').then(r => r.json()).then(data => {
+      const s = data.site || {};
+      const pad = (v) => String(v).padStart(2, '0');
+      if (s.site_updated_at) {
+        document.getElementById('statsAt').textContent = '站点快照 · ' + s.site_updated_at;
+      }
+      if (s.pages != null) document.getElementById('pages').textContent = pad(s.pages);
+      if (s.experiments != null) document.getElementById('experiments').textContent = pad(s.experiments);
+      if (s.games != null) document.getElementById('games').textContent = pad(s.games);
+      if (s.launched) document.getElementById('launched').textContent = s.launched;
+    }).catch(() => {});
+  </script>
 </body>
 </html>

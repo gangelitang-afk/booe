@@ -1,230 +1,475 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>和我聊聊 · 止一的数字基地</title>
-<meta name="theme-color" content="#efe8d8">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@400;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="fonts/mashanzheng.css">
-<style>
-  :root{
-    --paper:#FCFAF3; --ink:#1A1A18; --red:#C0272D; --red-d:#9E2A1F;
-    --line:rgba(26,26,24,.16); --gray:#6A6A60; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{background:var(--paper);color:var(--ink);font-family:'Noto Serif SC',serif;min-height:100vh;}
-  body{position:relative;overflow-x:hidden;}
-  .grain{position:fixed;inset:0;pointer-events:none;z-index:0;
-    background-image:radial-gradient(rgba(26,26,24,.035) 1px,transparent 1px);background-size:3px 3px;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 40px;position:relative;z-index:1;}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#efe8d8">
+  <title>来信 · 止一的数字基地</title>
+  <meta name="description" content="路过也好，久坐也好。给止一留一句话，让我知道你来过。">
+  <link rel="canonical" href="https://booe.xyz/talk.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/digital-base.css">
+  <link rel="stylesheet" href="assets/base.css">
+  <style>
+    .talk-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+      gap: 36px;
+      align-items: start;
+    }
 
-  .back{position:absolute;top:34px;left:40px;z-index:10;color:var(--ink);text-decoration:none;
-    font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:12px;letter-spacing:.3em;
-    padding:8px 16px;border:2px solid var(--ink);background:var(--paper);transition:all .25s;}
-  .back:hover{background:var(--ink);color:var(--paper);}
+    /* 写信纸笺 */
+    .letter-pad {
+      position: sticky;
+      top: 24px;
+      background: var(--paper-card);
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--red);
+      padding: 28px 28px 24px;
+    }
 
-  .topbar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;
-    letter-spacing:.28em;color:var(--gray);padding:26px 0 0;}
-  .topbar .r{color:var(--red);font-weight:700;}
-  .mast{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 0 0;}
-  .logo{display:flex;align-items:flex-end;gap:16px;}
-  .logo b{font-family:'Ma Shan Zheng',serif;font-weight:400;font-size:84px;line-height:.86;color:var(--red);letter-spacing:.04em;}
-  .logo i{font-style:normal;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:12px;letter-spacing:.42em;color:var(--ink);padding-bottom:9px;}
-  .issue{text-align:right;font-size:12px;letter-spacing:.14em;color:var(--gray);line-height:2;}
-  .issue b{display:block;font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:14px;color:var(--ink);letter-spacing:.1em;}
-  .wx{margin-top:18px;}
-  .wx .thick{height:5px;background:var(--red);}
-  .wx .thin{height:1px;background:var(--ink);margin-top:3px;}
+    .letter-pad__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
 
-  .page{max-width:780px;margin:0 auto;padding:46px 0 10px;}
+    .letter-pad__head h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
 
-  .ph{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;}
-  .ph .no{font-family:var(--mono);font-size:11px;color:var(--red);font-weight:700;}
-  .ph .nm{font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:15px;letter-spacing:.3em;}
-  .ph .ln{flex:1;height:1px;background:rgba(26,26,24,.3);}
-  .ph .pg{font-family:var(--mono);font-size:11px;color:#9A9A90;}
+    .letter-pad__hint {
+      font-family: var(--db-mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
 
-  .title{font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.3;letter-spacing:.02em;margin-top:18px;}
-  .title em{font-style:normal;color:var(--red);}
-  .sub{margin-top:12px;font-family:'Noto Sans SC',sans-serif;font-size:13px;letter-spacing:.22em;color:var(--gray);}
+    .field-group {
+      margin-bottom: 18px;
+    }
 
-  .colhead{display:inline-block;background:var(--red);color:#fff;font-family:'Noto Sans SC',sans-serif;
-    font-weight:900;font-size:12px;letter-spacing:.26em;padding:6px 13px;margin:34px 0 18px;}
+    .field-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
 
-  .form{border:2px solid var(--ink);padding:22px 24px;margin-bottom:34px;}
-  .form .row{display:flex;gap:12px;margin-bottom:12px;}
-  .form input{flex:1;border:2px solid var(--ink);background:transparent;padding:11px 14px;font-size:14px;
-    font-family:'Noto Sans SC',sans-serif;color:var(--ink);outline:none;transition:border-color .25s;}
-  .form input:focus{border-color:var(--red);}
-  .form input::placeholder{color:rgba(26,26,24,.35);}
-  .form textarea{width:100%;border:2px solid var(--ink);background:transparent;padding:12px 14px;font-size:14px;
-    font-family:'Noto Sans SC',sans-serif;color:var(--ink);resize:vertical;min-height:96px;outline:none;transition:border-color .25s;}
-  .form textarea:focus{border-color:var(--red);}
-  .form textarea::placeholder{color:rgba(26,26,24,.35);}
-  .form .acts{margin-top:14px;display:flex;align-items:center;justify-content:space-between;}
-  .btn{border:2px solid var(--red);background:var(--red);color:#fff;padding:10px 28px;font-size:14px;
-    font-family:'Noto Sans SC',sans-serif;font-weight:900;letter-spacing:.2em;cursor:pointer;transition:all .25s;}
-  .btn:hover{background:var(--ink);border-color:var(--ink);}
-  .btn:disabled{opacity:.5;cursor:wait;}
-  .msg{font-size:12px;color:var(--red);letter-spacing:.1em;font-family:'Noto Sans SC',sans-serif;}
+    .field-label small {
+      font-family: var(--db-mono);
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+    }
 
-  .list{display:flex;flex-direction:column;gap:14px;min-height:80px;}
-  .item{border:2px solid var(--ink);padding:18px 20px;transition:border-color .25s;}
-  .item:hover{border-color:var(--red);}
-  .ihead{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;}
-  .iname{font-family:'Noto Sans SC',sans-serif;font-weight:900;font-size:15px;letter-spacing:.1em;}
-  .iname::before{content:'';display:inline-block;width:8px;height:8px;background:var(--red);margin-right:8px;}
-  .itime{font-size:11px;color:var(--gray);font-family:var(--mono);}
-  .icontent{font-size:14px;line-height:1.85;word-break:break-word;color:#33322C;}
-  .empty{text-align:center;padding:50px 0;color:var(--gray);font-size:13px;letter-spacing:.3em;}
-  .loading{text-align:center;padding:34px 0;color:var(--gray);font-size:12px;letter-spacing:.3em;}
+    .letter-input,
+    .letter-textarea {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      padding: 10px 2px;
+      font-family: var(--db-sans);
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--ink);
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
 
-  .foot{margin:50px 0 44px;}
-  .foot .f1{height:1px;background:var(--ink);margin-bottom:3px;}
-  .foot .f2{height:3px;background:var(--red);margin-bottom:14px;}
-  .foot .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;color:var(--gray);}
-  .foot .row .r{color:var(--red);font-weight:700;}
-  .foot .row a{color:var(--gray);text-decoration:none;}
-  .foot .row a:hover{color:var(--red);}
+    .letter-textarea {
+      min-height: 124px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      background: rgba(239, 232, 216, 0.38);
+      padding: 12px 14px;
+    }
 
-  .fade{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
-  .fade.in{opacity:1;transform:none;}
+    .letter-input:focus,
+    .letter-textarea:focus {
+      outline: none;
+      border-color: var(--red);
+    }
 
-  @media (max-width:900px){
-    .wrap{padding:0 22px;}
-    .back{top:26px;left:22px;padding:7px 13px;font-size:11px;}
-    .logo b{font-size:56px;}
-    .logo i{font-size:10px;letter-spacing:.32em;}
-    .issue{font-size:11px;}
-    .page{padding-top:34px;}
-    .title{font-size:30px;}
-    .form .row{flex-direction:column;}
-  }
-</style>
-<link rel="stylesheet" href="assets/digital-base.css"><script src="assets/resume-browsing.js" defer></script></head>
-<body class="db-secondary">
-<div class="grain"></div>
+    .letter-textarea:focus {
+      background: #fffcf5;
+    }
 
-<div class="wrap">
-  <header class="db-header" aria-label="站点页首"><a class="db-brand" href="index.html"><strong>数字基地</strong><small>止一 · BOOE.XYZ</small></a><nav class="db-nav" aria-label="主导航"><a href="gate.html">认识我</a><a href="lab.html">实验室</a><a href="play.html">一起玩</a><a href="talk.html" aria-current="page">来信</a></nav></header>
+    .letter-input::placeholder,
+    .letter-textarea::placeholder {
+      color: rgba(100, 94, 82, 0.56);
+    }
 
-  <div class="page">
+    .letter-acts {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 20px;
+    }
 
-    <div class="ph fade"><span class="no">05</span><span class="nm">和 我 聊 聊</span><span class="ln"></span><span class="pg">P05</span></div>
-    <div class="title fade">留言板 · <em>想说啥说啥</em></div>
-    <div class="sub fade">来访即读者，留言即来信。</div>
+    .letter-feedback {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 30px;
+      font-size: 13px;
+      color: var(--red);
+    }
 
-    <div class="form fade">
-      <div class="row">
-        <input type="text" id="msgName" placeholder="怎么称呼你" maxlength="20">
-      </div>
-      <textarea id="msgContent" placeholder="想对止一说什么？" maxlength="500"></textarea>
-      <div class="acts">
-        <span class="msg" id="formMsg"></span>
-        <button class="btn" id="submitBtn" onclick="submitMsg()">落笔</button>
-      </div>
-    </div>
+    .letter-feedback.is-ok {
+      color: var(--green);
+    }
 
-    <div class="colhead fade">留 言</div>
-    <div class="list fade" id="msgList">
-      <div class="loading">正在打开留言簿…</div>
-    </div>
+    .letter-seal[hidden] {
+      display: none;
+    }
 
-  </div>
+    .submit-btn {
+      border: 1px solid var(--red);
+      background: var(--red);
+      color: #fff8ec;
+      padding: 10px 26px;
+      font-family: var(--db-sans);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    }
 
-  <div class="foot fade">
-    <div class="f1"></div><div class="f2"></div>
-    <div class="row">
-      <span><a href="index.html">← 回基地</a> · <a href="gate.html">认识我</a> · <a href="lab.html">实验室</a> · <a href="play.html">一起玩</a></span>
-      <span class="r">来访 <span id="busuanzi_value_site_uv">0</span> · 定价：无价</span>
-    </div>
-  </div>
+    .submit-btn:hover:not(:disabled) {
+      background: var(--red-deep);
+      border-color: var(--red-deep);
+    }
 
-</div>
+    .submit-btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
 
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<script>
-  const API = '/api/guestbook';
-  const list = document.getElementById('msgList');
+    .submit-btn:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
 
-  function fmtTime(iso) {
-    const d = new Date(iso);
-    const p = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-  }
+    /* 来信墙 */
+    .wall-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--ink);
+    }
 
-  async function loadMessages() {
-    try {
-      const res = await fetch(API);
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error);
-      list.innerHTML = '';
-      if (data.messages.length === 0) {
-        list.innerHTML = '<div class="empty">还没有留言，来当第一个吧。</div>';
-        return;
+    .wall-head h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+
+    .wall-count {
+      font-family: var(--db-mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .msg-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 120px;
+    }
+
+    .msg-card {
+      padding: 20px 22px;
+      background: var(--paper-card);
+      border: 1px solid var(--line);
+      transition: border-color 0.2s ease;
+    }
+
+    .msg-card:hover {
+      border-color: rgba(181, 56, 44, 0.45);
+    }
+
+    .msg-card__head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .msg-card__name {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .msg-card__name::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      background: var(--red);
+      flex: none;
+    }
+
+    .msg-card__time {
+      font-family: var(--db-mono);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .msg-card__content {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--ink-soft);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .wall-state {
+      padding: 44px 24px;
+      text-align: center;
+      background: var(--paper-card);
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 920px) {
+      .talk-layout {
+        grid-template-columns: 1fr;
+        gap: 28px;
       }
-      data.messages.forEach(m => {
-        const item = document.createElement('div');
-        item.className = 'item';
-        item.innerHTML = `
-          <div class="ihead">
-            <span class="iname">${escapeHtml(m.name)}</span>
-            <span class="itime">${fmtTime(m.created_at)}</span>
+      .letter-pad {
+        position: static;
+        padding: 22px 20px 20px;
+      }
+    }
+  </style>
+  <script src="assets/resume-browsing.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <div class="shell">
+    <header class="db-header" aria-label="站点页首">
+      <a class="db-brand" href="index.html">
+        <strong>数字基地</strong>
+        <small>止一 · BOOE.XYZ</small>
+      </a>
+      <nav class="db-nav" aria-label="主导航">
+        <a href="gate.html">认识我</a>
+        <a href="lab.html">实验室</a>
+        <a href="play.html">一起玩</a>
+        <a href="talk.html" aria-current="page">来信</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <div class="db-issue">
+        <span><a href="index.html">基地</a> / 来信</span>
+        <span>来访即读者 · 留言即来信</span>
+      </div>
+
+      <section class="db-page-head">
+        <p class="db-kicker">03 / 桌边信箱</p>
+        <h1>留一句话，<em>让我知道你来过。</em></h1>
+        <p class="db-page-lead">路过打个招呼、对某个专题聊聊看法，或者提议下一个想玩的小游戏，都可以直接落笔。</p>
+      </section>
+
+      <div class="talk-layout">
+        <section class="letter-pad" aria-labelledby="write-title">
+          <div class="letter-pad__head">
+            <h2 id="write-title">写一封便笺</h2>
+            <span class="letter-pad__hint">Ctrl + Enter 寄出</span>
           </div>
-          <div class="icontent">${escapeHtml(m.content)}</div>`;
-        list.appendChild(item);
-      });
-    } catch (e) {
-      list.innerHTML = '<div class="empty">留言板还没接通（数据库未配置）。</div>';
+
+          <form id="guestbookForm" novalidate>
+            <div class="field-group">
+              <label class="field-label" for="msgName">
+                <span>署名</span>
+                <small>选填，留空记为匿名</small>
+              </label>
+              <input class="letter-input" type="text" id="msgName" placeholder="怎么称呼你" maxlength="20" autocomplete="nickname">
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="msgContent">
+                <span>正文</span>
+                <small id="charCount">0 / 500</small>
+              </label>
+              <textarea class="letter-textarea" id="msgContent" placeholder="想对止一说什么？" maxlength="500"></textarea>
+            </div>
+
+            <div class="letter-acts">
+              <div class="letter-feedback" id="feedbackWrap" role="status" aria-live="polite">
+                <span class="db-seal letter-seal" id="stampSeal" aria-hidden="true" hidden>已收</span>
+                <span id="formMsg"></span>
+              </div>
+              <button class="submit-btn" id="submitBtn" type="submit">落笔</button>
+            </div>
+          </form>
+        </section>
+
+        <section aria-labelledby="wall-title">
+          <div class="wall-head">
+            <h2 id="wall-title">近期来信</h2>
+            <span class="wall-count" id="wallCount">正在打开留言簿…</span>
+          </div>
+          <div class="msg-list" id="msgList">
+            <div class="wall-state">正在打开留言簿…</div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="db-footer" aria-label="站点页脚">
+      <div class="db-footer__links">
+        <a href="index.html">← 回基地</a>
+        <a href="gate.html">认识我</a>
+        <a href="lab.html">实验室</a>
+        <a href="play.html">一起玩</a>
+      </div>
+      <span class="db-footer__motto">止一 / BOOE.XYZ</span>
+      <a href="#">回到页首 ↑</a>
+    </footer>
+  </div>
+
+  <script>
+    const API = '/api/guestbook';
+    const list = document.getElementById('msgList');
+    const wallCount = document.getElementById('wallCount');
+    const nameInput = document.getElementById('msgName');
+    const contentInput = document.getElementById('msgContent');
+    const charCount = document.getElementById('charCount');
+    const form = document.getElementById('guestbookForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const feedbackWrap = document.getElementById('feedbackWrap');
+    const formMsg = document.getElementById('formMsg');
+    const stampSeal = document.getElementById('stampSeal');
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
     }
-  }
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
-  }
+    function fmtTime(iso) {
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return String(iso || '');
+      const p = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
 
-  async function submitMsg() {
-    const name = document.getElementById('msgName').value.trim();
-    const content = document.getElementById('msgContent').value.trim();
-    const btn = document.getElementById('submitBtn');
-    const fm = document.getElementById('formMsg');
+    function updateCounter() {
+      charCount.textContent = `${contentInput.value.length} / 500`;
+    }
 
-    if (!content) { fm.textContent = '写点什么再落笔'; return; }
+    function showStamp() {
+      stampSeal.hidden = false;
+      stampSeal.classList.remove('db-seal--stamp');
+      void stampSeal.offsetWidth;
+      stampSeal.classList.add('db-seal--stamp');
+    }
 
-    btn.disabled = true;
-    fm.textContent = '正在落笔…';
+    async function loadMessages() {
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error);
+        list.innerHTML = '';
+        const items = Array.isArray(data.messages) ? data.messages : [];
+        wallCount.textContent = `共 ${items.length} 封`;
+        if (items.length === 0) {
+          list.innerHTML = '<div class="wall-state">还没有来信，来写下第一句吧。</div>';
+          return;
+        }
+        items.forEach(m => {
+          const card = document.createElement('article');
+          card.className = 'msg-card';
+          card.innerHTML = `
+            <div class="msg-card__head">
+              <span class="msg-card__name">${escapeHtml(m.name)}</span>
+              <time class="msg-card__time">${escapeHtml(fmtTime(m.created_at))}</time>
+            </div>
+            <p class="msg-card__content">${escapeHtml(m.content)}</p>`;
+          list.appendChild(card);
+        });
+      } catch (e) {
+        wallCount.textContent = '待连接';
+        list.innerHTML = '<div class="wall-state">留言簿当前未连接线上数据库（本地静态预览不会加载 D1 留言记录，线上访问可正常读写）。</div>';
+      }
+    }
 
-    try {
-      const res = await fetch(API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name || '匿名', content })
-      });
-      const data = await res.json();
-      if (!data.ok) {
-        fm.textContent = data.error || '失败';
-        btn.disabled = false;
+    async function submitMsg(e) {
+      if (e) e.preventDefault();
+      const name = nameInput.value.trim();
+      const content = contentInput.value.trim();
+
+      stampSeal.hidden = true;
+      feedbackWrap.classList.remove('is-ok');
+
+      if (!content) {
+        formMsg.textContent = '写点什么再落笔';
+        contentInput.focus();
         return;
       }
-      document.getElementById('msgContent').value = '';
-      fm.textContent = '留好啦';
-      loadMessages();
-    } catch (e) {
-      fm.textContent = '网络出错，稍后再试';
+
+      submitBtn.disabled = true;
+      formMsg.textContent = '正在寄出…';
+
+      try {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name || '匿名', content })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          formMsg.textContent = data.error || '发送失败';
+          submitBtn.disabled = false;
+          return;
+        }
+        contentInput.value = '';
+        updateCounter();
+        feedbackWrap.classList.add('is-ok');
+        formMsg.textContent = '留好啦';
+        showStamp();
+        loadMessages();
+      } catch (err) {
+        formMsg.textContent = '网络出错，稍后再试';
+      }
+      submitBtn.disabled = false;
     }
-    btn.disabled = false;
-  }
 
-  loadMessages();
+    contentInput.addEventListener('input', updateCounter);
+    contentInput.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        submitMsg(e);
+      }
+    });
+    form.addEventListener('submit', submitMsg);
 
-  var els = document.querySelectorAll('.fade');
-  var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, {threshold:0.06});
-  els.forEach(function(el){ io.observe(el); });
-</script>
+    updateCounter();
+    loadMessages();
+  </script>
 </body>
 </html>

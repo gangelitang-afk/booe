@@ -95,7 +95,10 @@
   "site": {
     "commits": 5,
     "first_commit": "2026-08-22",
-    "pages": 9,
-    "launched": "2026-08-22"
+    "pages": 15,
+    "experiments": 5,
+    "games": 4,
+    "launched": "2026-08-22",
+    "site_updated_at": "2026-11-24"
   }
 }
