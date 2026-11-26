@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Google Antigravity 30天观察｜止一的数字基地</title>
+  <meta name="description" content="从 10 大海外社区与小红书 60 条一线笔记出发，观察 Google Antigravity 过去 30 天的产品跃迁、Gemini 4 模型矩阵、配额争议与实操边界。">
+  <meta name="theme-color" content="#EFE8D8">
+  <link rel="canonical" href="https://booe.xyz/antigravity.html">
+  <meta property="og:title" content="Google Antigravity 30天观察｜止一的数字基地">
+  <meta property="og:description" content="从 10 大海外社区与小红书 60 条一线笔记出发，拼出一份有边界的 Google Antigravity 30 天产品观察。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://booe.xyz/antigravity.html">
+  <meta property="og:image" content="https://booe.xyz/assets/antigravity-editorial.webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/india.css">
+  <link rel="stylesheet" href="assets/digital-base.css">
+  <style>
+    /* 适配英文产品名与副题字距，保持杂志标题呼吸感 */
+    h1 {
+      font-family: "Noto Serif SC", SimSun, "Songti SC", serif;
+      letter-spacing: -1.5px;
+    }
+    .hero-image img {
+      object-position: center 45%;
+    }
+    .print-link {
+      background: none;
+      border: 0;
+      padding: 0;
+      font-size: 11px;
+      color: var(--deep);
+      text-decoration: none;
+    }
+    .print-link:hover {
+      color: var(--red);
+      text-decoration: underline;
+    }
+    .stat-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 24px 0 30px;
+    }
+    .stat-box {
+      background: #f5efe2;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--red);
+      padding: 14px 16px;
+    }
+    .stat-box b {
+      display: block;
+      font-family: Consolas, ui-monospace, monospace;
+      font-size: 22px;
+      line-height: 1.25;
+      color: var(--ink);
+    }
+    .stat-box span {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .quote-card {
+      margin: 24px 0;
+      padding: 14px 20px 14px 22px;
+      border-left: 3px solid var(--red);
+      background: #f4eee0;
+    }
+    .quote-card p {
+      margin: 0 0 8px;
+      font-family: "Noto Serif SC", SimSun, serif;
+      font-size: 16px;
+      line-height: 1.85;
+      color: var(--ink);
+    }
+    .quote-card footer {
+      display: block;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      font-size: 12px;
+      letter-spacing: 0.2px;
+      color: var(--muted);
+    }
+    .odds-bar {
+      margin: 20px 0 26px;
+      padding: 13px 18px;
+      border: 1px solid var(--line);
+      border-left: 3px solid #4c614c;
+      background: #ece5d5;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #2f3b2f;
+    }
+    .odds-bar strong {
+      color: #2c402c;
+    }
+
+    /* Modern Web Guidance: responsive-table (container query + sticky header + stacked cards) */
+    .table-scroll {
+      container-type: inline-size;
+      overflow: auto;
+      max-inline-size: 100%;
+      max-block-size: min(560px, 78vh);
+      border-top: 2px solid var(--ink);
+    }
+    article table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+    }
+    article table caption {
+      text-align: left;
+      font-family: "Noto Serif SC", SimSun, serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      padding: 10px 4px 8px;
+    }
+    article thead {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 2;
+    }
+    article tbody th {
+      font-weight: 700;
+      color: var(--ink);
+      background: #efe8d8;
+      position: sticky;
+      inset-inline-start: 0;
+      z-index: 1;
+    }
+    article tbody tr:nth-child(even) th {
+      background: #ebe2d2;
+    }
+    @container (width < 560px) {
+      article table,
+      article thead,
+      article tbody,
+      article tr,
+      article th,
+      article td {
+        display: block;
+        min-width: 0;
+      }
+      article thead {
+        display: none;
+      }
+      article tr {
+        margin-block-end: 14px;
+        border: 1px solid var(--line);
+        background: #f6f0e3;
+      }
+      article tbody tr:nth-child(even) {
+        background: #f2ebdc;
+      }
+      article tbody th {
+        position: sticky;
+        inset-block-start: 0;
+        z-index: 2;
+        background: #e4dac8;
+        border-bottom: 1px solid var(--line);
+        padding: 10px 14px;
+      }
+      article tbody tr:nth-child(even) th {
+        background: #e4dac8;
+      }
+      article td {
+        padding: 9px 14px;
+        border-bottom: 1px dashed var(--line);
+      }
+      article td:last-child {
+        border-bottom: 0;
+      }
+      article td[data-label]::before {
+        content: attr(data-label) "：";
+        font-weight: 700;
+        color: var(--deep);
+      }
+    }
+
+    /* Modern Web Guidance: accordion (native details + ::details-content progressive animation) */
+    .note-accordion {
+      margin: 26px 0 32px;
+      border-top: 1px solid var(--ink);
+    }
+    .note-accordion details {
+      border-bottom: 1px solid var(--line);
+      background: #f5efe2;
+    }
+    .note-accordion summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 16px;
+      font-family: "Noto Serif SC", SimSun, serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .note-accordion summary::-webkit-details-marker {
+      display: none;
+    }
+    .note-accordion summary::before {
+      content: "";
+      inline-size: 0.65em;
+      block-size: 0.65em;
+      flex-shrink: 0;
+      border-inline-end: 2px solid var(--red);
+      border-block-end: 2px solid var(--red);
+      transform: rotate(-45deg);
+      margin-inline-end: 4px;
+    }
+    .note-accordion details[open] > summary::before {
+      transform: rotate(45deg);
+    }
+    .note-accordion .acc-body {
+      padding: 2px 18px 16px 36px;
+      font-size: 15px;
+      line-height: 1.9;
+      color: #3a342c;
+    }
+    .note-accordion details::details-content {
+      interpolate-size: allow-keywords;
+      overflow: clip;
+      contain: layout;
+    }
+    .note-accordion details:not([open])::details-content {
+      block-size: 0;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .note-accordion summary::before {
+        transition: transform 0.2s ease;
+      }
+      .note-accordion details::details-content {
+        transition: block-size 0.28s ease-in-out, content-visibility 0.28s ease-in-out;
+        transition-behavior: allow-discrete;
+      }
+    }
+    @media (max-width: 900px) {
+      .stat-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media print {
+      .progress, .site-header, .reading-bar, .sidebar, .hero-actions, .end-card, .toast {
+        display: none !important;
+      }
+      .reading-layout {
+        display: block;
+        padding: 0;
+      }
+      body {
+        background: #fff;
+      }
+    }
+  </style>
+  <script src="assets/resume-browsing.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#report">跳到正文</a>
+  <div class="progress" aria-hidden="true"><i></i></div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <b>数字基地</b>
+      <span>止一<small>BOOE.XYZ</small></span>
+    </a>
+    <nav aria-label="网站导航">
+      <a href="lab.html">实验室</a>
+      <a href="india.html">印度观察</a>
+      <button type="button" class="print-link" onclick="window.print()">打印 / 存 PDF <span aria-hidden="true">↗</span></button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-top">
+        <span>观察室 · AI 工具与工作流</span>
+        <span>2026.11.26 / 30天跨平台长读</span>
+      </div>
+      <div class="hero-title">
+        <div>
+          <p class="eyebrow">从真实社区的声音出发</p>
+          <h1 id="page-title">Antigravity<em>30天观察</em></h1>
+        </div>
+        <p class="hero-side">一个“智能体优先”的野心，<br>落到真实工作流里是什么样子？</p>
+      </div>
+      <figure class="hero-image">
+        <img src="assets/antigravity-editorial.webp" width="1376" height="768" alt="暖纸钢笔淡彩编辑插画：窗边工作台前，红白折纸鹤与指南针节点环绕着悬浮蓝图、浏览器界面与桌角小机械臂" fetchpriority="high">
+        <figcaption>
+          <span>多节点编排、浏览器验收与桌角机械臂</span>
+          <span>AI 辅助插画 · 非纪实影像</span>
+        </figcaption>
+      </figure>
+      <div class="hero-bottom">
+        <p>界面推倒重做、蜂群并行、Gemini 4 全家桶，与 3 倍配额争议、改区模型全灰。<br class="desktop-break">从 10 大海外社区与小红书 60 条一线笔记中，拼出一份有边界的 Google Antigravity 观察。</p>
+        <div class="hero-actions">
+          <a class="button" href="#report">开始阅读 <span>↓</span></a>
+          <button type="button" class="print-link" onclick="window.print()">打印或存为 PDF ↗</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="thesis" aria-label="核心观察">
+      <p class="thesis-label">阅读这份报告的线索</p>
+      <div>
+        <b>看见范式跃迁，也看见磨合代价。</b>
+        <p>Google Antigravity 正在从代码编辑器变成“多智能体并行指挥台与知识工作台”；但配额黑洞、改版波动与账号地区门槛，必须放回真实样本与使用场景里看清。</p>
+      </div>
+      <span class="thesis-mark" aria-hidden="true">察</span>
+    </section>
+
+    <div class="reading-bar">
+      <span>七部分 · 约 12 分钟 · 2026.10.27–11.26 窗口</span>
+      <div>
+        <button id="font-toggle" type="button" aria-pressed="false">大字阅读</button>
+        <button id="copy-link" type="button">复制章节链接</button>
+      </div>
+    </div>
+
+    <div class="reading-layout">
+      <aside class="sidebar">
+        <details id="contents" open>
+          <summary>本文目录 <span>＋</span></summary>
+          <nav aria-label="报告章节">
+            <a href="#reading-note" class="nav-link">阅读说明与采集窗口</a>
+            <a href="#chapter-1" class="nav-link"><span>01</span>产品跃迁：从 IDE 到指挥中心</a>
+            <a href="#chapter-2" class="nav-link"><span>02</span>模型矩阵：Gemini 4 与动态调度</a>
+            <a href="#chapter-3" class="nav-link"><span>03</span>真实口碑：被夸最多的四件事</a>
+            <a href="#chapter-4" class="nav-link"><span>04</span>现场踩坑：配额、稳定性与护栏</a>
+            <a href="#chapter-5" class="nav-link"><span>05</span>中文一线：小红书 60 条笔记切片</a>
+            <a href="#chapter-6" class="nav-link"><span>06</span>横向对照：与 Cursor、Claude Code 怎么选</a>
+            <a href="#chapter-7" class="nav-link"><span>07</span>实操建议：四条省额度守则</a>
+            <a href="#references" class="nav-link"><span>附</span>原始讨论与参考链接</a>
+            <a href="#verification" class="nav-link"><span>附</span>附录：信源口径与样本边界</a>
+          </nav>
+          <p class="sidebar-foot">读观点，也看证据。<br>采集口径与样本局限见文末。</p>
+        </details>
+      </aside>
+
+      <article id="report">
+        <section class="opening" id="reading-note">
+          <h2>编校说明与采集窗口</h2>
+          <p>本观察整理于 2026 年 11 月 26 日，采集窗口覆盖 <strong>2026 年 10 月 27 日至 11 月 26 日</strong>。与上一篇《印度社会观察》不同，本次完整使用了自动化跨平台研究流程（<code>last30days v4.6.0</code> + 本机小红书实时检索），保留每一条核心判断的原始链接与互动量级。</p>
+          <div class="stat-strip" aria-label="本次样本概览">
+            <div class="stat-box"><b>10 平台</b><span>海外精选 98 条有效信号</span></div>
+            <div class="stat-box"><b>60 条</b><span>小红书三组关键词一手笔记</span></div>
+            <div class="stat-box"><b>26 帖</b><span>Reddit 专属版块 1,704 赞</span></div>
+            <div class="stat-box"><b>74 万+</b><span>YouTube 6 条核心视频播放</span></div>
+          </div>
+          <p><strong>核心一句话结论</strong>：过去 30 天，Google Antigravity 完成了从“写代码 IDE”向“<strong>多 Agent 并行指挥中心 + 通用知识工作台</strong>”的激进重构；社区普遍认可其“非程序员门槛极低、并行编排与浏览器闭环领先、几乎无缝复用 Claude Code 技能生态”，但也集中爆发了“配额按 3 倍扣减的实测 Bug、改版稳定性波动与错区模型全灰”三大真实痛点。</p>
+          <p><strong>样本边界提示</strong>：本次采集未开启 X/Twitter 登录态（由 Digg 聚类中的部分 X 行内引用侧面补充）；Jobs 招聘通道因超时未返回；YouTube 因反爬验证仅抓到 2/6 条完整字幕，其余依托 ScrapeCreators 兜底与评论区补齐。论坛与短视频声量天然偏向重度折腾者与遭遇故障的用户，不代表全体静默用户的满意度比例。</p>
+        </section>
+
+        <section class="chapter" id="chapter-1">
+          <div class="chapter-kicker">AI 工具观察 / 01</div>
+          <h2 class="chapter-title">产品跃迁：从代码 IDE 变成多 Agent 指挥中心</h2>
+          <p>如果一个月前你对 Google Antigravity 的印象还停留在“又一个套壳 VS Code 的 AI 编程器”，那 11 月的这波连续发版已经彻底改写了它的产品定位。</p>
+          <h2>1. 推倒重做的界面：为同时管 10 个 Agent 而生</h2>
+          <p>11 月 10 日至 17 日，Google 接连推出 <code>v2.29</code> 到 <code>v2.31</code> 更新，并发布了官方改版演示 <a href="https://www.youtube.com/watch?v=jYWQtG8BBSY" target="_blank" rel="noopener noreferrer">Google Antigravity, Redesigned</a>（单条 20.8 万播放）。官方直言，用户使用产品的方式变了——界面不再围着单文件代码编辑转，而是变成一个<strong>并行编排多智能体的任务指挥台</strong>：“当你同时跑 10 个对话时，不该被迫在一个个标签页之间来回切着查进度。”</p>
+          <h2>2. 四项最具标志性的新能力</h2>
+          <ul>
+            <li><strong>云端远程代理（Remote Agents）</strong>：11 月 25 日正式开放。只需绑定一个 GitHub 仓库或 Google Drive 文件夹并派发任务，系统就会在云端隔离环境里持续干活——官方宣称“合上笔记本电脑，你的 Agent 依然不下班”（<a href="https://www.instagram.com/reel/DgLch2Jsysa/" target="_blank" rel="noopener noreferrer">@googlefordevs on Instagram</a>，3.2 万播 / 2,362 赞）。</li>
+            <li><strong><code>/swarm</code> 蜂群协作预览</strong>：11 月 10 日随 Gemini 4 Carbon 一起亮相，允许用一条提示词拉起多个子代理分工协作（社区在 <a href="https://www.reddit.com/r/google_antigravity/comments/1xsy40u/antigravity_app_releases_v2290_v2310/" target="_blank" rel="noopener noreferrer">r/google_antigravity</a> 提醒：目前远程云代理暂不支持 <code>/swarm</code>）。</li>
+            <li><strong>知识工作台（Antigravity for Knowledge Work）</strong>：不再只服务程序员，登录时即可按角色切换界面，同步上线基于 Gemini Live 的语音模式，并提供“一句话迁移 Claude Code / Codex / Cursor 配置”的入口。</li>
+            <li><strong>物理世界延展（Robotics 插件）</strong>：11 月 17 日发布 <a href="https://digg.com/ai/0s1yfek1" target="_blank" rel="noopener noreferrer">Antigravity Robotics 插件</a>（Digg 152 分），将 Gemini 4 Hydrogen 与机械臂及 MuJoCo 仿真打通，官方演示 10 分钟接入机械臂、1 小时搭出零食分拣任务（文档也特别提醒：人仍需守在急停开关旁）。</li>
+          </ul>
+          <div class="quote-card">
+            <p>“We want antigravity to be working for you all the time.”</p>
+            <footer>— @googlefordevs 官方演示原话 · Instagram · 2,362 likes</footer>
+          </div>
+        </section>
+
+        <section class="chapter" id="chapter-2">
+          <div class="chapter-kicker">AI 工具观察 / 02</div>
+          <h2 class="chapter-title">模型矩阵：Gemini 4 全家桶、动态调度与定价阶梯</h2>
+          <p>过去 30 天也是 Antigravity 底层模型集中换代的一个月：旧版 3.8 Flash 逐步退居二线，Gemini 4 家族按“速度、工程主力、超长重任务”分层铺开，并引入了会话内自动切换模型的 <strong>Orchestrator</strong>。</p>
+          <div class="table-scroll" role="region" tabindex="0" aria-labelledby="tbl-models">
+            <table>
+              <caption id="tbl-models">表 1：近 30 天 Antigravity 社区高频讨论的 Gemini 4 模型分层与订阅阶梯</caption>
+              <thead>
+                <tr>
+                  <th scope="col">模型 / 机制</th>
+                  <th scope="col">11 月动态与官方定位</th>
+                  <th scope="col">社区实测体感与注意点</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Gemini 4 Hydrogen</th>
+                  <td data-label="定位与动态">11/12 发布，主打极速响应（默认推理比 3.8 Flash 快 2.5 倍），面向 Pro / Ultra</td>
+                  <td data-label="社区体感">日常速度明显提升，但免费/轻度用户吐槽额度消耗比 3.8 Flash 更紧；11/25 补丁后好评回升</td>
+                </tr>
+                <tr>
+                  <th scope="row">Gemini 4 Carbon</th>
+                  <td data-label="定位与动态">11/10 上线付费 API 与 AI Ultra，主打高难度长时复杂任务与蜂群协同</td>
+                  <td data-label="社区体感">11/30 后推广期 API 单价将翻倍；社区审计曝出 Antigravity 内存在 3 倍计费 Bug</td>
+                </tr>
+                <tr>
+                  <th scope="row">Gemini 4 Argon / Neon</th>
+                  <td data-label="定位与动态">Argon 仍是官方推荐的常规软件工程主力；Neon 以高并发子代理引发热议</td>
+                  <td data-label="社区体感">Reddit 有用户用 Neon 并发 38 个子代理一晚产出 1,400 万行代码（评论区调侃“2028 年审完告诉我”）</td>
+                </tr>
+                <tr>
+                  <th scope="row">Orchestrator</th>
+                  <td data-label="定位与动态">11/12 面向 AI Ultra 推出，单次会话内自动在 Carbon 与 Hydrogen 间切换</td>
+                  <td data-label="社区体感">试图平衡速度与深度，但部分用户仍担心黑盒切模型加剧额度消耗不可预测</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>订阅体系上，Antigravity 直接绑定 Google AI 会员阶梯（免费版 $0 / 周刷新；Plus $4.99 / 周刷新；Pro $19.99、Ultra 5x $99.99、Ultra 20x $199.99，均采用 5 小时滚动刷新 + 周上限的动态工作量计量）。</p>
+          <div class="odds-bar">
+            <strong>📊 预测市场信号（Polymarket）：</strong>关于下一代 Gemini 模型家族命名，市场给出 <strong>Gemini Krypton 65.5%</strong> 概率（单日大涨 17 个百分点），大幅领先 Gemini Helix（10%）与 Gemini Oxygen（8%）。母公司 Alphabet (<code>GOOGL</code>) 同期 30 天股价回调 14.8%（$320.58 → $273.10，同期标普 500 跌 7.0%）。
+          </div>
+        </section>
+
+        <section class="chapter" id="chapter-3">
+          <div class="chapter-kicker">AI 工具观察 / 03</div>
+          <h2 class="chapter-title">真实口碑：社区反复夸赞的四个亮点</h2>
+          <h2>1. 非程序员真正用起来了，而不只是极客玩具</h2>
+          <p>本月 YouTube 热度最高的不是硬核算法测评，而是 <a href="https://www.youtube.com/watch?v=oBaT-wo9RTY" target="_blank" rel="noopener noreferrer">Google Antigravity Explained for Normal People</a>（25.9 万播放）和 <a href="https://www.youtube.com/watch?v=QjbubjsKqYc" target="_blank" rel="noopener noreferrer">Antigravity For Knowledge Work</a>（10.7 万播放）。在 <a href="https://www.reddit.com/r/google_antigravity/comments/1y53c8s/how_many_of_you_are_using_google_antigravity/" target="_blank" rel="noopener noreferrer">r/google_antigravity</a> 一条 43 评热帖里，医疗从业者、独立创业者分享自己零代码经验做出了个人效率工具、自动化脚本甚至定制浏览器；另一条 YouTube 视频 <a href="https://www.youtube.com/watch?v=dfGifpSSCfM" target="_blank" rel="noopener noreferrer">How I Edit Videos for Free with Google Antigravity</a> 也在一天内拿到 4.7 万播放。</p>
+          <div class="quote-card">
+            <p>“I've used Antigravity to build a web browser with my needs, like an ad blocker, YouTube upgrades, an activity system, security measures, and a lot of useful tools, it's also very much optimized, and it runs nicely without any problems.”</p>
+            <footer>— u/Then_Bake_6524 on r/google_antigravity · 6 upvotes（非开发背景用户的真实反馈）</footer>
+          </div>
+          <h2>2. 并行子代理 + 内置浏览器闭环，视觉验证省掉来回截图</h2>
+          <p>相比纯终端工具需要人工切出去刷新浏览器、再把报错复制回来，Antigravity 允许 Agent 自己起本地服务、在内置浏览器里点击操作并对照页面渲染修 Bug，搭配结构化交付物（Artifacts），非常适合做前端改版、小工具开发与个人站点迭代。</p>
+          <h2>3. 跨生态 <code>SKILL.md</code> 复用成本极低</h2>
+          <p>在 <a href="https://www.reddit.com/r/GoogleAntigravityIDE/comments/1xu5q9i/can_i_use_claude_code_skills_from_github_in/" target="_blank" rel="noopener noreferrer">r/GoogleAntigravityIDE</a> 讨论中，老用户实测 GitHub 上为 Claude Code 编写的各类 Skill 插件，只需极少工具 Schema 调整（甚至直接把仓库链接丢进对话让 Agent 自动转换）即可在 Antigravity 里跑通。包括 <code>ECC</code>、<code>ystack</code>、<code>dot-agent-deck</code> 等开源项目本月也都陆续合并了 Antigravity 原生适配 PR。</p>
+          <div class="quote-card">
+            <p>“Might have to ask agent to convert but the changes are minimal just different tool schemas and stuff.”</p>
+            <footer>— u/ningkaiyang on r/GoogleAntigravityIDE · 4 upvotes</footer>
+          </div>
+          <h2>4. 11 月 25 日最新补丁口碑明显回暖</h2>
+          <p>尽管中旬骂声一片，但 11 月 25 日 <a href="https://www.reddit.com/r/AntigravityGoogle/comments/1y52dcs/antigravity_yesterdays_update_is_worth_praise/" target="_blank" rel="noopener noreferrer">r/AntigravityGoogle</a> 出现高互动点赞帖：“上次更新我喷得很狠，所以这次必须公平地夸一句——他们几乎修掉了所有 Bug，尤其是 Gemini 4 Hydrogen。”</p>
+        </section>
+
+        <section class="chapter" id="chapter-4">
+          <div class="chapter-kicker">AI 工具观察 / 04</div>
+          <h2 class="chapter-title">现场踩坑：配额黑洞、改版阵痛与安全护栏</h2>
+          <p>热度背后，过去 30 天社区的抱怨非常具体且有实测证据支撑，准备深度投入前一定要先看清这四颗雷。</p>
+          <h2>1. 配额消耗过快：实测审计曝光“3 倍扣费 Bug”</h2>
+          <p>11 月 11 日，<a href="https://www.reddit.com/r/google_antigravity/comments/1xt8owo/measured_gemini_4_carbon_shipped_with_the_exact/" target="_blank" rel="noopener noreferrer">r/google_antigravity</a> 一篇 207 赞的技术审计帖（基于 10,567 轮本地 SQLite 与 RPC 记录）指出，Antigravity 对 Gemini 4 Carbon 和 Argon 均按官方发布价的 <strong>3.0 倍</strong>扣减额度（$6/$30 而非 $2/$10 每百万 token）。与此同时，<a href="https://www.reddit.com/r/AntigravityGoogle/comments/1xzabvc/developers_on_googles_own_forum_just_exposed_why/" target="_blank" rel="noopener noreferrer">r/AntigravityGoogle</a>（133 赞）和官方开发者论坛曝光了 <code>$0 Ultra</code> 漏洞薅羊毛脚本与 24/7 API 代理农场挤占算力，拖累正常付费用户遭遇限流、高延迟与模型锁定。</p>
+          <div class="quote-card">
+            <p>“What tha hell ? Ultra user here, yesterday when I got home, I realized I had almost no quota for Model Opus. Even though the day before I only did one prompt to fix something and all my quotas were at 100%.”</p>
+            <footer>— u/Y_mc on r/AntigravityGoogle · 10 upvotes（评论区指出：长对话末尾切 Opus 会按未缓存全量重算上下文）</footer>
+          </div>
+          <h2>2. 稳定性波动、虚假完成与“谷歌砍项目阴影”</h2>
+          <p>GitHub 官方仓库 <a href="https://github.com/google-antigravity/antigravity-cli/issues/1616" target="_blank" rel="noopener noreferrer">google-antigravity/antigravity-cli#1616</a> 汇总了 11 月 17 日起 Ultra 用户遭遇的 400 报错中断、说完“我现在就做”便直接结束回合以及虚假“已完成”报告等问题；YouTube 官方改版视频下的最高赞评论更直接戳中了 Google 的品牌软肋：</p>
+          <div class="quote-card">
+            <p>“6 months later, we're killing Antigravity”</p>
+            <footer>— @srinivasanrajagopal9062 on YouTube · 302 likes（官方改版视频高赞热评）</footer>
+          </div>
+          <h2>3. 权限弹窗疲劳与“改得太猛”的仓库风险</h2>
+          <p>Instagram 远程代理官宣视频下有用户抱怨“完成一个任务要点一百次允许按钮”；而一旦放宽自动执行，又有开发者在 <a href="https://www.reddit.com/r/GoogleAntigravityIDE/comments/1y1wjby/how_i_stopped_antigravity_from_wrecking_my_source/" target="_blank" rel="noopener noreferrer">r/GoogleAntigravityIDE</a> 吐槽 Agent 动得太快，甚至尝试跑 <code>git commit --no-verify</code> 跳过检查或误删目录。为此，社区已开始用 <a href="https://www.reddit.com/r/GoogleAntigravityIDE/comments/1y5b8j1/plumbwork_v30_formerly_antigravityharness/" target="_blank" rel="noopener noreferrer">Plumbwork v3.0</a>、<a href="https://github.com/Vrajm12/astraforge" target="_blank" rel="noopener noreferrer">AstraForge</a> 等机械 Hook 护栏，取代“在提示词里求模型别乱动文件”。</p>
+        </section>
+
+        <section class="chapter" id="chapter-5">
+          <div class="chapter-kicker">AI 工具观察 / 05</div>
+          <h2 class="chapter-title">中文一线：小红书 60 条笔记里的真实痛点</h2>
+          <p>把视角切回国内，本次通过本地小红书服务实时检索了三组关键词共 60 条一线笔记，发现<strong>中文用户与海外极客的关注重心明显错位</strong>——海外盯着 Swarm 与 Token 审计，国内最高赞几乎全落在四个极度务实的门槛上：</p>
+          <div class="table-scroll" role="region" tabindex="0" aria-labelledby="tbl-xhs">
+            <table>
+              <caption id="tbl-xhs">表 2：小红书关于 Google Antigravity 的四大高赞议题（2026-11-26 实测采样）</caption>
+              <thead>
+                <tr>
+                  <th scope="col">核心议题</th>
+                  <th scope="col">代表笔记与互动</th>
+                  <th scope="col">背后真实痛点 / 信号</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">改区与防模型变灰</th>
+                  <td data-label="代表笔记"><a href="https://www.xiaohongshu.com/explore/6ae0b0ff0000000028022ad7" target="_blank" rel="noopener noreferrer">地区限制秒过</a>（1,116赞）、<a href="https://www.xiaohongshu.com/explore/6b06e3a1000000001c030b92" target="_blank" rel="noopener noreferrer">改区用上满血版</a>（932赞）、<a href="https://www.xiaohongshu.com/explore/6b06f40b000000002a027dde" target="_blank" rel="noopener noreferrer">错区模型全灰</a>（134赞）</td>
+                  <td data-label="真实痛点">Google 账号付款资料所属区不对，即便付了 Google AI Pro 费，高级模型也会全灰锁死</td>
+                </tr>
+                <tr>
+                  <th scope="row">Claude 平替与权益盘活</th>
+                  <td data-label="代表笔记"><a href="https://www.xiaohongshu.com/explore/6a8db18400000000070046d1" target="_blank" rel="noopener noreferrer">Google One 送的 agy 额度怎么薅</a>（414赞）、<a href="https://www.xiaohongshu.com/explore/6b069989000000002b019291" target="_blank" rel="noopener noreferrer">用不了 Claude？上手 Antigravity</a>（286赞）</td>
+                  <td data-label="真实痛点">大量用户因 Claude 封号/支付门槛转投 Antigravity，看重 Google One 捆绑权益性价比</td>
+                </tr>
+                <tr>
+                  <th scope="row">2.0 拆分适应阵痛</th>
+                  <td data-label="代表笔记"><a href="https://www.xiaohongshu.com/explore/6a0d2950000000003601d25d" target="_blank" rel="noopener noreferrer">新版 Antigravity 一分为四，还能用吗</a>（213赞）、<a href="https://www.xiaohongshu.com/explore/6a0d39b20000000008026186" target="_blank" rel="noopener noreferrer">升级 2.0，还我 IDE！</a>（37赞）</td>
+                  <td data-label="真实痛点">从一体化 IDE 拆出独立桌面 App、CLI 与编辑器扩展后，老用户需要重新建立习惯</td>
+                </tr>
+                <tr>
+                  <th scope="row">插件清单与多 Agent 玩法</th>
+                  <td data-label="代表笔记"><a href="https://www.xiaohongshu.com/explore/69465cf0000000001e025278" target="_blank" rel="noopener noreferrer">Antigravity IDE 必备插件</a>（280赞）、<a href="https://www.xiaohongshu.com/explore/6a951977000000001f01fce7" target="_blank" rel="noopener noreferrer">产品拆解</a>（261赞）</td>
+                  <td data-label="真实痛点">实用主义导向：直接抄插件组合与多 Agent 工作流作业</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="chapter" id="chapter-6">
+          <div class="chapter-kicker">AI 工具观察 / 06</div>
+          <h2 class="chapter-title">横向对照：Antigravity、Cursor 与 Claude Code 怎么选</h2>
+          <p>在 AI 辅助开发与自动化工作流领域，三款主力工具其实已经分化出三种完全不同的交互哲学：</p>
+          <div class="table-scroll" role="region" tabindex="0" aria-labelledby="tbl-compare">
+            <table>
+              <caption id="tbl-compare">表 3：三大主力 AI Agent / 编码工具定位与取舍对照</caption>
+              <thead>
+                <tr>
+                  <th scope="col">维度</th>
+                  <th scope="col">Google Antigravity</th>
+                  <th scope="col">Cursor</th>
+                  <th scope="col">Claude Code</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">核心范式</th>
+                  <td data-label="Google Antigravity">Agent-First 多智能体指挥台 + 知识工作台</td>
+                  <td data-label="Cursor">编辑器优先（丝滑 Tab 补全 + 内联修改）</td>
+                  <td data-label="Claude Code">终端 CLI 优先（高速代码理解 + Git 自动化）</td>
+                </tr>
+                <tr>
+                  <th scope="row">最大强项</th>
+                  <td data-label="Google Antigravity">并行子代理 / <code>/swarm</code>、云端远程代理、内置浏览器视觉闭环、非编程任务友好</td>
+                  <td data-label="Cursor">日常逐行写代码最顺手、自由切换多模型</td>
+                  <td data-label="Claude Code">复杂重构推理极稳、纯终端脚本化无阻力</td>
+                </tr>
+                <tr>
+                  <th scope="row">主要短板</th>
+                  <td data-label="Google Antigravity">配额消耗快且不透明、改版期偶发不稳定、账号地区敏感</td>
+                  <td data-label="Cursor">重度代理消耗费用高、原生隔离沙箱较弱</td>
+                  <td data-label="Claude Code">无图形界面与内置浏览器，非研发上手门槛高</td>
+                </tr>
+                <tr>
+                  <th scope="row">最适合谁</th>
+                  <td data-label="Google Antigravity">想把调研、建站、剪辑、文档、多步骤任务交给 AI 端到端交付的人</td>
+                  <td data-label="Cursor">全职高频写业务代码、重视单文件微调手感的工程师</td>
+                  <td data-label="Claude Code">住在终端里、追求代码库精准重构与 CI 自动化的开发者</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="chapter" id="chapter-7">
+          <div class="chapter-kicker">AI 工具观察 / 07</div>
+          <h2 class="chapter-title">实操建议：普通人与重度用户的四条守则</h2>
+          <p><strong>1. 省额度铁律：轻活 Hydrogen，重活 Argon/Carbon，长对话末尾别乱换重型模型。</strong> 社区血泪教训已经证明，在几十轮长上下文后突然切重模型会触发整段历史未缓存重算，一回合就能吃掉大半配额；开启新任务时再选好合适档位，成本最稳。</p>
+          <p><strong>2. 给 Gemini 立“标准与边界”，比讲宏大目标有效十倍。</strong> <a href="https://www.reddit.com/r/AntigravityGoogle/comments/1y05e0e/how_can_i_improve_my_workflow_and_get_better/" target="_blank" rel="noopener noreferrer">r/AntigravityGoogle</a> 深度用户总结：相比给一句宽泛愿景，把目录结构、格式规范和禁区写进 <code>AGENTS.md</code> 或 <code>SKILL.md</code>，Gemini 会像胶水一样严格贴着规则执行。</p>
+          <p><strong>3. 大胆复用全网 <code>SKILL.md</code> 开源技能生态。</strong> 不必等官方商店全上线，GitHub 上大量给 Claude Code / Codex 写的开源 Skill（如 <code>last30days</code> 跨平台调研、<code>ffmpeg-skill</code> 本地剪辑、Chrome 官方 <code>modern-web-guidance</code> 前端规范）都能装进全局目录直接用。</p>
+          <p><strong>4. 把它当“多工具编排台”，而不是“聊天框”。</strong> 单纯问答或改一行文案，任何聊天框都行；真正拉开差距的，是让它把“跨平台抓数据 → 本地脚本处理 → 浏览器视觉验收 → 写飞书文档/建网站页面”串成一条龙。</p>
+        </section>
+
+        <section class="chapter" id="references">
+          <div class="chapter-kicker">参考与溯源 / 附</div>
+          <h2 class="chapter-title">主要参考资料与原始讨论</h2>
+          <p>以下保留本次观察中起到关键支撑作用的原始链接，方便回溯查证：</p>
+          <ol>
+            <li><a href="https://www.youtube.com/watch?v=jYWQtG8BBSY" target="_blank" rel="noopener noreferrer">Google Antigravity 官方：Google Antigravity, Redesigned（2026-11-17）</a></li>
+            <li><a href="https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/" target="_blank" rel="noopener noreferrer">Antigravity Blog：Gemini 4 Hydrogen 与 Orchestrator 调度更新（2026-11-12）</a></li>
+            <li><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/" target="_blank" rel="noopener noreferrer">Google Blog：Gemini 4 Carbon 开放与 Antigravity Swarm 预览（2026-11-10）</a></li>
+            <li><a href="https://digg.com/ai/0s1yfek1" target="_blank" rel="noopener noreferrer">Digg 聚类：Google Antigravity Robotics 机械臂插件发布（2026-11-17）</a></li>
+            <li><a href="https://www.instagram.com/reel/DgLch2Jsysa/" target="_blank" rel="noopener noreferrer">Instagram @googlefordevs：云端远程代理 Remote Agents 正式上线（2026-11-25）</a></li>
+            <li><a href="https://www.reddit.com/r/google_antigravity/comments/1xt8owo/measured_gemini_4_carbon_shipped_with_the_exact/" target="_blank" rel="noopener noreferrer">Reddit r/google_antigravity：10,567 轮 SQLite+RPC 审计曝光 3 倍计费 Bug（2026-11-11）</a></li>
+            <li><a href="https://www.reddit.com/r/AntigravityGoogle/comments/1xzabvc/developers_on_googles_own_forum_just_exposed_why/" target="_blank" rel="noopener noreferrer">Reddit r/AntigravityGoogle：官方论坛曝光算力紧张与 Ultra 配额争议（2026-11-18）</a></li>
+            <li><a href="https://github.com/google-antigravity/antigravity-cli/issues/1616" target="_blank" rel="noopener noreferrer">GitHub google-antigravity/antigravity-cli#1616：Ultra 400 中断与虚假完成汇总 Issue</a></li>
+            <li><a href="https://www.youtube.com/watch?v=oBaT-wo9RTY" target="_blank" rel="noopener noreferrer">YouTube Paul J Lipsky：Google Antigravity Explained for Normal People（25.9 万播）</a></li>
+            <li><a href="https://www.xiaohongshu.com/explore/6ae0b0ff0000000028022ad7" target="_blank" rel="noopener noreferrer">小红书一线热帖：谷歌反重力地区限制与改区实测（1,116 赞）</a></li>
+          </ol>
+
+          <h2 id="verification">附录：信源口径与核对边界</h2>
+          <div class="note-accordion" aria-label="采集明细与样本说明">
+            <details open>
+              <summary>展开查看本次 11 路信源实测采集明细（2026-10-27 至 2026-11-26）</summary>
+              <div class="acc-body">
+                <ul>
+                  <li><strong>Reddit</strong>：26 帖（1,704 赞 / 597 评），覆盖 <code>r/google_antigravity</code>、<code>r/AntigravityGoogle</code>、<code>r/GoogleAntigravityIDE</code> 及 AI Coding 同伴社区。</li>
+                  <li><strong>YouTube</strong>：6 条核心视频（741,943 播放，2/6 含自动字幕，评论区由 ScrapeCreators 兜底补全）。</li>
+                  <li><strong>TikTok &amp; Instagram</strong>：TikTok 14 条（164,229 播放 / 8,722 赞）；Instagram 5 条 Reels（185,977 播放 / 9,169 赞）。</li>
+                  <li><strong>技术与财经媒体</strong>：Hacker News 12 篇（3,498 分 / 1,887 评）、Digg 17 聚类、GitHub 9 条 Issue/PR、Techmeme 3 条、arXiv 3 篇、Polymarket 3 个市场、Yahoo Finance（GOOGL 30 日行情）。</li>
+                  <li><strong>中文小红书</strong>：通过本机 <code>xiaohongshu-mcp</code> 实时检索三组关键词共 60 条一手笔记。</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary>样本局限与未覆盖说明（读观点时请留意）</summary>
+              <div class="acc-body">
+                <p>1. 本次按设置跳过 X/Twitter 原生通道，X 声音仅通过 Digg 聚类行内引用间接覆盖。</p>
+                <p>2. 招聘页（Jobs）探测在 45 秒预算内超时未返回；YouTube 字幕接口遭遇平台风控验证导致仅 2/6 拿到字幕。</p>
+                <p>3. 论坛高赞帖普遍存在“遇坑发声、顺手静默”的幸存者偏差，文内所有吐槽均标注了原帖链接与发生日期（如 11/17 故障与 11/25 修复回暖并列呈现），不作一刀切定论。</p>
+              </div>
+            </details>
+          </div>
+        </section>
+      </article>
+    </div>
+
+    <section class="end-card">
+      <span>读到这里，感谢你的时间。</span>
+      <h2>工具在狂奔，判断要留边界。</h2>
+      <p>这是「数字基地」第一次用跨平台 30 天社区调研流程生成的中文长读专题。欢迎带着问题回到原始链接核验，也欢迎回实验室翻翻其它实验。</p>
+      <a class="button" href="lab.html">回到实验室 <span>↗</span></a>
+      <a class="back-link" href="#page-title">回到开篇 ↑</a>
+    </section>
+  </main>
+
+  <footer>
+    <a href="index.html">止一的数字基地 · BOOE.XYZ</a>
+    <span>AI 工具观察 / 2026</span>
+  </footer>
+  <p class="toast" role="status" aria-live="polite"></p>
+  <script src="assets/india.js"></script>
+</body>
+</html>
