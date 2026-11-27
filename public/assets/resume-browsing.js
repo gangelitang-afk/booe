@@ -7,6 +7,7 @@
     "talk": "来信",
     "india": "印度社会观察",
     "antigravity": "Antigravity 观察",
+    "axioms": "43 条决策公理",
     "procurement": "采购机会看板",
     "twenty-four": "24 点"
   });
