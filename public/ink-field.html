@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#efe8d8">
+  <title>墨流 · 四时行卷 · 止一的数字基地</title>
+  <meta name="description" content="纯手写 WebGL2 实时着色器互动实验：滚动滚轮探索四时画卷与倒流时间，点击落印涟漪，长按聚气爆散。">
+  <link rel="canonical" href="https://booe.xyz/ink-field.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/digital-base.css">
+  <style>
+    :root {
+      --ui-ink: #211f19;
+      --ui-muted: rgba(33, 31, 25, 0.66);
+      --ui-line: rgba(33, 31, 25, 0.18);
+      --ui-surface: rgba(247, 242, 231, 0.74);
+      --ui-surface-hover: rgba(247, 242, 231, 0.94);
+      --ui-red: #b5382c;
+      --ui-green: #4c614c;
+    }
+
+    body[data-tone="dark"] {
+      --ui-ink: #f3e8d2;
+      --ui-muted: rgba(243, 232, 210, 0.68);
+      --ui-line: rgba(243, 232, 210, 0.22);
+      --ui-surface: rgba(24, 22, 18, 0.68);
+      --ui-surface-hover: rgba(36, 32, 27, 0.88);
+      --ui-red: #e0523c;
+      --ui-green: #7da381;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #efe8d8;
+      color: var(--ui-ink);
+      font-family: var(--db-sans);
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #stage {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    /* 顶部悬浮导航 */
+    .hud-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 28px;
+      pointer-events: none;
+      transition: color 0.35s ease;
+    }
+
+    .hud-brand {
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 7px 14px;
+      background: var(--ui-surface);
+      border: 1px solid var(--ui-line);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .hud-back {
+      color: var(--ui-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .hud-back:hover { color: var(--ui-red); }
+
+    .hud-sep {
+      width: 1px;
+      height: 14px;
+      background: var(--ui-line);
+    }
+
+    .hud-title {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .hud-title strong {
+      font-family: var(--db-serif);
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      color: var(--ui-ink);
+    }
+
+    .hud-title small {
+      font-family: var(--db-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--ui-red);
+    }
+
+    .hud-controls {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .hud-btn {
+      appearance: none;
+      border: 1px solid var(--ui-line);
+      background: var(--ui-surface);
+      color: var(--ui-ink);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 7px 13px;
+      font-family: var(--db-sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .hud-btn:hover {
+      background: var(--ui-surface-hover);
+      border-color: var(--ui-red);
+      color: var(--ui-red);
+    }
+
+    .hud-btn[aria-pressed="true"] {
+      border-color: var(--ui-red);
+      color: var(--ui-red);
+    }
+
+    .hud-btn--accent {
+      border-color: var(--ui-red);
+      color: var(--ui-red);
+    }
+
+    .hud-btn:focus-visible,
+    .hud-back:focus-visible,
+    .era-btn:focus-visible {
+      outline: 2px solid var(--ui-red);
+      outline-offset: 3px;
+    }
+
+    /* 悬浮操作提示（首次交互后自然淡出，可点 ? 唤回） */
+    .hud-guide {
+      position: fixed;
+      left: 28px;
+      bottom: 92px;
+      z-index: 18;
+      max-width: min(460px, calc(100vw - 56px));
+      padding: 12px 16px;
+      background: var(--ui-surface);
+      border: 1px solid var(--ui-line);
+      border-left: 3px solid var(--ui-red);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-size: 12px;
+      line-height: 1.8;
+      color: var(--ui-muted);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    .hud-guide strong {
+      color: var(--ui-ink);
+      font-weight: 700;
+    }
+
+    .hud-guide.is-hidden {
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+    }
+
+    /* 底部刊物时序尺 */
+    .hud-bottom {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      padding: 0 28px 20px;
+      pointer-events: none;
+    }
+
+    .timeline-bar {
+      pointer-events: auto;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 12px 18px 14px;
+      background: var(--ui-surface);
+      border: 1px solid var(--ui-line);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: background 0.35s ease, border-color 0.35s ease;
+    }
+
+    .timeline-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .era-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .era-btn {
+      appearance: none;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ui-muted);
+      padding: 2px 8px;
+      font-family: var(--db-serif);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .era-btn:hover { color: var(--ui-ink); }
+
+    .era-btn.is-active {
+      color: var(--ui-red);
+      border-color: var(--ui-red);
+    }
+
+    .time-readout {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--db-mono);
+      font-size: 12px;
+      color: var(--ui-muted);
+      white-space: nowrap;
+    }
+
+    .time-dir {
+      color: var(--ui-green);
+      font-family: var(--db-sans);
+      font-weight: 600;
+    }
+
+    .time-dir.is-rev { color: var(--ui-red); }
+
+    .scrubber {
+      position: relative;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      cursor: ew-resize;
+      touch-action: none;
+    }
+
+    .scrubber-track {
+      position: relative;
+      width: 100%;
+      height: 2px;
+      background: var(--ui-line);
+    }
+
+    .scrubber-ticks {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .scrubber-ticks i {
+      width: 1px;
+      height: 7px;
+      background: var(--ui-line);
+      transform: translateY(-2.5px);
+    }
+
+    .scrubber-ripples {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .scrubber-dot {
+      position: absolute;
+      top: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ui-red);
+      transform: translate(-50%, -50%);
+      opacity: 0.85;
+    }
+
+    .scrubber-thumb {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--ui-red);
+      background: var(--ui-ink);
+      transform: translate(-50%, -50%) rotate(45deg);
+      pointer-events: none;
+      transition: transform 0.12s ease;
+    }
+
+    .scrubber:active .scrubber-thumb {
+      transform: translate(-50%, -50%) rotate(45deg) scale(1.25);
+    }
+
+    /* 拓印成功浮层提示 */
+    .toast-seal {
+      position: fixed;
+      right: 28px;
+      bottom: 92px;
+      z-index: 25;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--ui-surface-hover);
+      border: 1px solid var(--ui-line);
+      font-size: 13px;
+      color: var(--ui-ink);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    .toast-seal.is-show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 780px) {
+      .hud-top { padding: 12px 14px; align-items: flex-start; }
+      .hud-title small { display: none; }
+      .hud-btn { padding: 6px 10px; font-size: 11px; }
+      .hud-bottom { padding: 0 14px 14px; }
+      .timeline-bar { padding: 10px 12px 12px; }
+      .timeline-meta { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .hud-guide { left: 14px; bottom: 112px; max-width: calc(100vw - 28px); }
+      .toast-seal { right: 14px; bottom: 112px; }
+    }
+  </style>
+  <script src="assets/resume-browsing.js" defer></script>
+</head>
+<body data-tone="light">
+  <canvas id="stage" aria-label="墨流 · 四时行卷 实时 WebGL 互动水墨画卷"></canvas>
+
+  <header class="hud-top" aria-label="实验导航与控制">
+    <div class="hud-brand">
+      <a class="hud-back" href="lab.html">← 实验室</a>
+      <span class="hud-sep" aria-hidden="true"></span>
+      <span class="hud-title">
+        <strong>墨流 · 四时行卷</strong>
+        <small id="engineTag">WEBGL2</small>
+      </span>
+    </div>
+
+    <div class="hud-controls">
+      <button class="hud-btn" id="btnPause" type="button" aria-pressed="false" title="空格键暂停或恢复自然流速">定格</button>
+      <button class="hud-btn" id="btnSound" type="button" aria-pressed="false" title="开启纯代码合成五声音阶风声">听风</button>
+      <button class="hud-btn" id="btnGuide" type="button" aria-pressed="true" title="显示或隐藏操作提示">说明</button>
+      <button class="hud-btn hud-btn--accent" id="btnStamp" type="button" title="盖章导出当前画面为高清 PNG">拓印</button>
+    </div>
+  </header>
+
+  <aside class="hud-guide" id="guideBox" aria-label="互动指南">
+    <strong>滚轮上下</strong>：沿时间轴深入探索或<strong>时光倒流</strong>（快滚触发星轨穿梭）<br>
+    <strong>移动鼠标</strong>：拂动水墨流场与 3D 镜头视差<br>
+    <strong>单击画布</strong>：落下一道可逆折射涟漪（倒滚可亲眼收回）<br>
+    <strong>按住左键</strong>：凝滞时间聚气漩涡，松手爆散墨浪
+  </aside>
+
+  <div class="toast-seal" id="toastSeal" role="status" aria-live="polite">
+    <span class="db-seal db-seal--stamp" aria-hidden="true">拓印</span>
+    <span id="toastText">已导出高清画卷 PNG</span>
+  </div>
+
+  <footer class="hud-bottom" aria-label="四时时序尺">
+    <div class="timeline-bar">
+      <div class="timeline-meta">
+        <div class="era-group" role="group" aria-label="快速跳转四时画境">
+          <button class="era-btn is-active" type="button" data-era="0">卯 · 晨纸</button>
+          <button class="era-btn" type="button" data-era="1">午 · 朱岚</button>
+          <button class="era-btn" type="button" data-era="2">酉 · 松烟</button>
+          <button class="era-btn" type="button" data-era="3">子 · 夜灯</button>
+        </div>
+        <div class="time-readout">
+          <span class="time-dir" id="timeDir">→ 缓行探索</span>
+          <span id="timeCode">T +000.0</span>
+        </div>
+      </div>
+
+      <div class="scrubber" id="scrubber" role="slider" tabindex="0" aria-label="四时时间轴" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="scrubber-track">
+          <div class="scrubber-ticks" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <div class="scrubber-ripples" id="scrubberRipples" aria-hidden="true"></div>
+          <div class="scrubber-thumb" id="scrubberThumb"></div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/ink-field.js" defer></script>
+</body>
+</html>

@@ -9,7 +9,8 @@
     "antigravity": "Antigravity 观察",
     "axioms": "43 条决策公理",
     "procurement": "采购机会看板",
-    "twenty-four": "24 点"
+    "twenty-four": "24 点",
+    "ink-field": "墨流 · 四时行卷"
   });
   const currentPage = location.pathname.replace(/\/$/, '').split('/').pop().replace(/\.html$/, '');
   const isKnownPage = (page) => Object.hasOwn(pages, page);
